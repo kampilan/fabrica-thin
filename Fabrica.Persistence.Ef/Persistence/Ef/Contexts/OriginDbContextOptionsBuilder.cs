@@ -7,29 +7,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Fabrica.Persistence.Ef.Contexts;
 
-public class OriginDbContextOptionsBuilder: DbContextOptionsBuilder
+public class OriginDbContextOptionsBuilder(ICorrelation correlation, IRuleSet rules, IConnectionResolver resolver, IUnitOfWork uow, ILoggerFactory loggerFactory) : DbContextOptionsBuilder
 {
-
-    public OriginDbContextOptionsBuilder(ICorrelation correlation, IRuleSet rules, IConnectionResolver resolver, IUnitOfWork uow, ILoggerFactory loggerFactory)
-    {
-
-        Correlation = correlation;
-        Rules = rules;
-        Resolver = resolver;
-        Uow = uow;
-        LoggerFactory = loggerFactory;
-
-    }    
-    
-    
-    public ICorrelation Correlation { get; }
-    public IRuleSet Rules { get; }
-    public IConnectionResolver Resolver { get; }
-    public IUnitOfWork Uow { get; }
-    public ILoggerFactory LoggerFactory { get; }
+    public ICorrelation Correlation { get; } = correlation;
+    public IRuleSet Rules { get; } = rules;
+    public IConnectionResolver Resolver { get; } = resolver;
+    public IUnitOfWork Uow { get; } = uow;
+    public ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
 
-    public void ConfigureDbContext( OriginDbContext context )
+    public void ConfigureDbContext( DbContext context )
     {
         context.Database.UseTransaction(Uow.Transaction);
     }

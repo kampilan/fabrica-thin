@@ -92,23 +92,6 @@ public abstract class AbstractDbContext: DbContext
     }
 
 
-
-    protected void EnlistUnitOfWork()
-    {
-
-        using var logger = EnterMethod();
-
-
-        // *****************************************************************
-        if (Uow is not null)
-        {
-            logger.Debug("Attempting to enlisting Transaction from Uow");
-            Database.UseTransaction(Uow.Transaction);
-        }
-
-    }
-
-
     private void ReadonlyCheck()
     {
         if( IsReadonly )

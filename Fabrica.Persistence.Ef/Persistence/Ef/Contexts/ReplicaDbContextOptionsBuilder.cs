@@ -4,19 +4,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Fabrica.Persistence.Ef.Contexts;
 
-public class ReplicaDbContextOptionsBuilder: DbContextOptionsBuilder
+public class ReplicaDbContextOptionsBuilder(ICorrelation correlation, ILoggerFactory factory) : DbContextOptionsBuilder
 {
-
-    public ReplicaDbContextOptionsBuilder(ICorrelation correlation, ILoggerFactory factory)
-    {
-
-        Correlation = correlation;
-        LoggerFactory = factory;
-
-    }
-
-    public ICorrelation Correlation { get; }
-    public ILoggerFactory LoggerFactory { get; }
-
-
+    public ICorrelation Correlation { get; } = correlation;
+    public ILoggerFactory LoggerFactory { get; } = factory;
 }
