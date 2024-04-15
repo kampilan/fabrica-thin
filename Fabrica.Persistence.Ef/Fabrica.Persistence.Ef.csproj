@@ -9,7 +9,7 @@
     <Description>Fabrica Persistence handler support for EF</Description>
     <Authors>Pond Hawk Technologies Inc.</Authors>
     <Company>Pond Hawk Technologies Inc.</Company>
-    <Copyright>Pond Hawk Technologies Inc. (c) 2023</Copyright>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
   </PropertyGroup>
 
 	<ItemGroup>
