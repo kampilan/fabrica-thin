@@ -8,8 +8,9 @@
 	<Description>Fabrica Watch logging facsade</Description>
 	<Authors>Pond Hawk Technologies Inc.</Authors>
 	<Company>Pond Hawk Technologies Inc.</Company>
-	<Copyright>Pond Hawk Technologies Inc. (c) 2023</Copyright>
+	<Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,6 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Fabrica.Watch</RootNamespace>
+    <Title>Fabrica.Watch.Http</Title>
+    <Authors>Pond Hawk Technologies Inc.</Authors>
+    <Company>Pond Hawk Technologies Inc.</Company>
+    <Description>Fabrica.Watch Http sink.</Description>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
 	<ItemGroup>
