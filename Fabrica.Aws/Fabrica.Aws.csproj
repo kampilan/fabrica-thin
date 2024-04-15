@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Fabrica</RootNamespace>
+    <Title>Fabrica AWS</Title>
+    <Description>Fabrica helpers for using AWS Services</Description>
+    <Authors>Pond Hawk Technologies Inc.</Authors>
+    <Company>Pond Hawk Technologies Inc.</Company>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2023</Copyright>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Autofac" Version="8.0.0" />
+		<PackageReference Include="AWSSDK.S3" Version="3.7.307.15" />
+		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.302.49" />
+		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.75" />
+	</ItemGroup>
+
+</Project>

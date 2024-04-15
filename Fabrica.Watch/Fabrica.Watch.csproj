@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>Fabrica Watch</Title>
+	<Description>Fabrica Watch logging facsade</Description>
+	<Authors>Pond Hawk Technologies Inc.</Authors>
+	<Company>Pond Hawk Technologies Inc.</Company>
+	<Copyright>Pond Hawk Technologies Inc. (c) 2023</Copyright>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>
