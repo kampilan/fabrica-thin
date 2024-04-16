@@ -1,5 +1,8 @@
-﻿using Autofac;
+﻿using System.Reflection;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Fabrica.Rules;
+using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable UnusedMember.Global
 
@@ -8,8 +11,17 @@ namespace Fabrica.Mediator;
 public static class AutofacExtensions
 {
 
-    public static ContainerBuilder RegisterRequestMediator(this ContainerBuilder builder)
+    public static ContainerBuilder RegisterRequestMediator(this ContainerBuilder builder, params Assembly[] sources )
     {
+
+        var services = new ServiceCollection();
+        services.AddMediatR(c =>
+        {
+            c.RegisterServicesFromAssemblies(sources);
+        });
+
+        builder.Populate(services);
+
 
         builder.Register(c =>
             {
