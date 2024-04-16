@@ -2,6 +2,8 @@
 using Fabrica.Exceptions;
 using Fabrica.Models;
 using Fabrica.Rules;
+using Fabrica.Utilities.Container;
+using Fabrica.Watch;
 using MediatR;
 
 // ReSharper disable UnusedMember.Global
@@ -18,7 +20,7 @@ public interface IRequestMediator
 
 }
 
-internal class RequestMediator(ILifetimeScope root, IRuleSet rules): IRequestMediator
+internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IRuleSet rules): CorrelatedObject(correlation), IRequestMediator
 {
 
     protected class WrapperServiceProvider(ILifetimeScope scope) : IServiceProvider
@@ -36,15 +38,23 @@ internal class RequestMediator(ILifetimeScope root, IRuleSet rules): IRequestMed
     protected virtual bool TryValidateRequest<TRequest,TResponse>( TRequest request, out Response<TResponse>? error ) where TRequest: class, IRequest<Response<TResponse>> where TResponse: class
     {
 
+        using var logger = EnterMethod();
+
+
         var reqType = request.GetType();
 
         var details = new List<EventDetail>();
 
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to validate the request");
         if (!rules.TryValidate(request, out var violations))
             details.AddRange(violations);
 
         if ( details.Count != 0 )
         {
+            logger.Debug("Validation failed.");
             error = Response<TResponse>.BadRequest($"{reqType.Name} is not valid. See details below.", details);
             return false;
         }
@@ -59,14 +69,22 @@ internal class RequestMediator(ILifetimeScope root, IRuleSet rules): IRequestMed
     protected virtual bool TryValidateRequest( IRequest<Response> request, out Response? error)
     {
 
+        using var logger = EnterMethod();
+
+
         var reqType = request.GetType();
 
         var details = new List<EventDetail>();
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to validate the request");
         if (!rules.TryValidate(request, out var violations))
             details.AddRange(violations);
 
         if (details.Count != 0)
         {
+            logger.Debug("Validation failed.");
             error = Response.BadRequest($"{reqType.Name} is not valid. See details below.", details);
             return false;
         }
@@ -81,8 +99,14 @@ internal class RequestMediator(ILifetimeScope root, IRuleSet rules): IRequestMed
     public async Task<Response<TResponse>> Send<TRequest,TResponse>( TRequest request, CancellationToken cancellationToken = new ()) where TRequest: class, IRequest<Response<TResponse>> where TResponse: class
     {
 
+        using var logger = EnterMethod();
+
+        logger.LogObject(nameof(request), request);
+
+
         if( !TryValidateRequest<TRequest,TResponse>(request, out var error) && error is not null )
             return error;
+
 
         await using var scope = root.BeginLifetimeScope();
 
@@ -90,6 +114,12 @@ internal class RequestMediator(ILifetimeScope root, IRuleSet rules): IRequestMed
         var inner = new MediatR.Mediator(provider);
 
         var response = await inner.Send(request, cancellationToken);
+
+        if (logger.IsDebugEnabled)
+        {
+            var ctx = new {response.IsSuccessful, response.ErrorCode, response.Explanation};
+            logger.LogObject(nameof(response), ctx);
+        }
 
 
         return response;
@@ -99,8 +129,14 @@ internal class RequestMediator(ILifetimeScope root, IRuleSet rules): IRequestMed
     public async Task<Response> Send<TRequest>( TRequest request, CancellationToken cancellationToken = new ()) where TRequest: class, IRequest<Response>
     {
 
+        using var logger = EnterMethod();
+
+        logger.LogObject(nameof(request), request);
+
+
         if (!TryValidateRequest(request, out var error) && error is not null)
             return error;
+
 
         await using var scope = root.BeginLifetimeScope();
 
@@ -108,6 +144,13 @@ internal class RequestMediator(ILifetimeScope root, IRuleSet rules): IRequestMed
         var inner = new MediatR.Mediator(provider);
 
         var response = await inner.Send(request, cancellationToken);
+
+        if (logger.IsDebugEnabled)
+        {
+            var ctx = new { response.IsSuccessful, response.ErrorCode, response.Explanation };
+            logger.LogObject(nameof(response), ctx);
+        }
+
 
         return response;
 
