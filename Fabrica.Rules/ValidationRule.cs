@@ -131,8 +131,26 @@ public class ValidationRule<TFact> : AbstractRule, IValidationRule<TFact>
 
     }
 
+    public IValidator<TFact, TType> For<TType>(Expression<Func<TFact, TType>> extractorEx)
+    {
 
-        
+        if (extractorEx == null)
+            throw new ArgumentNullException(nameof(extractorEx));
+
+        var factName = typeof(TFact).Name;
+
+        var group = (extractorEx.Body is MemberExpression body ? $"{typeof(TFact).Name}.{body.Member.Name}" : factName);
+
+        var extractor = extractorEx.Compile();
+
+        var validator = new Validator<TFact, TType>(this, group, extractor);
+        TypeValidator = validator;
+
+        return validator;
+
+    }
+
+
     public EnumerableValidator<TFact, TType> AssertOver<TType>( Expression<Func<TFact, IEnumerable<TType>>> extractorEx )
     {
 

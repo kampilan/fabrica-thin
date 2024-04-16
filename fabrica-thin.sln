@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabrica.Watch.Realtime", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabrica.Persistence.Ef", "Fabrica.Persistence.Ef\Fabrica.Persistence.Ef.csproj", "{E8BC2B29-F59C-4C0D-890D-6C45A81BF187}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.Mediator", "Fabrica.Mediator\Fabrica.Mediator.csproj", "{D2525FEC-657B-4248-945E-2A575880243F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabrica.Mediator", "Fabrica.Mediator\Fabrica.Mediator.csproj", "{D2525FEC-657B-4248-945E-2A575880243F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
