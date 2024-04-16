@@ -50,7 +50,8 @@ public class RequestLoggingMiddleware(RequestDelegate next)
 
 
         // ****************************************************************************************
-        var diagLogger = correlation.GetLogger("Fabrica.Diagnostics.Http");
+        var lr = new LoggerRequest {Category = "Fabrica.Diagnostics.Http", CorrelationId = correlation.Uid, Level = Level.Warning };
+        var diagLogger = WatchFactoryLocator.Factory.GetLogger( lr );
 
         if( diagLogger.IsDebugEnabled )
         {
