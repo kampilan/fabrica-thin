@@ -467,7 +467,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         using var logger = EnterMethod();
 
 
-        var dirty = Context.ChangeTracker.Entries().Where(e => Helpers.DirtyStates.Contains(e.State)).ToList();
+        var dirty = Context.ChangeTracker.Entries().Where(e => Helpers.DirtyStates.Contains(e.State)).Select(d=>d.Entity).ToList();
 
         logger.LogObject(nameof(dirty.Count), dirty.Count );
 
