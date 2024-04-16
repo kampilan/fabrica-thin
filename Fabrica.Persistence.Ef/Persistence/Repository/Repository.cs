@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Autofac;
 using Fabrica.Exceptions;
 using Fabrica.Rules;
@@ -112,10 +111,8 @@ public interface ICommandRepository
 
 }
 
-public class CommandRepository( ICorrelation correlation, IOriginDbContextFactory factory, IRuleSet rules ) : ICommandRepository
+public class CommandRepository( ICorrelation correlation, IOriginDbContextFactory factory, IRuleSet rules ): CorrelatedObject(correlation), ICommandRepository
 {
-
-    protected ILogger EnterMethod( [CallerMemberName] string name = "") => correlation.EnterMethod(name);
 
     private DbContext Context => factory.GetDbContext();
 
@@ -470,7 +467,10 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         using var logger = EnterMethod();
 
 
-        var dirty = Context.ChangeTracker.Entries().Where(e => Helpers.DirtyStates.Contains(e.State));
+        var dirty = Context.ChangeTracker.Entries().Where(e => Helpers.DirtyStates.Contains(e.State)).ToList();
+
+        logger.LogObject(nameof(dirty.Count), dirty.Count );
+
 
         if( !rules.TryValidate(dirty, out var violations) )
             return NotValidError.Create(violations);
@@ -532,10 +532,8 @@ public interface IQueryRepository
 
 }
 
-public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory factory ) : IQueryRepository
+public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory factory ) : CorrelatedObject(correlation), IQueryRepository
 {
-
-    protected ILogger EnterMethod([CallerMemberName] string name = "") => correlation.EnterMethod(name);
 
     private DbContext Context => factory.GetDbContext();
 
