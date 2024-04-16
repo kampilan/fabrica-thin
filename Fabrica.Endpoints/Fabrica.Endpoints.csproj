@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Fabrica</RootNamespace>
+    <Title>Fabrica.Endpoints</Title>
+    <Authors>Pond Hawk Technologies Inc.</Authors>
+    <Company>Pond Hawk Technologies Inc.</Company>
+    <Description>Helper for implementing Fabrica APIs</Description>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+	</ItemGroup>
+
+</Project>
