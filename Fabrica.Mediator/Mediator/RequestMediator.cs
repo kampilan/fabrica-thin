@@ -117,7 +117,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
 
         if (logger.IsDebugEnabled)
         {
-            var ctx = new {response.IsSuccessful, response.ErrorCode, response.Explanation};
+            var ctx = new {response.IsSuccessful, response.ErrorCode, response.Explanation, response.Details};
             logger.LogObject(nameof(response), ctx);
         }
 
@@ -147,7 +147,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
 
         if (logger.IsDebugEnabled)
         {
-            var ctx = new { response.IsSuccessful, response.ErrorCode, response.Explanation };
+            var ctx = new { response.IsSuccessful, response.ErrorCode, response.Explanation, response.Details };
             logger.LogObject(nameof(response), ctx);
         }
 
