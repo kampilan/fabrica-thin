@@ -9,6 +9,8 @@ namespace Fabrica.Rules;
 public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
 {
 
+    private int _currentSalience = 100000;
+
     public virtual IValidator<TFact,TType> For<TType>(Expression<Func<TFact,TType>> extractor)
     {
 
@@ -18,7 +20,7 @@ public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
         var rule = new ValidationRule<TFact>(fullSetName, "Placeholder");
 
         // Apply default salience
-        rule.WithSalience(DefaultSalience);
+        rule.WithSalience(_currentSalience);
 
         // Apply default inception and expiration
         rule.WithInception(DefaultInception);
@@ -26,12 +28,14 @@ public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
 
         Sinks.Add(t => t.Add(typeof(TFact), rule));
 
+        _currentSalience += 100;
+
         var validator = rule.Assert(extractor);
 
         return validator;
 
-
     }
+
 
     protected ValidationRule<TFact> Add()
     {
@@ -40,6 +44,16 @@ public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
         var fullSetName = $"{nameSpace}.{SetName}";
 
         var rule = new ValidationRule<TFact>(fullSetName, "Placeholder");
+
+        rule.WithSalience(_currentSalience);
+
+        // Apply default inception and expiration
+        rule.WithInception(DefaultInception);
+        rule.WithExpiration(DefaultExpiration);
+
+        Sinks.Add(t => t.Add(typeof(TFact), rule));
+
+        _currentSalience += 100;
 
         return rule;
 
