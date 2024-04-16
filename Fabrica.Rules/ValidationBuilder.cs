@@ -57,7 +57,42 @@ public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
 
     }
 
+    public virtual IValidator<TFact, TType> Mutex<TType>( string name, Expression<Func<TFact, TType>> extractor )
+    {
 
+        var nameSpace = GetType().Namespace;
+        var fullSetName = $"{nameSpace}.{SetName}";
+
+        var rule = new ValidationRule<TFact>(fullSetName, "Placeholder");
+
+
+        // Apply default salience
+        if (!_mutexSalience.TryGetValue(name, out var cur))
+        {
+            _mutexSalience[name] = 100000;
+            cur = 100000;
+        }
+        else
+            cur += 100;
+
+        rule.InMutex(name);
+        rule.WithSalience(cur);
+
+
+        // Apply default inception and expiration
+        rule.WithInception(DefaultInception);
+        rule.WithExpiration(DefaultExpiration);
+
+        Sinks.Add(t => t.Add(typeof(TFact), rule));
+
+        var validator = rule.Assert(extractor);
+
+        return validator;
+
+
+    }
+
+    private readonly Dictionary<string, int> _mutexSalience = [];
 
 
 
