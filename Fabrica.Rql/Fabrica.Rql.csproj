@@ -12,7 +12,18 @@
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <ItemGroup>
+
+	<PropertyGroup>
+		<PackageIcon>smithy.png</PackageIcon>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<None Include="smithy.png" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+
+
+	<ItemGroup>
     <PackageReference Include="Sprache" Version="2.3.1" />
   </ItemGroup>
 

@@ -12,6 +12,16 @@
     <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<PackageIcon>smithy.png</PackageIcon>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<None Include="smithy.png" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.4" />

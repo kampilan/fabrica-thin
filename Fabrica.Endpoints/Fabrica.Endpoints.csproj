@@ -12,6 +12,15 @@
     <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<PackageIcon>smithy.png</PackageIcon>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<None Include="smithy.png" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
