@@ -1,10 +1,9 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Autofac;
+using Fabrica.Identity;
 using Fabrica.Watch;
 
 namespace Fabrica.Utilities.Container;
@@ -27,7 +26,7 @@ public static class CorrelationExtensions
 
     public static ClaimsIdentity ToIdentity(this ICorrelation correlation)
     {
-        var identity = correlation.Caller?.Identity as ClaimsIdentity ?? new ClaimsIdentity();
+        var identity = correlation.Caller?.Identity as ClaimsIdentity ?? new AnonymousClaimsIdentity();
         return identity;
     }
 

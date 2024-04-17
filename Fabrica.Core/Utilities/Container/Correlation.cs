@@ -72,6 +72,6 @@ public class NullUser : IPrincipal, IIdentity
     public IIdentity Identity => this;
     public string AuthenticationType => "None";
     public bool IsAuthenticated => false;
-    public string Name => string.Empty;
+    public string Name => "Anonymous";
 
 }

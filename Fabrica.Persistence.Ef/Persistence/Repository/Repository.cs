@@ -769,7 +769,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         {
             TypeCode = type.ToString(),
             UnitOfWorkUid = Correlation.Uid,
-            SubjectUid = ident.GetSubject(),
+            SubjectUid = ident.GetSubject("Anonymous"),
             SubjectDescription = ident.GetName(),
             Occurred = journalTime,
             Entity = entity.GetType().FullName ?? "",
@@ -801,11 +801,6 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         return aj;
 
     }
-
-
-
-
-
 
 
 
