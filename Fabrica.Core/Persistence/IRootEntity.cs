@@ -1,5 +1,5 @@
 ﻿namespace Fabrica.Persistence;
 
-public interface IRootEntity
+public interface IRootEntity: IEntity
 {
 }

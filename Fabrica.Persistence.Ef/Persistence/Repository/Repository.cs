@@ -1,11 +1,14 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
 using Autofac;
 using Fabrica.Exceptions;
+using Fabrica.Identity;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 using Fabrica.Watch.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 // ReSharper disable UnusedMember.Global
 
@@ -461,30 +464,47 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
 
 
-    public async Task<OkOrError> Save(CancellationToken ct = default)
+    public async Task<OkOrError> Save( CancellationToken ct = default )
     {
 
         using var logger = EnterMethod();
 
 
-        var dirty = Context.ChangeTracker.Entries().Where(e => Helpers.DirtyStates.Contains(e.State)).Select(d=>d.Entity).ToList();
-
-        logger.LogObject(nameof(dirty.Count), dirty.Count );
-
-
-        if( !rules.TryValidate(dirty, out var violations) )
-            return NotValidError.Create(violations);
-
-
         try
         {
 
+
+            // *****************************************************************
+            logger.Debug("Attempting to perform evaluation");
+            var eval = PerformEvaluation();
+            if (eval.IsError)
+                return eval.AsError;
+
+
+            // *****************************************************************
+            logger.Debug("Attempting to perform lifecycle callbacks");
+            PerformCallbacks();
+
+
+
+            // *****************************************************************
+            logger.Debug("Attempting to perform journaling");
+            var journal = PerformEntityJournaling();
+            await Context.AddRangeAsync(journal, ct);
+
+
+
+            // *****************************************************************
+            logger.Debug("Attempting to save changes");
             var affected = await Context.SaveChangesAsync(ct);
 
             logger.Inspect(nameof(affected), affected);
 
 
+
+            // *****************************************************************
             return Ok.Singleton;
+
 
         }
         catch (Exception cause)
@@ -497,6 +517,292 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
 
     }
+
+
+    public bool PerformEvaluations { get; set; }
+
+    protected OkOrError PerformEvaluation()
+    {
+
+        using var logger = EnterMethod();
+
+        logger.Inspect(nameof(PerformEvaluations), PerformEvaluations);
+
+        if (!PerformEvaluations)
+            return Ok.Singleton;
+
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to find all dirty entities");
+        var entries = Context.ChangeTracker.Entries().Where(e => Helpers.DirtyStates.Contains(e.State)).ToList();
+        var entities = entries.Select(d => d.Entity).ToList();
+
+        logger.Inspect(nameof(entities.Count), entities.Count);
+
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to evaluate all tracked entities");            
+        if (!rules.TryValidate( entities, out var violations ) )
+            return NotValidError.Create(violations);
+
+
+
+        // *****************************************************************
+        return Ok.Singleton;
+
+
+    }
+
+
+    public bool PerformLifecycleCallbacks { get; set; } = true;
+
+    protected void PerformCallbacks()
+    {
+
+        using var logger = EnterMethod();
+
+        logger.Inspect(nameof(PerformLifecycleCallbacks), PerformLifecycleCallbacks);
+
+        if (!PerformLifecycleCallbacks)
+            return;
+
+
+        foreach (var candidate in Context.ChangeTracker.Entries().Where(e=>Helpers.DirtyStates.Contains(e.State)) )
+        {
+
+            if (candidate is { State: EntityState.Added, Entity: IEntity created })
+            {
+                created.OnCreate();
+                created.OnModification();
+            }
+
+            if (candidate is { State: EntityState.Modified, Entity: IEntity modified })
+                modified.OnModification();
+
+        }
+
+
+    }
+
+
+    public bool PerformJournaling { get; set; } = true;
+    public IRootEntity? Root { get; set; }
+
+    protected IList<AuditJournal> PerformEntityJournaling()
+    {
+
+        using var logger = EnterMethod();
+
+
+
+        var journalTime = DateTime.Now;
+        var journals = new List<AuditJournal>();
+
+
+
+        // *****************************************************************
+        logger.Inspect(nameof(PerformJournaling), PerformJournaling);
+
+        if (!PerformJournaling)
+            return journals;
+
+
+        if (Root != null)
+        {
+
+            logger.Debug("Attempting to create unmodified root journal entry");
+            var aj = CreateAuditJournal(journalTime, AuditJournalType.UnmodifiedRoot, Root);
+
+            journals.Add(aj);
+        }
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to inspect each entity in this DbContext");
+        foreach (var entry in Context.ChangeTracker.Entries() )
+        {
+
+            logger.Inspect("EntityType", entry.Entity.GetType().FullName);
+            logger.Inspect("State", entry.State);
+
+
+            // *****************************************************************
+            logger.Debug("Attempting to check if entity is Model");
+            if (entry.Entity is not IEntity entity)
+                continue;
+
+
+
+            // *****************************************************************
+            logger.Debug("Attempting to get AuditAttribute");
+            var audit = entry.Entity.GetType().GetCustomAttribute<AuditAttribute>(true);
+
+            logger.LogObject(nameof(audit), audit);
+
+            if (audit == null || audit is { Read: false, Write: false })
+                continue;
+
+
+
+            // *****************************************************************                    
+            if (audit.Read)
+            {
+
+                logger.Debug("Attempting to create read journal entry");
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.Read, entity);
+                journals.Add(aj);
+
+            }
+
+
+
+            // *****************************************************************
+            if (entry.State == EntityState.Added && audit.Write)
+            {
+
+                logger.Debug("Attempting to create insert journal entry");
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.Created, entity);
+
+                journals.Add(aj);
+
+                if (audit.Detailed)
+                    PerformDetailJournaling(entry, journals, journalTime);
+
+            }
+
+
+
+            // *****************************************************************
+            if (entry.State == EntityState.Modified && audit.Write)
+            {
+
+                logger.Debug("Attempting to create update journal entry");
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.Updated, entity);
+
+                journals.Add(aj);
+
+                if (audit.Detailed)
+                    PerformDetailJournaling(entry, journals, journalTime);
+
+            }
+
+
+
+            // *****************************************************************
+            if (entry.State == EntityState.Deleted && audit.Write)
+            {
+
+                logger.Debug("Attempting to create delete journal entry");
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.Deleted, entity);
+
+                journals.Add(aj);
+
+            }
+
+
+
+            // *****************************************************************
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            if (entry.State == EntityState.Unchanged && audit.Write && entity is IRootEntity && Root == null)
+            {
+
+                logger.Debug("Attempting to create unmodified root journal entry");
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.UnmodifiedRoot, entity);
+
+                journals.Add(aj);
+
+            }
+
+
+        }
+
+
+
+        // *****************************************************************        
+        logger.Inspect("Journal Count", journals.Count);
+        return journals;
+
+
+
+    }
+
+    protected void PerformDetailJournaling(EntityEntry entry, IList<AuditJournal> journals, DateTime journalTime)
+    {
+
+        using var logger = EnterMethod();
+
+
+
+        if (entry.Entity is not IEntity entity)
+            return;
+
+
+
+        foreach (var prop in entry.Properties)
+        {
+
+            if (!prop.IsModified)
+                continue;
+
+            var aj = CreateAuditJournal(journalTime, AuditJournalType.Detail, entity, prop);
+
+            journals.Add(aj);
+
+        }
+
+
+    }
+
+
+
+    protected AuditJournal CreateAuditJournal(DateTime journalTime, AuditJournalType type, IEntity entity, PropertyEntry? prop = null)
+    {
+
+        var ident = Correlation.ToIdentity();
+
+        var aj = new AuditJournal
+        {
+            TypeCode = type.ToString(),
+            UnitOfWorkUid = Correlation.Uid,
+            SubjectUid = ident.GetSubject(),
+            SubjectDescription = ident.GetName(),
+            Occurred = journalTime,
+            Entity = entity.GetType().FullName ?? "",
+            EntityUid = entity.Uid,
+            EntityDescription = entity.ToString() ?? ""
+        };
+
+
+        if (prop != null)
+        {
+
+            aj.PropertyName = prop.Metadata.Name;
+
+            var prev = prop.OriginalValue?.ToString() ?? "";
+            if (prev.Length > 255)
+                prev = prev[..255];
+
+            aj.PreviousValue = prev;
+
+            var curr = prop.CurrentValue?.ToString() ?? "";
+            if (curr.Length > 255)
+                curr = curr[..255];
+
+            aj.CurrentValue = curr;
+
+        }
+
+
+        return aj;
+
+    }
+
+
+
+
+
 
 
 
