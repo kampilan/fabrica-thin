@@ -31,15 +31,15 @@ namespace Fabrica.Rules.Listeners
 {
 
 
-    public class LoggingEvaluationListener: IEvaluationListener
+    public class WatchEvaluationListener: IEvaluationListener
     {
 
-        public LoggingEvaluationListener( ILogger logger )
+        public WatchEvaluationListener( ILogger logger )
         {
             Logger = logger;
         }
 
-        public LoggingEvaluationListener(  string category )
+        public WatchEvaluationListener(  string category )
         {
             Logger = WatchFactoryLocator.Factory.GetLogger( category );
         }

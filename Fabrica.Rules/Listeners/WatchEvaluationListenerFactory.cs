@@ -29,7 +29,7 @@ using Fabrica.Watch;
 namespace Fabrica.Rules.Listeners
 {
 
-    public class LoggingEvaluationListenerFactory: IEvaluationListenerFactory
+    public class WatchEvaluationListenerFactory: IEvaluationListenerFactory
     {
 
 
@@ -39,7 +39,7 @@ namespace Fabrica.Rules.Listeners
         public IEvaluationListener CreateListener()
         {
             var logger = WatchFactoryLocator.Factory.GetLogger( Category );
-            return new LoggingEvaluationListener( logger );
+            return new WatchEvaluationListener( logger );
         }
 
     }
