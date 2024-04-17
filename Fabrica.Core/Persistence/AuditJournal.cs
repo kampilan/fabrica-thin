@@ -35,9 +35,8 @@ namespace Fabrica.Persistence;
 /// Audit Journal Entity. Used by the auditing system to persist audit journals to
 /// the database
 /// </summary>
-public class AuditJournal
+public class AuditJournal: BaseEntity<AuditJournal>, IEntity
 {
-
 
     public long Id { get; protected set; } = default;
 
@@ -66,5 +65,9 @@ public class AuditJournal
 
     public virtual string CurrentValue { get; set; } = string.Empty;
 
+    public override string GetUid()
+    {
+        return Uid;
+    }
 
 }
