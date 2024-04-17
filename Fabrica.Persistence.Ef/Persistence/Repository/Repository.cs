@@ -639,7 +639,10 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
             logger.Debug("Attempting to get AuditAttribute");
             var audit = entry.Entity.GetType().GetCustomAttribute<AuditAttribute>(true);
 
-            logger.LogObject(nameof(audit), audit);
+            if( logger.IsDebugEnabled && audit is not null )
+            {
+                logger.LogObject(nameof(audit), new { audit.EntityName, audit.Read, audit.Write, audit.Detailed } );
+            }
 
             if (audit == null || audit is { Read: false, Write: false })
                 continue;

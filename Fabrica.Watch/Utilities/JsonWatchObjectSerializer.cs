@@ -19,7 +19,9 @@ public class JsonWatchObjectSerializer: IWatchObjectSerializer
             TypeInfoResolver = new WatchJsonTypeInfoResolver()
         };
 
-        WatchOptions.Converters.Add(new TypeWatchJsonConvert());
+        WatchOptions.Converters.Add( new TypeWatchJsonConvert() );
+        WatchOptions.Converters.Add( new AttributeWatchJsonConvert() );
+
 
     }
 
@@ -148,6 +150,23 @@ internal class TypeWatchJsonConvert: JsonConverter<Type>
         writer.WriteStartObject();
         writer.WritePropertyName("Name");
         writer.WriteStringValue(value.GetConciseFullName());
+        writer.WriteEndObject();
+    }
+}
+
+
+internal class AttributeWatchJsonConvert : JsonConverter<Attribute>
+{
+    public override Attribute? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Write(Utf8JsonWriter writer, Attribute value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WritePropertyName("Name");
+        writer.WriteStringValue(value.GetType().GetConciseFullName());
         writer.WriteEndObject();
     }
 }
