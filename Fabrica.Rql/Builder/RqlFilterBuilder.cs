@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2019 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,12 @@ namespace Fabrica.Rql.Builder
         public static RqlFilterBuilder<TTarget> Create()
         {
             return new RqlFilterBuilder<TTarget>();
+        }
+
+        public static RqlFilterBuilder<TTarget> Create( string rql )
+        {
+            var tree = RqlLanguageParser.ToCriteria(rql);
+            return new RqlFilterBuilder<TTarget>(tree);
         }
 
 
