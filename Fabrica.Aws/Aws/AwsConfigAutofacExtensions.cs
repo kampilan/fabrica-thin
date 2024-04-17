@@ -5,9 +5,12 @@ using Amazon.S3;
 using Amazon.SecurityToken;
 using Autofac;
 
+// ReSharper disable UnusedMember.Global
+
 namespace Fabrica.Aws;
 
-public static class AutofacExtensions
+
+public static class AwsConfigAutofacExtensions
 {
 
     public static ContainerBuilder UseAws(this ContainerBuilder builder, string profileName)
