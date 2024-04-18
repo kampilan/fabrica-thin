@@ -93,6 +93,7 @@ public interface ICommandRepository
 {
 
     Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, int limit, CancellationToken ct = default) where TEntity : class, IEntity;
 
     Task<EntityOrError<TEntity>> One<TEntity>(long id, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<EntityOrError<TEntity>> One<TEntity>(string uid, CancellationToken ct = default) where TEntity : class, IEntity;
@@ -144,6 +145,32 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         }
 
     }
+
+    public async Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, int limit, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var list = await Context.Set<TEntity>().Where(predicate).Take(limit).ToListAsync(ct);
+
+            return list;
+
+        }
+        catch (Exception cause)
+        {
+
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "Many failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+    }
+
 
     public async Task<EntityOrError<TEntity>> One<TEntity>(long id, CancellationToken ct = default) where TEntity : class, IEntity
     {
@@ -824,6 +851,8 @@ public interface IQueryRepository
 {
 
     Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, int limit, CancellationToken ct = default) where TEntity : class, IEntity;
+
 
     Task<EntityOrError<TEntity>> One<TEntity>(long id, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<EntityOrError<TEntity>> One<TEntity>(string uid, CancellationToken ct = default) where TEntity : class, IEntity;
@@ -851,6 +880,31 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
         {
 
             var list = await Context.Set<TEntity>().Where(predicate).ToListAsync(ct);
+
+            return list;
+
+        }
+        catch (Exception cause)
+        {
+
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "Many failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+    }
+
+    public async Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, int limit, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var list = await Context.Set<TEntity>().Where(predicate).Take(limit).ToListAsync(ct);
 
             return list;
 
