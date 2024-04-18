@@ -151,12 +151,30 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
         using var logger = EnterMethod();
 
+        logger.Debug("For: {0} with Limit: {1}", typeof(TEntity).GetConciseFullName(), limit);
+
         try
         {
 
-            var list = await Context.Set<TEntity>().Where(predicate).Take(limit).ToListAsync(ct);
 
+
+            // *****************************************************************
+            logger.Debug("Attempting to build queryable");
+            var query = Context.Set<TEntity>().Where(predicate);
+            if (limit > 0)
+                query = query.Take(limit);
+
+
+
+            // *****************************************************************
+            logger.Debug("Attempting to execute query");
+            var list = await query.ToListAsync(ct);
+
+
+
+            // *****************************************************************
             return list;
+
 
         }
         catch (Exception cause)
