@@ -99,9 +99,9 @@ public interface ICommandRepository
     Task<EntityOrError<TEntity>> One<TEntity>(string uid, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<EntityOrError<TEntity>> One<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
 
-    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> queryable, long id, CancellationToken ct = default) where TEntity : class, IEntity;
-    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> queryable, string uid, CancellationToken ct = default) where TEntity : class, IEntity;
-    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> queryable, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, long id, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, string uid, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
 
     Task<OkOrError> Add<TEntity>( TEntity entity, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<OkOrError> AddRange(IEnumerable<IEntity> range, CancellationToken ct = default);
@@ -278,7 +278,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
 
 
-    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> extractor, long id, CancellationToken ct = default) where TEntity : class, IEntity
+    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> extractor, long id, CancellationToken ct = default) where TEntity : class, IEntity
     {
 
 
@@ -287,7 +287,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         try
         {
 
-            var queryable = extractor(Context.Set<TEntity>());
+            var queryable = extractor(Context.Set<TEntity>().AsQueryable());
 
             var entity = await queryable.SingleOrDefaultAsync(e => e.Id == id, ct);
             if (entity is null)
@@ -309,7 +309,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
     }
 
-    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> extractor, string uid, CancellationToken ct = default) where TEntity : class, IEntity
+    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> extractor, string uid, CancellationToken ct = default) where TEntity : class, IEntity
     {
 
 
@@ -318,7 +318,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         try
         {
 
-            var queryable = extractor(Context.Set<TEntity>());
+            var queryable = extractor(Context.Set<TEntity>().AsQueryable());
 
             var entity = await queryable.SingleOrDefaultAsync(e => e.Uid == uid, ct);
             if (entity is null)
@@ -340,7 +340,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
     }
 
-    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> extractor, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
+    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> extractor, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
     {
 
 
@@ -349,7 +349,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         try
         {
 
-            var queryable = extractor(Context.Set<TEntity>());
+            var queryable = extractor(Context.Set<TEntity>().AsQueryable());
 
             var entity = await queryable.SingleOrDefaultAsync(predicate, ct);
             if (entity is null)
@@ -876,9 +876,10 @@ public interface IQueryRepository
     Task<EntityOrError<TEntity>> One<TEntity>(string uid, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<EntityOrError<TEntity>> One<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
 
-    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> queryable, long id, CancellationToken ct = default) where TEntity : class, IEntity;
-    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> queryable, string uid, CancellationToken ct = default) where TEntity : class, IEntity;
-    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> queryable, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, long id, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, string uid, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+
 
 
 }
@@ -1027,7 +1028,7 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
 
 
 
-    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> extractor, long id, CancellationToken ct = default) where TEntity : class, IEntity
+    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> extractor, long id, CancellationToken ct = default) where TEntity : class, IEntity
     {
 
 
@@ -1036,7 +1037,7 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
         try
         {
 
-            var queryable = extractor(Context.Set<TEntity>());
+            var queryable = extractor(Context.Set<TEntity>().AsQueryable());
 
             var entity = await queryable.SingleOrDefaultAsync(e => e.Id == id, ct);
             if (entity is null)
@@ -1058,7 +1059,7 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
 
     }
 
-    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> extractor, string uid, CancellationToken ct = default) where TEntity : class, IEntity
+    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> extractor, string uid, CancellationToken ct = default) where TEntity : class, IEntity
     {
 
 
@@ -1067,7 +1068,7 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
         try
         {
 
-            var queryable = extractor(Context.Set<TEntity>());
+            var queryable = extractor(Context.Set<TEntity>().AsQueryable());
 
             var entity = await queryable.SingleOrDefaultAsync(e => e.Uid == uid, ct);
             if (entity is null)
@@ -1089,7 +1090,7 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
 
     }
 
-    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<DbSet<TEntity>, IQueryable<TEntity>> extractor, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
+    public async Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> extractor, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
     {
 
 
@@ -1098,7 +1099,7 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
         try
         {
 
-            var queryable = extractor(Context.Set<TEntity>());
+            var queryable = extractor(Context.Set<TEntity>().AsQueryable());
 
             var entity = await queryable.SingleOrDefaultAsync(predicate, ct);
             if (entity is null)
