@@ -26,6 +26,7 @@ using System.Linq.Expressions;
 using Fabrica.Rules.Builder;
 using Fabrica.Rules.Evaluation;
 using Fabrica.Rules.Validators;
+using Fabrica.Utilities.Types;
 
 namespace Fabrica.Rules;
 
@@ -118,9 +119,9 @@ public class ValidationRule<TFact> : AbstractRule, IValidationRule<TFact>
         if( extractorEx == null )
             throw new ArgumentNullException( nameof( extractorEx ) );
 
-        var factName = typeof(TFact).Name;
+        var factName = typeof(TFact).GetConciseName();
 
-        var group = (extractorEx.Body is MemberExpression body ? $"{typeof(TFact).Name}.{body.Member.Name}" : factName);
+        var group = (extractorEx.Body is MemberExpression body ? $"{factName}.{body.Member.Name}" : factName);
 
         var extractor = extractorEx.Compile();
 

@@ -13,13 +13,17 @@ public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
     private int _currentSalience = 100000;
     private string _currentMutex = "";
 
-    public virtual IValidator<TFact,TType> Rule<TType>(Expression<Func<TFact,TType>> extractor)
+    public virtual IValidator<TFact,TType> Assert<TType>( Expression<Func<TFact,TType>> extractor )
     {
 
         var nameSpace = GetType().Namespace;
         var fullSetName = $"{nameSpace}.{SetName}";
 
-        var rule = new ValidationRule<TFact>(fullSetName, typeof(TFact).GetConciseName());
+        var factName = typeof(TFact).GetConciseName();
+        var ruleName = (extractor.Body is MemberExpression body ? $"{factName}.{body.Member.Name}" : factName);
+
+        var rule = new ValidationRule<TFact>( fullSetName, ruleName );
+
 
         // Apply default salience
         rule.WithSalience(_currentSalience);
@@ -28,8 +32,13 @@ public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
         rule.WithInception(DefaultInception);
         rule.WithExpiration(DefaultExpiration);
 
-        if( !string.IsNullOrWhiteSpace(_currentMutex) )
+
+        if (_currentPredicate is not null)
+            rule.When(_currentPredicate);
+
+        if ( !string.IsNullOrWhiteSpace(_currentMutex) )
             rule.InMutex(_currentMutex);
+
 
         Sinks.Add(t => t.Add(typeof(TFact), rule));
 
@@ -48,13 +57,22 @@ public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
         var nameSpace = GetType().Namespace;
         var fullSetName = $"{nameSpace}.{SetName}";
 
-        var rule = new ValidationRule<TFact>(fullSetName, typeof(TFact).GetConciseName());
+        var factName = typeof(TFact).GetConciseName();
+        var ruleName = factName;
+
+        var rule = new ValidationRule<TFact>( fullSetName, ruleName );
+
 
         rule.WithSalience(_currentSalience);
 
         // Apply default inception and expiration
         rule.WithInception(DefaultInception);
         rule.WithExpiration(DefaultExpiration);
+
+
+        if (_currentPredicate is not null)
+            rule.When(_currentPredicate);
+
 
         if (!string.IsNullOrWhiteSpace(_currentMutex))
             rule.InMutex(_currentMutex);
@@ -96,6 +114,23 @@ public abstract class ValidationBuilder<TFact>: AbstractRuleBuilder, IBuilder
         finally
         {
             _currentMutex = "";
+        }
+
+    }
+
+
+    private Func<TFact, bool>? _currentPredicate;
+    protected void When( Func<TFact,bool> predicate, Action builder )
+    {
+
+        try
+        {
+            _currentPredicate = predicate;
+            builder();
+        }
+        finally
+        {
+            _currentPredicate = null;
         }
 
     }

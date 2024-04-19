@@ -87,61 +87,6 @@ public abstract class RuleBuilder : AbstractRuleBuilder, IBuilder
     }
 
 
-    /// <summary>
-    /// Adds a validation rule for the single fact type defined for this builder.
-    /// Validation rules are a special case of the regular rule. They typically have
-    /// special condition builders associated with them that allow for easy definition of
-    /// validation conditions that must evaluate to true for the given data expression
-    /// associated with the given fact to be considered "valid". They do not modify the
-    /// facts that validate but instead only report instances when the conditions for
-    /// validation have not been met.
-    /// </summary>
-    /// <param name="ruleName">The name for the rule. This is required and should be
-    /// unique within the builder where the rule is defined. I can be anything you like
-    /// and serves no operational function. However, it is very useful when you are
-    /// troubleshooting your rules and is used in the EvaluationResults statistics.</param>
-    /// <returns>
-    /// The newly created rule for the single given fact type of this builder
-    /// </returns>
-    /// <example>
-    /// AddValidation("NameIsNotEmpty")
-    ///      .Assert( f=&gt;f.Name).IsNotEmpty()
-    ///      .Otherwise( "Name is empty" );
-    /// AddValidation("NameIsAtLeast5Long")
-    ///      .Assert( f=&gt;f.Name).HasMinimumLength(5)
-    ///      .Otherwise( "The value specified for Name ({0}) is to short.", f=&gt;f.Name );
-    /// </example>
-        
-    public virtual ValidationRule<TFact> AddValidation<TFact>(string ruleName)
-    {
-
-        if (ruleName == null)
-            throw new ArgumentNullException(nameof(ruleName));
-
-        if (String.IsNullOrWhiteSpace(ruleName))
-            throw new ArgumentException("All rules must have a name and should be unique", nameof(ruleName));
-
-
-        string nameSpace = GetType().Namespace;
-        string fullSetName = $"{nameSpace}.{SetName}";
-
-        var rule = new ValidationRule<TFact>(fullSetName, ruleName);
-
-        // Apply default salience
-        rule.WithSalience(DefaultSalience);
-
-        // Apply default inception and expiration
-        rule.WithInception(DefaultInception);
-        rule.WithExpiration(DefaultExpiration);
-
-        Sinks.Add(t => t.Add(typeof(TFact), rule));
-
-
-        return rule;
-
-    }
-
-
 
     /// <summary>
     /// Adds a rule that reasons over the an enumeration of child facts associated with
@@ -259,58 +204,6 @@ public abstract class RuleBuilder<TFact> : AbstractRuleBuilder, IBuilder
         else
             rule.FireAlways();
 
-
-        // Apply default salience
-        rule.WithSalience( DefaultSalience );
-
-        // Apply default inception and expiration
-        rule.WithInception( DefaultInception );
-        rule.WithExpiration( DefaultExpiration );
-
-        Rules.Add( rule );
-
-        return rule;
-    }
-
-
-    /// <summary>
-    /// Adds a validation rule for the single fact type defined for this builder.
-    /// Validation rules are a special case of the regular rule. They typically have
-    /// special condition builders asscoaied with them that allow for easy definition of
-    /// validation conditions that must evaluate to true for the given data expression
-    /// associated with the given fact to be considered "valid". They do not modifiy the
-    /// facts that validate but instead only report instances when the conditions for
-    /// validation have not been met.
-    /// </summary>
-    /// <param name="ruleName">The name for the rule. This is required and should be
-    /// unique within the builder where the rule is defined. I can be anything you like
-    /// and serves no operational function. However it is very useful when you are
-    /// troubleshooting your rules and is used in the EvaluationResults statistics.</param>
-    /// <returns>
-    /// The newly created rule for the single given fact type of this builder
-    /// </returns>
-    /// <example>
-    /// AddValidation("NameIsNotEmpty")
-    ///      .Assert( f=&gt;f.Name).IsNotEmpty()
-    ///      .Otherwise( "Name is empty" );
-    /// AddValidation("NameIsAtLeast5Long")
-    ///      .Assert( f=&gt;f.Name).HasMinimumLength(5)
-    ///      .Otherwise( "The value specified for Name ({0}) is to short.", f=&gt;f.Name );
-    /// </example>
-        
-    public virtual ValidationRule<TFact> AddValidation( string ruleName )
-    {
-        if (ruleName == null)
-            throw new ArgumentNullException( nameof(ruleName) );
-
-        if (String.IsNullOrWhiteSpace( ruleName ))
-            throw new ArgumentException( "All rules must have a name and should be unique", nameof(ruleName) );
-
-
-        string nameSpace = GetType().Namespace;
-        string fullSetName = $"{nameSpace}.{SetName}";
-
-        var rule = new ValidationRule<TFact>( fullSetName, ruleName );
 
         // Apply default salience
         rule.WithSalience( DefaultSalience );
