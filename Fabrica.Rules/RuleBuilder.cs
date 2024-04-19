@@ -23,6 +23,8 @@ SOFTWARE.
 */
 
 using Fabrica.Rules.Builder;
+using Fabrica.Utilities.Types;
+using TypeExtensions = Fabrica.Watch.Utilities.TypeExtensions;
 
 namespace Fabrica.Rules;
 
@@ -50,18 +52,12 @@ public abstract class RuleBuilder : AbstractRuleBuilder, IBuilder
     /// The newly created rule for the single given fact type of this builder
     /// </returns>
         
-    public virtual Rule<TFact> AddRule<TFact>(string ruleName)
+    public virtual Rule<TFact> Rule<TFact>()
     {
 
-        if (ruleName == null)
-            throw new ArgumentNullException(nameof(ruleName));
-
-        if (ruleName == "")
-            throw new ArgumentException("All rules must have names and should be unique within a given builder", nameof(ruleName));
-
-
-        string nameSpace = GetType().Namespace;
-        string fullSetName = $"{nameSpace}.{SetName}";
+        var nameSpace = GetType().Namespace;
+        var fullSetName = $"{nameSpace}.{SetName}";
+        var ruleName = $"({typeof(TFact).GetConciseName()})";
 
         var rule = new Rule<TFact>(fullSetName, ruleName);
 
@@ -122,17 +118,14 @@ public abstract class RuleBuilder : AbstractRuleBuilder, IBuilder
     ///     Then( c=&gt;c.Status = "Not A baby anymore" )
     /// </example>
         
-    public virtual ForeachRule<TFact, TChild> AddRule<TFact,TChild>(string ruleName, Func<TFact, IEnumerable<TChild>> extractor)
+    public virtual ForeachRule<TFact, TChild> Rule<TFact,TChild>( Func<TFact, IEnumerable<TChild>> extractor)
     {
 
-        if (ruleName == null)
-            throw new ArgumentNullException(nameof(ruleName));
-
-        if (String.IsNullOrWhiteSpace(ruleName))
-            throw new ArgumentException("All rules must have a name and should be unique", nameof(ruleName));
 
         string nameSpace = GetType().Namespace;
         string fullSetName = $"{nameSpace}.{SetName}";
+        var ruleName = $"({typeof(TFact).GetConciseName()}[{TypeExtensions.GetConciseName(typeof(TChild))}])";
+
 
         var rule = new ForeachRule<TFact, TChild>(extractor, fullSetName, ruleName);
 
@@ -184,17 +177,12 @@ public abstract class RuleBuilder<TFact> : AbstractRuleBuilder, IBuilder
     /// The newly created rule for the single given fact type of this builder
     /// </returns>
         
-    public virtual Rule<TFact> AddRule( string ruleName )
+    public virtual Rule<TFact> Rule()
     {
-        if (ruleName == null)
-            throw new ArgumentNullException( nameof(ruleName) );
 
-        if (ruleName == "")
-            throw new ArgumentException( "All rules must have names and should be unique within a given builder", nameof(ruleName) );
-
-
-        string nameSpace = GetType().Namespace;
-        string fullSetName = $"{nameSpace}.{SetName}";
+        var nameSpace = GetType().Namespace;
+        var fullSetName = $"{nameSpace}.{SetName}";
+        var ruleName = $"({typeof(TFact).GetConciseName()})";
 
         var rule = new Rule<TFact>( fullSetName, ruleName );
 
@@ -253,17 +241,14 @@ public abstract class RuleBuilder<TFact> : AbstractRuleBuilder, IBuilder
     ///     Then( c=&gt;c.Status = "Not A baby anymore" )
     /// </example>
         
-    public virtual ForeachRule<TFact, TChild> AddRule<TChild>( string ruleName, Func<TFact, IEnumerable<TChild>> extractor )
+    public virtual ForeachRule<TFact, TChild> Rule<TChild>( Func<TFact, IEnumerable<TChild>> extractor )
     {
 
-        if (ruleName == null)
-            throw new ArgumentNullException( nameof(ruleName) );
 
-        if (String.IsNullOrWhiteSpace( ruleName ))
-            throw new ArgumentException( "All rules must have a name and should be unique", nameof(ruleName) );
+        var nameSpace = GetType().Namespace;
+        var fullSetName = $"{nameSpace}.{SetName}";
+        var ruleName = $"({typeof(TFact).GetConciseName()}[{TypeExtensions.GetConciseName(typeof(TChild))}])";
 
-        string nameSpace = GetType().Namespace;
-        string fullSetName = $"{nameSpace}.{SetName}";
 
         var rule = new ForeachRule<TFact, TChild>( extractor, fullSetName, ruleName );
 
