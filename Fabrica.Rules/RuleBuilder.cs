@@ -28,36 +28,17 @@ using TypeExtensions = Fabrica.Watch.Utilities.TypeExtensions;
 
 namespace Fabrica.Rules;
 
-/// <summary>
-/// Responsible for the creation and collection of rules that reason over a single
-/// fact. The single fact RuleBuilder allows for the creation or both normal rules
-/// and the special case validation rules.
-/// At runtime RuleBuilders are discovered in supplied assemblies and initialied to
-/// create and collect into the a RuleBase. The RuleBase then serves up the rules
-/// for evaluation.
-/// </summary>
 public abstract class RuleBuilder : AbstractRuleBuilder, IBuilder
 {
 
-
-
-    /// <summary>
-    /// Adds a rule that reasons over the single fact type defined for this builder
-    /// </summary>
-    /// <param name="ruleName">The name for the rule. This is required and should be
-    /// unique within the builder where the rule is defined. I can be anything you like
-    /// and serves no operational function. However it is very useful when you are
-    /// troubleshoot your rules and is used in the EvaluationResults statistics.</param>
-    /// <returns>
-    /// The newly created rule for the single given fact type of this builder
-    /// </returns>
         
-    public virtual Rule<TFact> Rule<TFact>()
+    public virtual Rule<TFact> Rule<TFact>( params string[] tags )
     {
 
         var nameSpace = GetType().Namespace;
         var fullSetName = $"{nameSpace}.{SetName}";
-        var ruleName = $"({typeof(TFact).GetConciseName()})";
+        var tagsSegment = tags.Length > 0 ? $":{string.Join(':', tags)}" : "";
+        var ruleName = $"({typeof(TFact).GetConciseName()}){tagsSegment}";
 
         var rule = new Rule<TFact>(fullSetName, ruleName);
 
@@ -83,48 +64,15 @@ public abstract class RuleBuilder : AbstractRuleBuilder, IBuilder
     }
 
 
-
-    /// <summary>
-    /// Adds a rule that reasons over the an enumeration of child facts associated with
-    /// the type defined for this builder.
-    /// </summary>
-    /// <remarks>
-    /// These child facts are not inserted into the fact space and thus do not trigger
-    /// forward chaining if they are modified. However the parent can signal
-    /// modification and trigger forward chaining. If it is required that the children
-    /// participate in forward chainging use Cascade instead.
-    /// </remarks>
-    /// <typeparam name="TFact">The parent fact that contains the children that will
-    /// actually be evaluated. Also scheduling and order are alos drive by this type as
-    /// opposed to the children</typeparam>
-    /// <typeparam name="TChild">The type the conditions and consequence are targeting.
-    /// Each rule that produces a true evaluation will have its consequence
-    /// fired.</typeparam>
-    /// <param name="ruleName">The name for the rule. This is required and should be
-    /// unique within the builder where the rule is defined. I can be anything you like
-    /// and serves no operational function. However it is very useful when you are
-    /// troubleshoot (logging) your rules and is used in the EvaluationResults
-    /// statistics.</param>
-    /// <param name="extractor">The extractor used to access the collection from the
-    /// parent fact. The rules are defined for these child facts. The conditions are
-    /// evaulated for each child and those that produce a true condition are
-    /// fired.</param>
-    /// <returns>
-    /// The newly created rule for the single given fact type of this builder
-    /// </returns>
-    /// <example>
-    /// var rule = AddRule( "Gabby Foreach rule", p=&gt;p.Chilldren ).Modifies()
-    ///     If( c=&gt;c.Name == "Gabby" ).And( c=&gt;c.Age == 4 )
-    ///     Then( c=&gt;c.Status = "Not A baby anymore" )
-    /// </example>
         
-    public virtual ForeachRule<TFact, TChild> Rule<TFact,TChild>( Func<TFact, IEnumerable<TChild>> extractor)
+    public virtual ForeachRule<TFact, TChild> Rule<TFact,TChild>( Func<TFact, IEnumerable<TChild>> extractor, params string[] tags )
     {
 
 
-        string nameSpace = GetType().Namespace;
-        string fullSetName = $"{nameSpace}.{SetName}";
-        var ruleName = $"({typeof(TFact).GetConciseName()}[{TypeExtensions.GetConciseName(typeof(TChild))}])";
+        var nameSpace = GetType().Namespace;
+        var fullSetName = $"{nameSpace}.{SetName}";
+        var tagsSegment = tags.Length > 0 ? $":{string.Join(':', tags)}" : "";
+        var ruleName = $"({typeof(TFact).GetConciseName()}[{TypeExtensions.GetConciseName(typeof(TChild))}]){tagsSegment}";
 
 
         var rule = new ForeachRule<TFact, TChild>(extractor, fullSetName, ruleName);
@@ -146,16 +94,6 @@ public abstract class RuleBuilder : AbstractRuleBuilder, IBuilder
 }
 
 
-
-/// <summary>
-/// Responsible for the creation and collection of rules that reason over a single
-/// fact. The single fact RuleBuilder allows for the creation or both normal rules
-/// and the special case validation rules.
-/// At runtime RuleBuilders are discovered in supplied assemblies and initialied to
-/// create and collect into the a RuleBase. The RuleBase then serves up the rules
-/// for evaluation.
-/// </summary>
-/// <typeparam name="TFact">The Type of fact that this rule reasons over</typeparam>
 public abstract class RuleBuilder<TFact> : AbstractRuleBuilder, IBuilder
 {
 
@@ -165,24 +103,14 @@ public abstract class RuleBuilder<TFact> : AbstractRuleBuilder, IBuilder
         Targets = new[] {typeof(TFact)};
     }
 
-
-    /// <summary>
-    /// Adds a rule that reasons over the single fact type defined for this builder
-    /// </summary>
-    /// <param name="ruleName">The name for the rule. This is required and should be
-    /// unique within the builder where the rule is defined. I can be anything you like
-    /// and serves no operational function. However it is very useful when you are
-    /// troubleshoot your rules and is used in the EvaluationResults statistics.</param>
-    /// <returns>
-    /// The newly created rule for the single given fact type of this builder
-    /// </returns>
         
-    public virtual Rule<TFact> Rule()
+    public virtual Rule<TFact> Rule( params string[] tags)
     {
 
         var nameSpace = GetType().Namespace;
         var fullSetName = $"{nameSpace}.{SetName}";
-        var ruleName = $"({typeof(TFact).GetConciseName()})";
+        var tagsSegment = tags.Length > 0 ? $":{string.Join(':', tags)}" : "";
+        var ruleName = $"({typeof(TFact).GetConciseName()}){tagsSegment}";
 
         var rule = new Rule<TFact>( fullSetName, ruleName );
 
@@ -206,48 +134,15 @@ public abstract class RuleBuilder<TFact> : AbstractRuleBuilder, IBuilder
     }
 
 
-
-    /// <summary>
-    /// Adds a rule that reasons over the an enumeration of child facts associated with
-    /// the type defined for this builder.
-    /// </summary>
-    /// <remarks>
-    /// These child facts are not inserted into the fact space and thus do not trigger
-    /// forward chaining if they are modified. However the parent can signal
-    /// modification and trigger forward chaining. If it is required that the children
-    /// participate in forward chainging use Cascade instead.
-    /// </remarks>
-    /// <typeparam name="TFact">The parent fact that contains the children that will
-    /// actually be evaluated. Also scheduling and order are alos drive by this type as
-    /// opposed to the children</typeparam>
-    /// <typeparam name="TChild">The type the conditions and consequence are targeting.
-    /// Each rule that produces a true evaluation will have its consequence
-    /// fired.</typeparam>
-    /// <param name="ruleName">The name for the rule. This is required and should be
-    /// unique within the builder where the rule is defined. I can be anything you like
-    /// and serves no operational function. However it is very useful when you are
-    /// troubleshoot (logging) your rules and is used in the EvaluationResults
-    /// statistics.</param>
-    /// <param name="extractor">The extractor used to access the collection from the
-    /// parent fact. The rules are defined for these child facts. The conditions are
-    /// evaulated for each child and those that produce a true condition are
-    /// fired.</param>
-    /// <returns>
-    /// The newly created rule for the single given fact type of this builder
-    /// </returns>
-    /// <example>
-    /// var rule = AddRule( "Gabby Foreach rule", p=&gt;p.Chilldren ).Modifies()
-    ///     If( c=&gt;c.Name == "Gabby" ).And( c=&gt;c.Age == 4 )
-    ///     Then( c=&gt;c.Status = "Not A baby anymore" )
-    /// </example>
         
-    public virtual ForeachRule<TFact, TChild> Rule<TChild>( Func<TFact, IEnumerable<TChild>> extractor )
+    public virtual ForeachRule<TFact, TChild> Rule<TChild>( Func<TFact, IEnumerable<TChild>> extractor, params string[] tags )
     {
 
 
         var nameSpace = GetType().Namespace;
         var fullSetName = $"{nameSpace}.{SetName}";
-        var ruleName = $"({typeof(TFact).GetConciseName()}[{TypeExtensions.GetConciseName(typeof(TChild))}])";
+        var tagsSegment = tags.Length > 0 ? $":{string.Join(':', tags)}" : "";
+        var ruleName = $"({typeof(TFact).GetConciseName()}[{TypeExtensions.GetConciseName(typeof(TChild))}]){tagsSegment}";
 
 
         var rule = new ForeachRule<TFact, TChild>( extractor, fullSetName, ruleName );
