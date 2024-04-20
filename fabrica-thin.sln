@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabrica.Persistence.Ef", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabrica.Mediator", "Fabrica.Mediator\Fabrica.Mediator.csproj", "{D2525FEC-657B-4248-945E-2A575880243F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.Endpoints", "Fabrica.Endpoints\Fabrica.Endpoints.csproj", "{0FF4A1D7-FC99-45B4-B0CC-4FDA0B8BC847}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabrica.Endpoints", "Fabrica.Endpoints\Fabrica.Endpoints.csproj", "{0FF4A1D7-FC99-45B4-B0CC-4FDA0B8BC847}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.One", "Fabrica.One\Fabrica.One.csproj", "{24AAE2E7-FB88-4110-822F-79E9029BEF77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{0FF4A1D7-FC99-45B4-B0CC-4FDA0B8BC847}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FF4A1D7-FC99-45B4-B0CC-4FDA0B8BC847}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FF4A1D7-FC99-45B4-B0CC-4FDA0B8BC847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24AAE2E7-FB88-4110-822F-79E9029BEF77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24AAE2E7-FB88-4110-822F-79E9029BEF77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24AAE2E7-FB88-4110-822F-79E9029BEF77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24AAE2E7-FB88-4110-822F-79E9029BEF77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
