@@ -106,6 +106,8 @@ public interface ICommandRepository
     Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, long id, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, string uid, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<EntityOrError<TEntity>> Eager<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<ListOrError<TEntity>> EagerMany<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+
 
     Task<OkOrError> Add<TEntity>( TEntity entity, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<OkOrError> AddRange(IEnumerable<IEntity> range, CancellationToken ct = default);
@@ -420,6 +422,35 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
             var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
             logger.ErrorWithContext(cause, ctx, "Eager by predicate failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+
+    }
+
+
+    public async Task<ListOrError<TEntity>> EagerMany<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> extractor, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var queryable = extractor(Context.Set<TEntity>().AsQueryable());
+
+            var list = await queryable.Where(predicate).ToListAsync(ct);
+
+            return list;
+
+        }
+        catch (Exception cause)
+        {
+
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "EagerMany by predicate failed");
 
             return UnhandledError.Create(cause);
 
@@ -957,6 +988,7 @@ public interface IQueryRepository
 
     Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, int limit, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<ListOrError<TEntity>> EagerMany<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
 
 
     Task<EntityOrError<TEntity>> One<TEntity>(long id, CancellationToken ct = default) where TEntity : class, IEntity;
@@ -1252,6 +1284,35 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
 
             var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
             logger.ErrorWithContext(cause, ctx, "Eager by predicate failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+
+    }
+
+
+    public async Task<ListOrError<TEntity>> EagerMany<TEntity>(Func<IQueryable<TEntity>, IQueryable<TEntity>> extractor, Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var queryable = extractor(Context.Set<TEntity>().AsQueryable());
+
+            var list = await queryable.Where(predicate).ToListAsync(ct);
+
+            return list;
+
+        }
+        catch (Exception cause)
+        {
+
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "EagerMany by predicate failed");
 
             return UnhandledError.Create(cause);
 
