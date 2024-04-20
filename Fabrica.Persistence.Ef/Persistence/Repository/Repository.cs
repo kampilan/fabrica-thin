@@ -111,6 +111,7 @@ public interface ICommandRepository
     Task<OkOrError> AddRange(IEnumerable<IEntity> range, CancellationToken ct = default);
 
 
+    OkOrError Delete<TEntity>(TEntity entity, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<OkOrError> Delete<TEntity>(long id, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<OkOrError> Delete<TEntity>(string uid, CancellationToken ct = default) where TEntity : class, IEntity;
     OkOrError DeleteRange( IEnumerable<IEntity> range );
@@ -472,6 +473,33 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         }
 
     }
+
+    public OkOrError Delete<TEntity>(TEntity entity, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+
+        using var logger = EnterMethod();
+
+
+        try
+        {
+
+            Context.Remove(entity);
+
+            return Ok.Singleton;
+
+        }
+        catch (Exception cause)
+        {
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "Delete by Id failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+    }
+
 
 
 
