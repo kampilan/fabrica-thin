@@ -92,6 +92,10 @@ public static class AutofacExtensions
 public interface ICommandRepository
 {
 
+    Task<ExistsOrError> Exists<TEntity>( Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+
+    Task<CountOrError> Count<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+
     Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, int limit, CancellationToken ct = default) where TEntity : class, IEntity;
 
@@ -119,6 +123,58 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 {
 
     private DbContext Context => factory.GetDbContext();
+
+
+    public async Task<ExistsOrError> Exists<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var exists = await Context.Set<TEntity>().AnyAsync(predicate, ct);
+
+            return exists;
+
+        }
+        catch (Exception cause)
+        {
+
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "Exists failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+    }
+
+
+    public async Task<CountOrError> Count<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var count = await Context.Set<TEntity>().CountAsync(predicate, ct);
+
+            return count;
+
+        }
+        catch (Exception cause)
+        {
+
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "Count failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+    }
 
 
     public async Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
@@ -868,6 +924,9 @@ public class OriginDbContextFactory(DbContext context) : IOriginDbContextFactory
 public interface IQueryRepository
 {
 
+    Task<ExistsOrError> Exists<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+    Task<CountOrError> Count<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
+
     Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity;
     Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, int limit, CancellationToken ct = default) where TEntity : class, IEntity;
 
@@ -888,6 +947,58 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
 {
 
     private DbContext Context => factory.GetDbContext();
+
+
+    public async Task<ExistsOrError> Exists<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var exists = await Context.Set<TEntity>().AnyAsync(predicate, ct);
+
+            return exists;
+
+        }
+        catch (Exception cause)
+        {
+
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "Exists failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+    }
+
+
+    public async Task<CountOrError> Count<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var count = await Context.Set<TEntity>().CountAsync(predicate, ct);
+
+            return count;
+
+        }
+        catch (Exception cause)
+        {
+
+            var ctx = new { Type = typeof(TEntity).GetConciseFullName() };
+            logger.ErrorWithContext(cause, ctx, "Count failed");
+
+            return UnhandledError.Create(cause);
+
+        }
+
+    }
 
 
     public async Task<ListOrError<TEntity>> Many<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
