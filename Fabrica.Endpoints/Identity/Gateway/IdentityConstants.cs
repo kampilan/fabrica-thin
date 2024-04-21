@@ -9,4 +9,10 @@ public static class IdentityConstants
     public static string Scheme => "Fabrica.GatewayToken";
     public static string Policy => "Fabrica.GatewayToken";
 
+    public static string PublicPolicyName => "AllowPublic";
+
+    public static string AdminPolicyName => "RequiresAdminRole";
+    public static string AdminRoleName => "admin";
+    
+
 }

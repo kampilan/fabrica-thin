@@ -1,19 +1,38 @@
 ﻿using System.Text.Json;
 using Fabrica.Watch;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Fabrica.Identity.Token;
 
-public class GatewayAccessTokenSource: IAccessTokenSource
+
+public static class ServiceCollectionExtensions
 {
 
-    public GatewayAccessTokenSource(IGatewayTokenEncoder encoder, IClaimSet claims)
+
+    public static IServiceCollection AddGatewayAccessTokenSource(this IServiceCollection services, IClaimSet claims)
     {
-        Encoder = encoder;
-        Claims  = claims;
+
+        services.AddSingleton<IAccessTokenSource, GatewayAccessTokenSource>(sp =>
+        {
+            var encoder = sp.GetRequiredService<IGatewayTokenEncoder>();
+            var comp = new GatewayAccessTokenSource(encoder, claims);
+
+            return comp;
+
+        });
+
+        return services;
+
     }
-    
-    private IGatewayTokenEncoder Encoder { get; }
-    private IClaimSet Claims { get; }
+
+}
+
+
+public class GatewayAccessTokenSource(IGatewayTokenEncoder encoder, IClaimSet claims) : IAccessTokenSource
+{
+
+    private IGatewayTokenEncoder Encoder { get; } = encoder;
+    private IClaimSet Claims { get; } = claims;
 
     public string Name { get; set; } = "";
     public bool HasExpired { get; set; }
