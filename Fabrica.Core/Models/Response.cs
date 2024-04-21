@@ -30,9 +30,10 @@ public class Response: IResponse
         var res = new Response
         {
             _successful = false,
-            ErrorCode = error.ErrorCode,
+            Kind        = error.Kind,
+            ErrorCode   = error.ErrorCode,
             Explanation = error.Explanation,
-            Details = [.. error.Details]
+            Details     = [.. error.Details]
         };
 
         return res;
