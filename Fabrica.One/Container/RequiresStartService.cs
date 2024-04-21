@@ -5,7 +5,7 @@ using Autofac;
 using Fabrica.Utilities.Container;
 using Microsoft.Extensions.Hosting;
 
-namespace Fabrica.Container;
+namespace Fabrica.One.Container;
 
 public class RequiresStartService(ILifetimeScope root) : IHostedService
 {

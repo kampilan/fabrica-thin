@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Fabrica.Container;
+namespace Fabrica.One.Container;
 
 public class FabricaServiceProviderFactory : IServiceProviderFactory<ContainerBuilder>
 {

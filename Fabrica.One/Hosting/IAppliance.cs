@@ -1,4 +1,4 @@
-﻿namespace Fabrica.One;
+﻿namespace Fabrica.One.Hosting;
 
 public interface IAppliance
 {

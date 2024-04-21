@@ -2,7 +2,7 @@
 using Fabrica.Utilities.Process;
 using Microsoft.Extensions.Hosting;
 
-namespace Fabrica.One
+namespace Fabrica.One.Lifetime
 {
 
     public class ApplianceLifetime : IRequiresStart

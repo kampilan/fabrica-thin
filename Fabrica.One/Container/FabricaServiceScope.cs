@@ -2,7 +2,7 @@
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Fabrica.Container;
+namespace Fabrica.One.Container;
 
 public class FabricaServiceScope: IServiceScope, IAsyncDisposable
 {

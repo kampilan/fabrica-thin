@@ -1,11 +1,10 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 
-namespace Fabrica.Configuration.Yaml
+namespace Fabrica.One.Configuration.Yaml
 {
     /// <summary>
     /// Extension methods for adding <see cref="YamlConfigurationExtensions"/>.

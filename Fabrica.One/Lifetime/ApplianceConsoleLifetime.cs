@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using ILogger = Fabrica.Watch.ILogger;
 
-namespace Fabrica.One;
+namespace Fabrica.One.Lifetime;
 
 public class ApplianceConsoleLifetime : IHostLifetime, IDisposable
 {

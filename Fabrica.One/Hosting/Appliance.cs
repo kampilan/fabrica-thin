@@ -2,21 +2,21 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ConvertToUsingDeclaration
 
-using Fabrica.Bootstraps;
-using Fabrica.Configuration.Yaml;
+using Fabrica.One.Bootstraps;
+using Fabrica.One.Configuration.Yaml;
 using Fabrica.Watch;
 using Microsoft.Extensions.Configuration;
 
-namespace Fabrica.One;
+namespace Fabrica.One.Hosting;
 
 public static class Appliance
 {
 
 
-    public static async Task<IAppliance> Bootstrap<TBootstrap>(string path = "", string localConfigFile=null!) where TBootstrap : IBootstrap
+    public static async Task<IAppliance> Bootstrap<TBootstrap>(string path = "", string localConfigFile = null!) where TBootstrap : IBootstrap
     {
-        
-        IBootstrap bootstrap=null!;
+
+        IBootstrap bootstrap = null!;
         IAppliance app;
         try
         {

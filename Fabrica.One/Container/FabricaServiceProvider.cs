@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Fabrica.Container;
+namespace Fabrica.One.Container;
 
 public partial class FabricaServiceProvider : IServiceProvider, ISupportRequiredService, IServiceProviderIsService, IDisposable, IAsyncDisposable
 {

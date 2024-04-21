@@ -1,4 +1,4 @@
-﻿using Fabrica.One;
+﻿using Fabrica.One.Lifetime;
 using Fabrica.Utilities.Container;
 using Fabrica.Utilities.Process;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Fabrica.Bootstraps;
+namespace Fabrica.One.Bootstraps;
 
 public static class HostBuilderExtensions
 {

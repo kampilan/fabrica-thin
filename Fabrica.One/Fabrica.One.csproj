@@ -13,7 +13,7 @@
 
 	<PropertyGroup>
 		<PackageIcon>smithy.png</PackageIcon>
-		<RootNamespace>Fabrica</RootNamespace>
+		<RootNamespace>Fabrica.One</RootNamespace>
 	</PropertyGroup>
 
 

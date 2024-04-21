@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace Fabrica.One;
+namespace Fabrica.One.Hosting;
 
 public class HostAppliance(IHost host) : IAppliance
 {

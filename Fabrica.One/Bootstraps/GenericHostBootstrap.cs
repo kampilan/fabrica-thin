@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Fabrica.Container;
-using Fabrica.One;
+using Fabrica.One.Container;
+using Fabrica.One.Hosting;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 using Fabrica.Watch.Bridges.MicrosoftImpl;
@@ -14,7 +14,7 @@ using Microsoft.Extensions.Hosting;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Fabrica.Bootstraps;
+namespace Fabrica.One.Bootstraps;
 
 public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation()), IBootstrap
 {

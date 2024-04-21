@@ -3,7 +3,7 @@ using Fabrica.Watch;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Fabrica.One;
+namespace Fabrica.One.Lifetime;
 
 public class ApplianceConsoleLifetimeWithExit : ApplianceConsoleLifetime
 {

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
 using YamlDotNet.RepresentationModel;
 
-namespace Fabrica.Configuration.Yaml
+namespace Fabrica.One.Configuration.Yaml
 {
     internal class YamlConfigurationFileParser
     {

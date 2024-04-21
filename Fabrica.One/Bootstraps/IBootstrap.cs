@@ -1,9 +1,9 @@
-﻿using Fabrica.One;
+﻿using Fabrica.One.Hosting;
 using Microsoft.Extensions.Configuration;
 
 // ReSharper disable UnusedMemberInSuper.Global
 
-namespace Fabrica.Bootstraps;
+namespace Fabrica.One.Bootstraps;
 
 public interface IBootstrap
 {
