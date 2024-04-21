@@ -208,6 +208,7 @@ public class Response<TResponse> : IValueResponse where TResponse : class
         var res = new Response<TResponse>
         {
             _successful = false,
+            Kind        = error.Kind,
             ErrorCode   = error.ErrorCode,
             Explanation = error.Explanation,
             Details     = [..error.Details]
