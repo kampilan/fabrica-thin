@@ -22,7 +22,7 @@ public class VtoJsonTypeInfoResolver: CompactJsonTypeInfoResolver
 
         foreach (var prop in typeInfo.Properties)
         {
-            if( prop.Name == "Id" || prop.Name.EndsWith("Id") )
+            if( prop.Name == "Id" || prop.Name == "id" || prop.Name.EndsWith("Id") )
 
                 prop.ShouldSerialize = (_, _) => false;
         }
