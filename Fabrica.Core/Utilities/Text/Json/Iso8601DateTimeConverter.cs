@@ -14,7 +14,7 @@ public class Iso8601DateTimeConverter : JsonConverter<DateTime>
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
         var dt = value.ToUniversalTime();
-        var iso = dt.ToString("O");
+        var iso = dt.ToString("YYYY-MM-ddTHH:mm:ssK");
         writer.WriteStringValue(iso);
     }
 
