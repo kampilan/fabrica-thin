@@ -9,6 +9,7 @@ using Fabrica.Watch;
 using Fabrica.Watch.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using TypeExtensions = Fabrica.Utilities.Types.TypeExtensions;
 
 // ReSharper disable UnusedMember.Global
 
@@ -784,9 +785,6 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         foreach (var entry in Context.ChangeTracker.Entries() )
         {
 
-            logger.Inspect("EntityType", entry.Entity.GetType().FullName);
-            logger.Inspect("State", entry.State);
-
 
             // *****************************************************************
             logger.Debug("Attempting to check if entity is Model");
@@ -799,13 +797,16 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
             logger.Debug("Attempting to get AuditAttribute");
             var audit = entry.Entity.GetType().GetCustomAttribute<AuditAttribute>(true);
 
-            if( logger.IsDebugEnabled && audit is not null )
-            {
-                logger.LogObject(nameof(audit), new { audit.EntityName, audit.Read, audit.Write, audit.Detailed } );
-            }
 
             if (audit == null || audit is { Read: false, Write: false })
                 continue;
+
+
+            if( logger.IsDebugEnabled )
+            {
+                var name = TypeExtensions.GetConciseName(entity.GetType());
+                logger.LogObject(nameof(audit), new { EntityType = name, audit.EntityName, audit.Read, audit.Write, audit.Detailed });
+            }
 
 
 
