@@ -1,11 +1,8 @@
-﻿using Fabrica.Persistence.UnitOfWork;
-using Fabrica.Rules;
-using Fabrica.Utilities.Container;
+﻿using Fabrica.Utilities.Container;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
-using Fabrica.Rules.Factory;
 using ILogger = Fabrica.Watch.ILogger;
 
 
@@ -19,13 +16,9 @@ public abstract class AbstractDbContext: DbContext
     {
 
         Correlation = builder.Correlation;
-        Uow         = builder.Uow;
-        Rules       = builder.Rules;
         Factory     = builder.LoggerFactory;
 
         IsReadonly       = false;
-        EvaluateEntities = true;
-        PerformAuditing  = true;
 
     }
 
@@ -34,28 +27,18 @@ public abstract class AbstractDbContext: DbContext
     {
 
         Correlation = builder.Correlation;
-        Rules       = new RuleSet();
         Factory     = builder.LoggerFactory;
 
         IsReadonly       = true;
-        EvaluateEntities = false;
-        PerformAuditing  = false;
 
     }
 
 
     protected bool IsReadonly { get; }
-    protected bool EvaluateEntities { get; }
-    protected bool PerformAuditing { get; }
-
-
 
     protected ICorrelation Correlation { get; }
 
     private ILoggerFactory Factory { get; }
-
-    protected IUnitOfWork? Uow { get; }
-    protected IRuleSet Rules { get; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
