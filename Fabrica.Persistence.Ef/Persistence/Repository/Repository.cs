@@ -787,7 +787,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
 
             // *****************************************************************
-            logger.Debug("Attempting to check if entity is Model");
+            logger.Debug("Attempting to check if entity is IEntity");
             if (entry.Entity is not IEntity entity)
                 continue;
 
@@ -802,12 +802,15 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
                 continue;
 
 
-            if( logger.IsDebugEnabled )
-            {
-                var name = TypeExtensions.GetConciseName(entity.GetType());
-                logger.LogObject(nameof(audit), new { EntityType = name, audit.EntityName, audit.Read, audit.Write, audit.Detailed });
-            }
 
+            void Log()
+            {
+                if (logger.IsTraceEnabled)
+                {
+                    var name = TypeExtensions.GetConciseName(entity.GetType());
+                    logger.LogObject(nameof(audit), new { EntityType = name, audit.EntityName, audit.Read, audit.Write, audit.Detailed });
+                }
+            }
 
 
             // *****************************************************************                    
@@ -815,6 +818,8 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
             {
 
                 logger.Debug("Attempting to create read journal entry");
+                Log();
+
                 var aj = CreateAuditJournal(journalTime, AuditJournalType.Read, entity);
                 journals.Add(aj);
 
@@ -827,8 +832,9 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
             {
 
                 logger.Debug("Attempting to create insert journal entry");
-                var aj = CreateAuditJournal(journalTime, AuditJournalType.Created, entity);
+                Log();
 
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.Created, entity);
                 journals.Add(aj);
 
                 if (audit.Detailed)
@@ -843,8 +849,9 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
             {
 
                 logger.Debug("Attempting to create update journal entry");
-                var aj = CreateAuditJournal(journalTime, AuditJournalType.Updated, entity);
+                Log();
 
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.Updated, entity);
                 journals.Add(aj);
 
                 if (audit.Detailed)
@@ -859,8 +866,9 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
             {
 
                 logger.Debug("Attempting to create delete journal entry");
-                var aj = CreateAuditJournal(journalTime, AuditJournalType.Deleted, entity);
+                Log();
 
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.Deleted, entity);
                 journals.Add(aj);
 
             }
@@ -873,8 +881,9 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
             {
 
                 logger.Debug("Attempting to create unmodified root journal entry");
-                var aj = CreateAuditJournal(journalTime, AuditJournalType.UnmodifiedRoot, entity);
+                Log();
 
+                var aj = CreateAuditJournal(journalTime, AuditJournalType.UnmodifiedRoot, entity);
                 journals.Add(aj);
 
             }
