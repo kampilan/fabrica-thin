@@ -23,8 +23,15 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
         using var logger = EnterMethod();
 
 
-        if (result is IValueResponse { IsSuccessful: true } ok)
-            return Results.Json(ok.Value, options:options);
+        if (result is IValueResponse {IsSuccessful: true} ok)
+        {
+
+            if( ok.Value is Stream st )
+                return Results.Stream(st, "application/json");
+
+            return Results.Json(ok.Value, options: options);
+
+        }
 
         if (result is IResponse { IsSuccessful: true })
             return Results.Ok();
