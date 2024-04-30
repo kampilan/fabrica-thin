@@ -52,6 +52,9 @@ public static class AwsConfigAutofacExtensions
                 if (credentials is not null && region is not null)
                     return new AmazonS3Client(credentials, region);
 
+                if (credentials is not null)
+                    return new AmazonS3Client(credentials);
+
                 if (region is not null)
                     return new AmazonS3Client(region);
 
