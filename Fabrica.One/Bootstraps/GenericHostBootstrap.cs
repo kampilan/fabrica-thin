@@ -82,7 +82,7 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
         logger.Debug("Attempting to call OnConfigured");
         await OnConfigured();
 
-        logger.LogObject("Boostrap", this);
+        logger.LogObject("Bootstrap", this);
 
 
 
@@ -94,18 +94,18 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
 
         // *****************************************************************
         logger.Debug("Attempting to Add Host Configuration ");
-        Builder.ConfigureHostConfiguration(cfb => cfb.AddConfiguration(Configuration));
+        Builder.ConfigureHostConfiguration( cfb => cfb.AddConfiguration(Configuration) );
 
 
 
         // *****************************************************************
         logger.Debug("Attempting to Add App Configuration ");
-        Builder.ConfigureAppConfiguration((cfb) => cfb.AddConfiguration(Configuration));
+        Builder.ConfigureAppConfiguration( cfb => cfb.AddConfiguration(Configuration) );
 
 
 
         // *****************************************************************
-        logger.Debug("Attempting to Configure the Microsoft Logging bridge");
+        logger.Debug("Attempting to Configure Microsoft Logging with Watch bridge");
         Builder.ConfigureLogging(lb =>
         {
             lb.UseWatch();

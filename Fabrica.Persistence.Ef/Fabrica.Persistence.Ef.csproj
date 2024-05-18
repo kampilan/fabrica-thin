@@ -18,16 +18,16 @@
 
 
 	<ItemGroup>
-		<None Include="smithy.png" Pack="true" PackagePath="\"/>
+		<None Include="smithy.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.4" />
-		<PackageReference Include="OneOf" Version="3.0.263" />
-		<PackageReference Include="OneOf.SourceGenerator" Version="3.0.263" />
-		<PackageReference Include="SmartFormat" Version="3.3.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.5" />
+		<PackageReference Include="OneOf" Version="3.0.271" />
+		<PackageReference Include="OneOf.SourceGenerator" Version="3.0.271" />
+		<PackageReference Include="SmartFormat" Version="3.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>

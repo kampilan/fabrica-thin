@@ -4,13 +4,13 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Fabrica</RootNamespace>
-    <Title>Fabrica AWS</Title>
-    <Description>Fabrica helpers for using AWS Services</Description>
+    <Title>Fabrica.Patch</Title>
     <Authors>Pond Hawk Technologies Inc.</Authors>
-    <Company>Pond Hawk Technologies Inc.</Company>
+    <Description>Implmentation od Patch using Mediator
+</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
   </PropertyGroup>
+
 
 	<PropertyGroup>
 		<PackageIcon>smithy.png</PackageIcon>
@@ -23,10 +23,9 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Autofac" Version="8.0.0" />
-		<PackageReference Include="AWSSDK.S3" Version="3.7.308.2" />
-		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.302.68" />
-		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.94" />
+	  <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+	  <ProjectReference Include="..\Fabrica.Watch\Fabrica.Watch.csproj" />
 	</ItemGroup>
+
 
 </Project>
