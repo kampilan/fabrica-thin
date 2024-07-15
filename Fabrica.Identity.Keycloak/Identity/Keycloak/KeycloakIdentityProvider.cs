@@ -303,6 +303,7 @@ public class KeycloakIdentityProvider(ICorrelation correlation, IHttpClientFacto
             var reqGet = HttpRequestBuilder.Get(HttpClientName)
                 .ForResource("users")
                 .AddParameter("username", request.NewUsername)
+                .AddParameter("exact", true)
                 .ToRequest();
 
             var (okGet, results) = await factory.Many<User>(reqGet, ct);
