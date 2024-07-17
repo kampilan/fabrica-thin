@@ -151,15 +151,16 @@ public static class AwsConfigAutofacExtensions
 
     }
 
-    public static ContainerBuilder AddStsConfiguration(this ContainerBuilder builder, string roleArn, string policy)
+    public static ContainerBuilder AddStsConfiguration(this ContainerBuilder builder, string roleArn, string policy, TimeSpan duration)
     {
 
         builder.Register( _ =>
             {
                 var comp = new StsConfiguration
                 {
-                    RoleArn = roleArn,
-                    Policy = policy
+                    RoleArn  = roleArn,
+                    Policy   = policy,
+                    Duration = duration
                 };
 
                 return comp;
