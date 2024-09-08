@@ -108,7 +108,11 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
             return error;
 
 
-        await using var scope = root.BeginLifetimeScope();
+        await using var scope = root.BeginLifetimeScope(cb =>
+        {
+            cb.CloneCorrelation(Correlation);
+        });
+
 
         var provider = new WrapperServiceProvider(scope);
         var inner = new MediatR.Mediator(provider);
@@ -138,7 +142,10 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
             return error;
 
 
-        await using var scope = root.BeginLifetimeScope();
+        await using var scope = root.BeginLifetimeScope(cb =>
+        {
+            cb.CloneCorrelation(Correlation);
+        });
 
         var provider = new WrapperServiceProvider(scope);
         var inner = new MediatR.Mediator(provider);

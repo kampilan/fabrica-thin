@@ -24,6 +24,19 @@ public static class CorrelationExtensions
 
     }
 
+    public static ContainerBuilder CloneCorrelation(this ContainerBuilder builder, ICorrelation source)
+    {
+
+        builder.RegisterInstance( source.Clone() )
+            .As<ICorrelation>()
+            .AsSelf()
+            .InstancePerLifetimeScope();
+
+        return builder;
+
+    }
+
+
     public static ClaimsIdentity ToIdentity(this ICorrelation correlation)
     {
         var identity = correlation.Caller?.Identity as ClaimsIdentity ?? new AnonymousClaimsIdentity();

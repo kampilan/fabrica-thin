@@ -37,7 +37,7 @@ public class Correlation: ICorrelation
 {
 
 
-    public string Uid { get; } = Ulid.NewUlid().ToString();
+    public string Uid { get; init; } = Ulid.NewUlid().ToString();
 
     public string CallerGatewayToken { get; set; } = string.Empty;
 
@@ -57,6 +57,24 @@ public class Correlation: ICorrelation
         var ci = new FabricaIdentity(claimSet);
 
         Caller = new ClaimsPrincipal(ci);
+    }
+
+    public Correlation Clone()
+    {
+
+        var c = new Correlation
+        {
+            Uid = Uid,
+            Caller = Caller,
+            CallerGatewayToken = CallerGatewayToken,
+            Color = Color,
+            Debug = Debug,
+            Level = Level,
+            Tenant = Tenant
+        };
+
+        return c;
+
     }
 
 }

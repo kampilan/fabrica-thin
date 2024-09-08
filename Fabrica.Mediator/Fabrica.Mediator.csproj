@@ -19,12 +19,12 @@
 
 
 	<ItemGroup>
-		<None Include="smithy.png" Pack="true" PackagePath="\"/>
+		<None Include="smithy.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="MediatR" Version="12.4.0" />
   </ItemGroup>
 
   <ItemGroup>

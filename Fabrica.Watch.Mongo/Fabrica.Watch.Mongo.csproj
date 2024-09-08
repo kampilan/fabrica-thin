@@ -19,12 +19,12 @@
 
 
 	<ItemGroup>
-		<None Include="smithy.png" Pack="true" PackagePath="\"/>
+		<None Include="smithy.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-    <PackageReference Include="DnsClient" Version="1.7.0" />
+    <PackageReference Include="DnsClient" Version="1.8.0" />
     <PackageReference Include="Fabrica.Mongo.Driver" Version="2.19.2" />
   </ItemGroup>
 
