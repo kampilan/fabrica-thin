@@ -27,7 +27,7 @@ public static class CorrelationExtensions
     public static ContainerBuilder CloneCorrelation(this ContainerBuilder builder, ICorrelation source)
     {
 
-        builder.RegisterInstance( source.Clone() )
+        builder.Register( _=> source.Clone() )
             .As<ICorrelation>()
             .AsSelf()
             .InstancePerLifetimeScope();
