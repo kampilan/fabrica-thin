@@ -26,7 +26,7 @@ public static class AutofacExtensions
 {
 
 
-    public static ContainerBuilder RegisterRepositories<TOrigin, TReplica>(this ContainerBuilder builder) where TOrigin : DbContext where TReplica : DbContext
+    public static ContainerBuilder RegisterRepositories<TOrigin, TReplica>(this ContainerBuilder builder, bool performEvaluation=true) where TOrigin : DbContext where TReplica : DbContext
     {
 
 
@@ -57,6 +57,7 @@ public static class AutofacExtensions
             var rules   = c.Resolve<IRuleSet>();
 
             var comp = new CommandRepository( corr, factory, rules );
+            comp.PerformEvaluations = performEvaluation;
 
             return comp;
 
