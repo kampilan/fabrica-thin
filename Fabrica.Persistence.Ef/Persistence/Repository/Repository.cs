@@ -680,7 +680,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
     }
 
 
-    public bool PerformEvaluations { get; set; }
+    public bool PerformEvaluations { get; set; } = true;
 
     protected OkOrError PerformEvaluation()
     {
