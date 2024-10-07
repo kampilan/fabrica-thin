@@ -18,7 +18,7 @@ namespace Fabrica.Persistence.Repository;
 
 internal static class Helpers
 {
-    internal static readonly HashSet<EntityState> DirtyStates = [EntityState.Added, EntityState.Deleted, EntityState.Modified];
+    internal static readonly HashSet<EntityState> DirtyStates = [EntityState.Added, EntityState.Modified];
 }
 
 
