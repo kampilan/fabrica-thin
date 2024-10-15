@@ -1,6 +1,11 @@
 ﻿using System.Text.Json;
 using Autofac;
+using Fabrica.Mediator;
+using Fabrica.Models;
 using Fabrica.Patch.Builder;
+using Fabrica.Patch.Resolver;
+using Fabrica.Utilities.Container;
+using MediatR;
 using NUnit.Framework;
 
 namespace Fabrica.Tests;
@@ -9,15 +14,14 @@ public class PatchTests
 {
 
     [OneTimeSetUp]
-    public void OneTimeSetup()
+    public async Task OneTimeSetup()
     {
 
         var builder = new ContainerBuilder();
 
         builder.RegisterModule(new PatchTestModule());
 
-        TheRoot = builder.Build();
-
+        TheRoot = await builder.BuildAndStart();
 
     }
 
@@ -114,8 +118,11 @@ public class PatchTests
 
 
     [Test]
-    public void Should_Track_Dependent_Changes_And_Create_Patch()
+    public async Task Should_Track_Dependent_Changes_And_Create_Patch()
     {
+
+        using var scope = TheRoot.BeginLifetimeScope();
+
 
         var highSchool = new School {Name = "Maine-Endwell High School"};
         var elemSchool = new School { Name = "Homer Brink Elementary" };
@@ -174,6 +181,12 @@ public class PatchTests
         Assert.That(set.GetPatches(), Is.Not.Empty);
         Assert.That(set.GetPatches().Count(), Is.EqualTo(2));
 
+        var resolver = scope.Resolve<ResolverService>();
+        var requests = resolver.GetRequests(set).Select(e => (IRequest<Response>)e);
+
+        var mm = scope.Resolve<IRequestMediator>();
+        var res = await mm.Send(requests);
+
 
         var json = set.ToJson();
 
@@ -201,7 +214,38 @@ public class PatchTests
     }
 
 
+    [Test]
+    public async Task Should_Produce_Request_From_Patch()
+    {
 
+        using var scope = TheRoot.BeginLifetimeScope();
+
+        var person = new Person(true)
+        {
+            FirstName = "James",
+            LastName = "Moring"
+        };
+
+        Assert.That(person.IsAdded(), Is.True);
+
+        var set = PatchSet.Create(person);
+
+        var resolver = scope.Resolve<ResolverService>();
+
+        var requests = resolver.GetRequests(set);
+
+        Assert.That(requests, Is.Not.Empty);
+
+        var mm = scope.Resolve<IRequestMediator>();
+
+        var request = (IRequest<Response>)requests[0];
+
+        var res = await mm.Send(request);
+
+        Assert.That(res, Is.Not.Null);
+
+
+    }
 
 
 

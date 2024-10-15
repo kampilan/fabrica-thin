@@ -18,6 +18,9 @@ public interface IRequestMediator
 
     Task<Response> Send<TRequest>( TRequest request, CancellationToken cancellationToken = new()) where TRequest: class, IRequest<Response>;
 
+    Task<Response> Send(IEnumerable<IRequest<Response>> requests, CancellationToken cancellationToken = new());
+
+
 }
 
 internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IRuleSet rules): CorrelatedObject(correlation), IRequestMediator
@@ -162,6 +165,48 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
         return response;
 
     }
+
+    public async Task<Response> Send( IEnumerable<IRequest<Response>> requests, CancellationToken cancellationToken = new())
+    {
+
+        using var logger = EnterMethod();
+
+
+        await using var scope = root.BeginLifetimeScope(cb =>
+        {
+            cb.CloneCorrelation(Correlation);
+        });
+
+        var provider = new WrapperServiceProvider(scope);
+        var inner = new MediatR.Mediator(provider);
+
+        foreach( var request in requests )
+        {
+
+            logger.LogObject(nameof(request), request);
+
+
+            if (!TryValidateRequest(request, out var error) && error is not null)
+                return error;
+
+
+            var innerRes = await inner.Send(request, cancellationToken);
+
+            if( logger.IsDebugEnabled )
+            {
+                var ctx = new { innerRes.IsSuccessful, innerRes.ErrorCode, innerRes.Explanation, innerRes.Details };
+                logger.LogObject(nameof(innerRes), ctx);
+            }
+
+            if( !innerRes.IsSuccessful )
+                return innerRes;
+
+        }
+
+        return Response.Ok();
+
+    }
+
 
 
 
