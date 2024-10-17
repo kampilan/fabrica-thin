@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel;
+using Fabrica.Patch.Builder;
 using Fabrica.Patch.Models;
 using Fabrica.Utilities.Types;
 
 namespace Fabrica.Tests;
+
 
 public class Person : BaseMutableModel<Person>, INotifyPropertyChanged
 {

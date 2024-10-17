@@ -257,7 +257,7 @@ namespace Fabrica.Patch.Builder
                 state = PatchVerb.Update;
 
             var name = source.GetType().Name;
-            var attr = source.GetType().GetCustomAttribute<ResolveAttribute>();
+            var attr = source.GetType().GetCustomAttribute<AliasAttribute>();
             if( attr is not null && !string.IsNullOrWhiteSpace(attr.Alias))
                 name = attr.Alias;
 
