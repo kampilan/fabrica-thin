@@ -1,5 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Reflection;
+using System.Text.Json;
 using Fabrica.Patch.Models;
+using Fabrica.Patch.Resolver;
 using Fabrica.Watch;
 
 
@@ -254,9 +256,14 @@ namespace Fabrica.Patch.Builder
             else if (source.IsModified())
                 state = PatchVerb.Update;
 
+            var name = source.GetType().Name;
+            var attr = source.GetType().GetCustomAttribute<ResolveAttribute>();
+            if( attr is not null && !string.IsNullOrWhiteSpace(attr.Alias))
+                name = attr.Alias;
+
             var patch = new ModelPatch
             {
-                Model = source.GetType().Name,
+                Model = name,
                 Uid = source.GetUid(),
                 Verb = state,
             };
@@ -305,7 +312,6 @@ namespace Fabrica.Patch.Builder
                     patch.Properties[prop.Name] = prop.Current!;
 
             }
-
 
             logger.LogObject(nameof(patch), patch);
 

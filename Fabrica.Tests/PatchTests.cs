@@ -172,6 +172,19 @@ public class PatchTests
 
         person.HighSchool = elemSchool;
 
+        var ad2 = new Address(true)
+        {
+            Line1 = "1708 Fox Run Dr",
+            Line2 = "Suite 300",
+            City = "Plainsboro",
+            State = "NJ",
+            Zip = "08609"
+        };
+
+        person.Addresses.Add(ad2);
+
+
+
         Assert.That(person.IsModified, Is.True);
 
 
@@ -179,7 +192,12 @@ public class PatchTests
 
         Assert.That(set, Is.Not.Null);
         Assert.That(set.GetPatches(), Is.Not.Empty);
-        Assert.That(set.GetPatches().Count(), Is.EqualTo(2));
+        Assert.That(set.GetPatches().Count(), Is.EqualTo(3));
+
+        var json = set.ToJson();
+
+
+
 
         var resolver = scope.Resolve<ResolverService>();
         var requests = resolver.GetRequests(set).Select(e => (IRequest<Response>)e);
@@ -188,7 +206,6 @@ public class PatchTests
         var res = await mm.Send(requests);
 
 
-        var json = set.ToJson();
 
         Assert.That(json, Is.Not.Empty);
 
