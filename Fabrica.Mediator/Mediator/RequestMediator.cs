@@ -14,7 +14,7 @@ namespace Fabrica.Mediator;
 public interface IRequestMediator
 {
 
-    Task<Response<TResponse>> SendA<TRequest,TResponse>( TRequest request, CancellationToken cancellationToken = new()) where TRequest: class, IRequest<Response<TResponse>> where TResponse : class;
+    Task<Response<TResponse>> SendA<TResponse>( IRequest<Response<TResponse>> request, CancellationToken cancellationToken = new()) where TResponse : class;
 
     Task<Response> SendB<TRequest>( TRequest request, CancellationToken cancellationToken = new()) where TRequest: class, IRequest<Response>;
 
@@ -38,7 +38,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
     }
 
 
-    protected virtual bool TryValidateRequest<TRequest,TResponse>( TRequest request, out Response<TResponse>? error ) where TRequest: class, IRequest<Response<TResponse>> where TResponse: class
+    protected virtual bool TryValidateRequest<TResponse>(IRequest<Response<TResponse>> request, out Response<TResponse>? error ) where TResponse: class
     {
 
         using var logger = EnterMethod();
@@ -99,7 +99,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
     }
 
 
-    public async Task<Response<TResponse>> SendA<TRequest,TResponse>( TRequest request, CancellationToken cancellationToken = new ()) where TRequest: class, IRequest<Response<TResponse>> where TResponse: class
+    public async Task<Response<TResponse>> SendA<TResponse>(IRequest<Response<TResponse>> request, CancellationToken cancellationToken = new ()) where  TResponse: class
     {
 
         using var logger = EnterMethod();
@@ -107,7 +107,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
         logger.LogObject(nameof(request), request);
 
 
-        if( !TryValidateRequest<TRequest,TResponse>(request, out var error) && error is not null )
+        if( !TryValidateRequest(request, out var error) && error is not null )
             return error;
 
 
