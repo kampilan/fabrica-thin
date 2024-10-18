@@ -257,7 +257,7 @@ public class PatchTests
 
         var request = (IRequest<Response>)requests[0];
 
-        var res = await mm.Send(request);
+        var res = await mm.SendX(request);
 
         Assert.That(res, Is.Not.Null);
 

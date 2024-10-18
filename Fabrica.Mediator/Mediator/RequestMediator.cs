@@ -16,7 +16,7 @@ public interface IRequestMediator
 
     Task<Response<TResponse>> Send<TRequest,TResponse>( TRequest request, CancellationToken cancellationToken = new()) where TRequest: class, IRequest<Response<TResponse>> where TResponse : class;
 
-    Task<Response> Send<TRequest>( TRequest request, CancellationToken cancellationToken = new()) where TRequest: class, IRequest<Response>;
+    Task<Response> SendX<TRequest>( TRequest request, CancellationToken cancellationToken = new()) where TRequest: class, IRequest<Response>;
 
     Task<Response> Send(IEnumerable<IRequest<Response>> requests, CancellationToken cancellationToken = new());
 
@@ -133,7 +133,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
 
     }
 
-    public async Task<Response> Send<TRequest>( TRequest request, CancellationToken cancellationToken = new ()) where TRequest: class, IRequest<Response>
+    public async Task<Response> SendX<TRequest>( TRequest request, CancellationToken cancellationToken = new ()) where TRequest: class, IRequest<Response>
     {
 
         using var logger = EnterMethod();
