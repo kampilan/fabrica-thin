@@ -203,7 +203,7 @@ public class PatchTests
         var requests = resolver.GetRequests(set).Select(e => (IRequest<Response>)e);
 
         var mm = scope.Resolve<IRequestMediator>();
-        var res = await mm.Send(requests);
+        var res = await mm.SendC(requests);
 
 
 
@@ -257,7 +257,7 @@ public class PatchTests
 
         var request = (IRequest<Response>)requests[0];
 
-        var res = await mm.SendX(request);
+        var res = await mm.SendB(request);
 
         Assert.That(res, Is.Not.Null);
 
