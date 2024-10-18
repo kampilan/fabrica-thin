@@ -14,11 +14,11 @@ namespace Fabrica.Mediator;
 public interface IRequestMediator
 {
 
-    Task<Response<TResponse>> SendA<TResponse>( IRequest<Response<TResponse>> request, CancellationToken cancellationToken = new()) where TResponse : class;
+    Task<Response<TResponse>> Send<TResponse>( IRequest<Response<TResponse>> request, CancellationToken cancellationToken = new()) where TResponse : class;
 
-    Task<Response> SendB<TRequest>( TRequest request, CancellationToken cancellationToken = new()) where TRequest: class, IRequest<Response>;
+    Task<Response> Send<TRequest>( TRequest request, CancellationToken cancellationToken = new()) where TRequest: class, IRequest<Response>;
 
-    Task<Response> SendC(IEnumerable<IRequest<Response>> requests, CancellationToken cancellationToken = new());
+    Task<Response> Send(IEnumerable<IRequest<Response>> requests, CancellationToken cancellationToken = new());
 
 
 }
@@ -99,7 +99,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
     }
 
 
-    public async Task<Response<TResponse>> SendA<TResponse>(IRequest<Response<TResponse>> request, CancellationToken cancellationToken = new ()) where  TResponse: class
+    public async Task<Response<TResponse>> Send<TResponse>(IRequest<Response<TResponse>> request, CancellationToken cancellationToken = new ()) where  TResponse: class
     {
 
         using var logger = EnterMethod();
@@ -133,7 +133,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
 
     }
 
-    public async Task<Response> SendB<TRequest>( TRequest request, CancellationToken cancellationToken = new ()) where TRequest: class, IRequest<Response>
+    public async Task<Response> Send<TRequest>( TRequest request, CancellationToken cancellationToken = new ()) where TRequest: class, IRequest<Response>
     {
 
         using var logger = EnterMethod();
@@ -166,7 +166,7 @@ internal class RequestMediator(ILifetimeScope root, ICorrelation correlation, IR
 
     }
 
-    public async Task<Response> SendC( IEnumerable<IRequest<Response>> requests, CancellationToken cancellationToken = new())
+    public async Task<Response> Send( IEnumerable<IRequest<Response>> requests, CancellationToken cancellationToken = new())
     {
 
         using var logger = EnterMethod();
