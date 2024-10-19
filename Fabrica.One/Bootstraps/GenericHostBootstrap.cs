@@ -57,12 +57,14 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
     public DateTime ApplianceStartTime { get; set; } = DateTime.MinValue;
 
 
-    public string ContentRootPath { get; set; } = string.Empty;
+    public string ContentRootPathOverride { get; set; } = string.Empty;
 
-    protected bool IsDevelopment { get; private set; }
-    protected bool IsProduction { get; private set; }
-    protected string EnvironmentName { get; private set; } = string.Empty;
-
+    public bool IsDevelopment { get; private set; }
+    public bool IsStaging { get; private set; }
+    public bool IsProduction { get; private set; }
+    public string EnvironmentName { get; private set; } = string.Empty;
+    public string ContentRootPath { get; private set; } = string.Empty;
+    public string ApplicationName { get; private set; } = string.Empty;
 
     protected IHostBuilder Builder { get; set; } = null!;
 
@@ -102,12 +104,15 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
             IsDevelopment   = c.HostingEnvironment.IsDevelopment();
             IsProduction    = c.HostingEnvironment.IsProduction();
             EnvironmentName = c.HostingEnvironment.EnvironmentName;
+            ContentRootPath = c.HostingEnvironment.ContentRootPath;
+            ApplicationName = c.HostingEnvironment.ApplicationName;
 
-            if( !string.IsNullOrWhiteSpace(ApplianceName))
+
+            if ( !string.IsNullOrWhiteSpace(ApplianceName))
                 c.HostingEnvironment.ApplicationName = ApplianceName;
 
-            if (!string.IsNullOrWhiteSpace(ContentRootPath))
-                c.HostingEnvironment.ContentRootPath = ContentRootPath;
+            if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
+                c.HostingEnvironment.ContentRootPath = ContentRootPathOverride;
 
         });
 
