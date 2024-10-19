@@ -57,6 +57,12 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
     public DateTime ApplianceStartTime { get; set; } = DateTime.MinValue;
 
 
+    public string ContentRootPath { get; set; } = string.Empty;
+
+    protected bool IsDevelopment { get; private set; }
+    protected bool IsProduction { get; private set; }
+    protected string EnvironmentName { get; private set; } = string.Empty;
+
 
     protected IHostBuilder Builder { get; set; } = null!;
 
@@ -90,6 +96,17 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
         logger.Debug("Attempting to create HostBuilder");
         Builder = Host.CreateDefaultBuilder();
 
+        Builder.ConfigureAppConfiguration((c, b) =>
+        {
+
+            IsDevelopment   = c.HostingEnvironment.IsDevelopment();
+            IsProduction    = c.HostingEnvironment.IsProduction();
+            EnvironmentName = c.HostingEnvironment.EnvironmentName;
+
+            if(!string.IsNullOrWhiteSpace(ContentRootPath))
+                c.HostingEnvironment.ContentRootPath = ContentRootPath;
+
+        });
 
 
         // *****************************************************************
@@ -168,7 +185,7 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
 
             try
             {
-                inner.Debug("Attempting to call Configure");
+                inner.Debug("Attempting to call Build");
 
                 var services = new ServiceCollection();
 
@@ -179,7 +196,7 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
             }
             catch (Exception cause)
             {
-                inner.ErrorWithContext(cause, this, "Bootstrap ConfigureContainer failed.");
+                inner.ErrorWithContext(cause, this, "Bootstrap Build failed.");
                 throw;
             }
 
@@ -190,7 +207,6 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
         logger.Debug("Attempting to Configure WebHost");
         Builder.ConfigureWebHost(whb =>
         {
-
 
             whb.UseKestrel(op =>
             {
