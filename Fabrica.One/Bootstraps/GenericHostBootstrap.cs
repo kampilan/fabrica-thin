@@ -98,16 +98,13 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
         logger.Debug("Attempting to create HostBuilder");
         Builder = Host.CreateDefaultBuilder();
 
-        Builder.ConfigureAppConfiguration((c, b) =>
-        {
 
-            IsDevelopment   = c.HostingEnvironment.IsDevelopment();
-            IsProduction    = c.HostingEnvironment.IsProduction();
-            EnvironmentName = c.HostingEnvironment.EnvironmentName;
-            ContentRootPath = c.HostingEnvironment.ContentRootPath;
-            ApplicationName = c.HostingEnvironment.ApplicationName;
 
-        });
+        // *****************************************************************
+        logger.Debug("Attempting to check for ContentRootPathOverride");
+        if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
+            Builder.UseContentRoot(ContentRootPathOverride);
+
 
 
         // *****************************************************************
@@ -209,9 +206,6 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
         Builder.ConfigureWebHost(whb =>
         {
 
-            if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
-                whb.UseContentRoot(ContentRootPathOverride);
-
             whb.UseKestrel(op =>
             {
                 if (AllowAnyIp)
@@ -245,9 +239,7 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
 
 
         });
-
-
-
+        
 
 
         // *****************************************************************
