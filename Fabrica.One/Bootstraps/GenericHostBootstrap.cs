@@ -101,13 +101,6 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
 
 
         // *****************************************************************
-        logger.Debug("Attempting to check for ContentRootPathOverride");
-        if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
-            Builder.UseContentRoot(ContentRootPathOverride);
-
-
-
-        // *****************************************************************
         logger.Debug("Attempting to Add Host Configuration ");
         Builder.ConfigureHostConfiguration( cfb => cfb.AddConfiguration(Configuration) );
 
@@ -239,7 +232,14 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
 
 
         });
-        
+
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to check for ContentRootPathOverride");
+        if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
+            Builder.UseContentRoot(ContentRootPathOverride);
+
 
 
         // *****************************************************************
