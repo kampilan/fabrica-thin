@@ -107,13 +107,6 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
             ContentRootPath = c.HostingEnvironment.ContentRootPath;
             ApplicationName = c.HostingEnvironment.ApplicationName;
 
-
-            if ( !string.IsNullOrWhiteSpace(ApplianceName))
-                c.HostingEnvironment.ApplicationName = ApplianceName;
-
-            if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
-                c.HostingEnvironment.ContentRootPath = ContentRootPathOverride;
-
         });
 
 
@@ -216,9 +209,11 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
         Builder.ConfigureWebHost(whb =>
         {
 
+            if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
+                whb.UseContentRoot(ContentRootPathOverride);
+
             whb.UseKestrel(op =>
             {
-
                 if (AllowAnyIp)
                     op.ListenAnyIP(ListeningPort);
                 else
