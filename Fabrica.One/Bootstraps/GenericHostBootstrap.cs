@@ -231,14 +231,14 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
             });
 
 
+            if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
+                whb.UseContentRoot(ContentRootPathOverride);
+
+
         });
 
 
 
-        // *****************************************************************
-        logger.Debug("Attempting to check for ContentRootPathOverride");
-        if (!string.IsNullOrWhiteSpace(ContentRootPathOverride))
-            Builder.UseContentRoot(ContentRootPathOverride);
 
 
 
