@@ -103,7 +103,10 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
             IsProduction    = c.HostingEnvironment.IsProduction();
             EnvironmentName = c.HostingEnvironment.EnvironmentName;
 
-            if(!string.IsNullOrWhiteSpace(ContentRootPath))
+            if( !string.IsNullOrWhiteSpace(ApplianceName))
+                c.HostingEnvironment.ApplicationName = ApplianceName;
+
+            if (!string.IsNullOrWhiteSpace(ContentRootPath))
                 c.HostingEnvironment.ContentRootPath = ContentRootPath;
 
         });
