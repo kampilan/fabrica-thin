@@ -28,7 +28,6 @@ SOFTWARE.
 
 using System.Globalization;
 using Fabrica.Rql.Builder;
-using Fabrica.Rql.Parser;
 
 namespace Fabrica.Rql.Serialization;
 

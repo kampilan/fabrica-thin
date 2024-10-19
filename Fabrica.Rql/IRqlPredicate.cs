@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fabrica.Rql.Parser;
+using Fabrica.Rql.Builder;
 
 namespace Fabrica.Rql
 {

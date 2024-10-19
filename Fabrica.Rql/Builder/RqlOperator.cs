@@ -1,4 +1,4 @@
-﻿namespace Fabrica.Rql.Parser
+﻿namespace Fabrica.Rql.Builder
 {
 
     

@@ -23,7 +23,7 @@ SOFTWARE.
 */
 
 using System.Text;
-using Fabrica.Rql.Parser;
+using Fabrica.Rql.Builder;
 
 namespace Fabrica.Rql.Serialization
 {

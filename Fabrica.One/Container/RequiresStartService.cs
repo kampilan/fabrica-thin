@@ -3,6 +3,7 @@
 
 using Autofac;
 using Fabrica.Utilities.Container;
+using Fabrica.Watch;
 using Microsoft.Extensions.Hosting;
 
 namespace Fabrica.One.Container;
@@ -15,6 +16,9 @@ public class RequiresStartService(ILifetimeScope root) : IHostedService
 
     public virtual async Task StartAsync(CancellationToken cancellationToken)
     {
+
+        using var logger = this.EnterMethod();
+
 
         var currentStartable = "";
         try
@@ -31,6 +35,7 @@ public class RequiresStartService(ILifetimeScope root) : IHostedService
         catch (Exception cause)
         {
             var ctx = new { FailedStartable = currentStartable };
+            logger.ErrorWithContext(cause, ctx, "RequiresStart failed");
             throw;
         }
 

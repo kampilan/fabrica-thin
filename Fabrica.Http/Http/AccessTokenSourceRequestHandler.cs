@@ -6,16 +6,8 @@ using Fabrica.Watch;
 
 namespace Fabrica.Http;
 
-public class AccessTokenSourceRequestHandler: DelegatingHandler
+public class AccessTokenSourceRequestHandler(IAccessTokenSource source) : DelegatingHandler
 {
-
-    public AccessTokenSourceRequestHandler( IAccessTokenSource source )
-    {
-        Source = source;
-    }
-
-    private IAccessTokenSource Source { get; }
-
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
@@ -25,7 +17,7 @@ public class AccessTokenSourceRequestHandler: DelegatingHandler
 
         // *****************************************************************
         logger.Debug("Attempting to get current access token");
-        var token = await Source.GetToken();
+        var token = await source.GetToken();
 
         if (string.IsNullOrWhiteSpace(token))
             throw new InvalidOperationException("Null or blank token returned by AccessToken Source");

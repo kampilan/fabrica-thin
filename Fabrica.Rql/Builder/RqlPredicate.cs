@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Fabrica.Rql.Parser
+﻿namespace Fabrica.Rql.Builder
 {
 
 
@@ -74,7 +70,7 @@ namespace Fabrica.Rql.Parser
 
         public TType Value
         {
-            get => (Values.Count > 0 ? Values[0] : default);
+            get => (Values.Count > 0 ? Values[0] : default!);
 
             set
             {

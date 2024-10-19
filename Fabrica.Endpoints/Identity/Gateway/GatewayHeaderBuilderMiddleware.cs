@@ -78,8 +78,12 @@ public class GatewayHeaderBuilderMiddleware
 
         // *****************************************************************
         logger.Debug("Attempting to set identity header");
-        context.Request.Headers.Add(IdentityConstants.IdentityHeaderName, json);
+        if( context.Request.Headers.ContainsKey(IdentityConstants.IdentityHeaderName) )
+            context.Request.Headers.Remove(IdentityConstants.IdentityHeaderName);
 
+#pragma warning disable ASP0019
+        context.Request.Headers.Add(IdentityConstants.IdentityHeaderName, json);
+#pragma warning restore ASP0019
 
 
         // *****************************************************************

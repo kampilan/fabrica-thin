@@ -113,8 +113,7 @@ internal struct Ulid : IEquatable<Ulid>, IComparable<Ulid>
         }
     }
 
-    internal Ulid(long timestampMilliseconds, XorShift64 random)
-        : this()
+    internal Ulid(long timestampMilliseconds, XorShift64 random) : this()
     {
         // Get memory in stack and copy to ulid(Little->Big reverse order).
         ref var fisrtByte = ref Unsafe.As<long, byte>(ref timestampMilliseconds);
@@ -130,16 +129,15 @@ internal struct Ulid : IEquatable<Ulid>, IComparable<Ulid>
         Unsafe.WriteUnaligned(ref randomness2, random.Next()); // randomness2~9
     }
 
-    internal Ulid(long timestampMilliseconds, ReadOnlySpan<byte> randomness)
-        : this()
+    internal Ulid(long timestampMilliseconds, ReadOnlySpan<byte> randomness) : this()
     {
-        ref var fisrtByte = ref Unsafe.As<long, byte>(ref timestampMilliseconds);
-        timestamp0 = Unsafe.Add(ref fisrtByte, 5);
-        timestamp1 = Unsafe.Add(ref fisrtByte, 4);
-        timestamp2 = Unsafe.Add(ref fisrtByte, 3);
-        timestamp3 = Unsafe.Add(ref fisrtByte, 2);
-        timestamp4 = Unsafe.Add(ref fisrtByte, 1);
-        timestamp5 = Unsafe.Add(ref fisrtByte, 0);
+        ref var firstByte = ref Unsafe.As<long, byte>(ref timestampMilliseconds);
+        timestamp0 = Unsafe.Add(ref firstByte, 5);
+        timestamp1 = Unsafe.Add(ref firstByte, 4);
+        timestamp2 = Unsafe.Add(ref firstByte, 3);
+        timestamp3 = Unsafe.Add(ref firstByte, 2);
+        timestamp4 = Unsafe.Add(ref firstByte, 1);
+        timestamp5 = Unsafe.Add(ref firstByte, 0);
 
         ref var src = ref MemoryMarshal.GetReference(randomness); // length = 10
         randomness0 = randomness[0];
@@ -147,8 +145,7 @@ internal struct Ulid : IEquatable<Ulid>, IComparable<Ulid>
         Unsafe.WriteUnaligned(ref randomness2, Unsafe.As<byte, ulong>(ref Unsafe.Add(ref src, 2))); // randomness2~randomness9
     }
 
-    public Ulid(ReadOnlySpan<byte> bytes)
-        : this()
+    public Ulid(ReadOnlySpan<byte> bytes) : this()
     {
         if (bytes.Length != 16) throw new ArgumentException("invalid bytes length, length:" + bytes.Length);
 
@@ -245,7 +242,7 @@ internal struct Ulid : IEquatable<Ulid>, IComparable<Ulid>
     {
         if (base32.Length != 26)
         {
-            ulid = default(Ulid);
+            ulid = default;
             return false;
         }
 
@@ -256,7 +253,7 @@ internal struct Ulid : IEquatable<Ulid>, IComparable<Ulid>
         }
         catch
         {
-            ulid = default(Ulid);
+            ulid = default;
             return false;
         }
     }
@@ -265,7 +262,7 @@ internal struct Ulid : IEquatable<Ulid>, IComparable<Ulid>
     {
         if (base32.Length != 26)
         {
-            ulid = default(Ulid);
+            ulid = default;
             return false;
         }
 
@@ -276,7 +273,7 @@ internal struct Ulid : IEquatable<Ulid>, IComparable<Ulid>
         }
         catch
         {
-            ulid = default(Ulid);
+            ulid = default;
             return false;
         }
     }

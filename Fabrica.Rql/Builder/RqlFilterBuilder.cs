@@ -23,7 +23,6 @@ SOFTWARE.
 */
 
 using System.Linq.Expressions;
-using Fabrica.Rql.Parser;
 
 namespace Fabrica.Rql.Builder
 {
@@ -35,12 +34,6 @@ namespace Fabrica.Rql.Builder
         public static RqlFilterBuilder<TTarget> Create()
         {
             return new RqlFilterBuilder<TTarget>();
-        }
-
-        public static RqlFilterBuilder<TTarget> Create( string rql )
-        {
-            var tree = RqlLanguageParser.ToCriteria(rql);
-            return new RqlFilterBuilder<TTarget>(tree);
         }
 
 

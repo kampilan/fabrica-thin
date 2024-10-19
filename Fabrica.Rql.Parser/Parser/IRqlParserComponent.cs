@@ -1,6 +1,6 @@
 ﻿using Fabrica.Rql.Builder;
 
-namespace Fabrica.Rql;
+namespace Fabrica.Rql.Parser;
 
 public interface IRqlParserComponent
 {
@@ -9,7 +9,7 @@ public interface IRqlParserComponent
 
     RqlFilterBuilder ParseCriteria(string rql);
 
-    RqlFilterBuilder<TEntity> Parse<TEntity>( string rql ) where TEntity : class;
+    RqlFilterBuilder<TEntity> Parse<TEntity>(string rql) where TEntity : class;
 
     RqlFilterBuilder<TEntity> ParseCriteria<TEntity>(string rql) where TEntity : class;
 

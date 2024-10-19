@@ -1,6 +1,4 @@
 ﻿
-using Fabrica.Rql.Parser;
-
 namespace Fabrica.Rql.Builder;
 
 public enum OperandKind { Single, From, To, List, ListOfInt, ListOfLong }

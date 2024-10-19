@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-
-namespace Fabrica.Rql.Parser
+namespace Fabrica.Rql.Builder
 {
 
-    public class Target
+    public class Target(string name)
     {
 
 
@@ -35,54 +33,49 @@ namespace Fabrica.Rql.Parser
         {
             if (candidate == null) throw new ArgumentNullException(nameof(candidate));
 
-            if ((String.IsNullOrWhiteSpace(target?.Name??"")) || String.IsNullOrWhiteSpace(candidate))
+            if ((string.IsNullOrWhiteSpace(target.Name)) || string.IsNullOrWhiteSpace(candidate))
                 return false;
 
-            return String.Compare(target?.Name ?? "", candidate, StringComparison.InvariantCultureIgnoreCase) == 0;
+            return string.Compare(target.Name, candidate, StringComparison.InvariantCultureIgnoreCase) == 0;
 
         }
 
         public static bool operator !=( Target target, string candidate)
         {
 
-            if ((String.IsNullOrWhiteSpace(target?.Name ?? "")) || String.IsNullOrWhiteSpace(candidate))
+            if ((string.IsNullOrWhiteSpace(target.Name)) || string.IsNullOrWhiteSpace(candidate))
                 return false;
 
-            return String.Compare(target?.Name ?? "", candidate, StringComparison.InvariantCultureIgnoreCase) != 0;
+            return string.Compare(target.Name, candidate, StringComparison.InvariantCultureIgnoreCase) != 0;
 
         }
 
 
-        public Target( string name )
-        {
-
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-
-        }
-
-        public string Name { get; }
-
+        public string Name { get; } = name;
 
 
         protected bool Equals( Target other )
         {
-            if (other == null) throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(other);
 
             return string.Equals(Name, other.Name);
 
         }
 
-        public override bool Equals( object obj)
+        public override bool Equals( object? obj)
         {
+
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
+
             return Equals((Target)obj);
+
         }
 
         public override int GetHashCode()
         {
-            return Name?.GetHashCode() ?? 0;
+            return Name.GetHashCode();
         }
 
 
