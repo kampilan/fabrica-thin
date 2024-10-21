@@ -122,7 +122,7 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
 
 
         // *****************************************************************
-        logger.Debug("Attempting to configure ApplicationLifetime");
+        logger.Debug( "Attempting to configure ApplicationLifetime{0}", ApplicationLifetimeType );
         switch (ApplicationLifetimeType.ToLowerInvariant())
         {
             case "fabricaone":

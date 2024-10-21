@@ -6,10 +6,11 @@ public static class WatchFactoryBuilderExtensions
 {
 
 
-    public static RelayEventSink UseRelaySink(this WatchFactoryBuilder builder, int port = 5246, string? domain = null)
+    public static RelayEventSink UseRelaySink(this WatchFactoryBuilder builder, int port = 5246, string? domain = null, bool useBatching=false)
     {
 
-        builder.UseBatching();
+        if( useBatching)
+            builder.UseBatching();
 
         var sink = new RelayEventSink
         {
