@@ -62,6 +62,9 @@ public static class DateTimeHelpers
     public static IReadOnlyCollection<IDateTimeRange> FutureModels { get; }
 
 
+    public static DateTime Epoch { get; } = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+    public static long ToTimestamp(DateTime target) => (long)(target.ToUniversalTime() - Epoch).TotalSeconds;
+    public static DateTime FromTimestamp(long ts) => Epoch.AddSeconds(ts).ToLocalTime();
 
     public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek = DayOfWeek.Sunday)
     {
