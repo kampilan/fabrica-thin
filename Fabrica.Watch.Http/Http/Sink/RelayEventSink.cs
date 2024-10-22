@@ -19,6 +19,8 @@ public class RelayEventSink : IEventSink
 
     private ConsoleEventSink DebugSink { get; } = new();
 
+    private DateTime _pauseUntil = DateTime.MinValue;
+
 
     public void Start()
     {
@@ -26,7 +28,7 @@ public class RelayEventSink : IEventSink
         var builder = new ContainerBuilder();
 
 
-        var delay = Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 3, fastFirst: true);
+        var delay = Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 2, fastFirst: true);
         var retry = HttpPolicyExtensions
             .HandleTransientHttpError()
             .WaitAndRetryAsync(delay);
@@ -69,10 +71,17 @@ public class RelayEventSink : IEventSink
         try
         {
 
+            if( _pauseUntil > DateTime.Now )
+                return;
+
             using var client = Factory.CreateClient("Fabrica.Watch.Relay");
 
             var response = await client.PostAsJsonAsync( "", batch );
-            response.EnsureSuccessStatusCode();
+
+            if( !response.IsSuccessStatusCode )
+            {
+                _pauseUntil = DateTime.Now.AddSeconds(60);
+            }            
 
 
         }
