@@ -3,6 +3,7 @@
 public class DateTimeRangeModel: IDateTimeRange
 {
 
+    private readonly DateTime _origin = new (1970,1,1,0,0,0,0, DateTimeKind.Utc);
 
     public int Id { get; set; }
 
@@ -17,7 +18,9 @@ public class DateTimeRangeModel: IDateTimeRange
     int IDateTimeRange.Id => Id;
     string IDateTimeRange.Label => Label;
     DateTime IDateTimeRange.Begin => Begin;
-    DateTime IDateTimeRange.End => End;
+    long IDateTimeRange.BeginTimestamp => (long)(Begin - _origin).TotalSeconds;
 
+    DateTime IDateTimeRange.End => End;
+    long IDateTimeRange.EndTimestamp => (long)(End - _origin).TotalSeconds;
 
 }

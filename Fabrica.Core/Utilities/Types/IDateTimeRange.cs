@@ -12,9 +12,11 @@
         string Label { get; }
 
         DateTime Begin { get; }
+        long BeginTimestamp { get; }
+
 
         DateTime End { get; }
-
+        long EndTimestamp { get; }
     }
 
 
