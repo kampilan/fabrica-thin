@@ -18,9 +18,9 @@ public class DateTimeRangeModel: IDateTimeRange
     int IDateTimeRange.Id => Id;
     string IDateTimeRange.Label => Label;
     DateTime IDateTimeRange.Begin => Begin;
-    long IDateTimeRange.BeginTimestamp => (long)(Begin - _origin).TotalSeconds;
+    long IDateTimeRange.BeginTimestamp => (long)(Begin.ToUniversalTime() - _origin).TotalSeconds;
 
     DateTime IDateTimeRange.End => End;
-    long IDateTimeRange.EndTimestamp => (long)(End - _origin).TotalSeconds;
+    long IDateTimeRange.EndTimestamp => (long)(End.ToUniversalTime() - _origin).TotalSeconds;
 
 }
