@@ -88,6 +88,8 @@ public class RelayEventSink : IEventSink
         catch (Exception cause)
         {
 
+            _pauseUntil = DateTime.Now.AddSeconds(60);
+
             var le = new LogEvent
             {
                 Category = GetType().FullName??"",
@@ -97,6 +99,7 @@ public class RelayEventSink : IEventSink
             };
 
             await DebugSink.Accept(le);
+
 
         }
 
