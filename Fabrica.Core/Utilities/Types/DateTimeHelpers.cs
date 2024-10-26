@@ -109,6 +109,30 @@ public static class DateTimeHelpers
     }
 
 
+    public static (long begin, long end) CalculateTimestamps(int id, DateTime origin = default)
+    {
+
+        if (id < 1 || id > AllModels.Count)
+            throw new ArgumentOutOfRangeException(nameof(id), id, "Id must be between 1 and " + AllModels.Count);
+
+        var range = AllModels.ElementAt(id - 1);
+        var (begin,end) = CalculateRange(range.RangeKind, origin);
+
+        return ( (long)(begin.ToUniversalTime() - Epoch).TotalSeconds, (long)(end.ToUniversalTime() - Epoch).TotalSeconds );
+
+    }
+
+
+    public static (long begin, long end) CalculateTimestamps(DateTimeRange range, DateTime origin = default)
+    {
+
+        var (begin,end) = CalculateRange(range, origin);
+
+        return ((long)(begin.ToUniversalTime() - Epoch).TotalSeconds, (long)(end.ToUniversalTime() - Epoch).TotalSeconds);
+
+    }
+
+
 
     public static (DateTime begin, DateTime end) CalculateRange( DateTimeRange range, DateTime origin = default )
     {
