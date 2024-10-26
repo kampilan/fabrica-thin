@@ -7,9 +7,29 @@ public static class DateTimeHelpers
     {
 
         var id = 0;
+
+        RecentModels = new List<IDateTimeRange>
+        {
+            new DateTimeRangeModel {Id=++id, Label = "Last 1 Minute",  RangeKind = DateTimeRange.Prev1Min},
+            new DateTimeRangeModel {Id=++id,Label = "Last 2 Minutes",  RangeKind = DateTimeRange.Prev2Min},
+            new DateTimeRangeModel {Id=++id,Label = "Last 5 Minutes",  RangeKind = DateTimeRange.Prev5Min},
+            new DateTimeRangeModel {Id=++id,Label = "Last 15 Minutes", RangeKind = DateTimeRange.Prev15Min},
+            new DateTimeRangeModel {Id=++id,Label = "Last 30 Minutes", RangeKind = DateTimeRange.Prev30Min},
+            new DateTimeRangeModel {Id=++id,Label = "Last 1 Hour",     RangeKind = DateTimeRange.Prev1Hour},
+            new DateTimeRangeModel {Id=++id,Label = "Last 2 Hours",    RangeKind = DateTimeRange.Prev2Hour},
+            new DateTimeRangeModel {Id=++id,Label = "Last 4 Hours",    RangeKind = DateTimeRange.Prev4Hour},
+            new DateTimeRangeModel {Id=++id,Label = "Last 8 Hours",    RangeKind = DateTimeRange.Prev8Hour},
+            new DateTimeRangeModel {Id=++id,Label = "Last 12 Hours",   RangeKind = DateTimeRange.Prev12Hour},
+            new DateTimeRangeModel {Id=++id,Label = "Last 24 Hours",   RangeKind = DateTimeRange.Prev24Hour},
+            new DateTimeRangeModel {Id=++id,Label = "Today",           RangeKind = DateTimeRange.Today},
+            new DateTimeRangeModel {Id=++id,Label = "Yesterday",       RangeKind = DateTimeRange.Yesterday}
+        };
+
+
+
         PastModels = new List<IDateTimeRange>
         {
-            new DateTimeRangeModel {Id=++id, Label = "Last 1 Minute",   RangeKind = DateTimeRange.Prev1Min},
+            new DateTimeRangeModel {Id=++id, Label = "Last 1 Minute",  RangeKind = DateTimeRange.Prev1Min},
             new DateTimeRangeModel {Id=++id,Label = "Last 2 Minutes",  RangeKind = DateTimeRange.Prev2Min},
             new DateTimeRangeModel {Id=++id,Label = "Last 5 Minutes",  RangeKind = DateTimeRange.Prev5Min},
             new DateTimeRangeModel {Id=++id,Label = "Last 15 Minutes", RangeKind = DateTimeRange.Prev15Min},
@@ -58,6 +78,7 @@ public static class DateTimeHelpers
     }
 
 
+    public static IReadOnlyCollection<IDateTimeRange> RecentModels { get; }
     public static IReadOnlyCollection<IDateTimeRange> PastModels { get; }
     public static IReadOnlyCollection<IDateTimeRange> FutureModels { get; }
 
