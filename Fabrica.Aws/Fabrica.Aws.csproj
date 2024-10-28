@@ -24,9 +24,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Autofac" Version="8.1.1" />
-		<PackageReference Include="AWSSDK.S3" Version="3.7.405" />
-		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.36" />
-		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.400.36" />
+		<PackageReference Include="AWSSDK.S3" Version="3.7.405.5" />
+		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.41" />
+		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.400.41" />
 	</ItemGroup>
 
 </Project>
