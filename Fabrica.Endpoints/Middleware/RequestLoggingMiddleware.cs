@@ -97,7 +97,7 @@ public class RequestLoggingMiddleware(RequestDelegate next)
     private async Task BuildRequest( HttpContext context, ICorrelation correlation, StringBuilder builder, bool includeBody )
     {
 
-        using var logger = correlation.EnterMethod();
+        using var logger = correlation.EnterMethod<RequestLoggingMiddleware>();
 
         try
         {

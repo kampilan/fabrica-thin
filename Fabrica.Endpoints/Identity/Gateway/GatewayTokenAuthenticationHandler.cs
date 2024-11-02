@@ -81,7 +81,7 @@ public class GatewayTokenAuthenticationHandler : AuthenticationHandler<GatewayTo
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
 
-        using var logger = Correlation.EnterMethod();
+        using var logger = Correlation.EnterMethod<GatewayTokenAuthenticationHandler>();
 
 
         var token = Context.Request.Headers[IdentityConstants.TokenHeaderName].FirstOrDefault();

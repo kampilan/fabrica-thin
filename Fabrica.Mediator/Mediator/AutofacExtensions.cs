@@ -3,6 +3,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
+using Fabrica.Utilities.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable UnusedMember.Global
@@ -28,7 +29,7 @@ public static class AutofacExtensions
             {
 
                 var scope = c.Resolve<ILifetimeScope>();
-                var corr = c.Resolve<ICorrelation>();
+                var corr  = c.Resolve<ICorrelation>();
                 var rules = c.Resolve<IRuleSet>();
 
                 var comp = new RequestMediator(scope, corr, rules);
@@ -48,3 +49,4 @@ public static class AutofacExtensions
 
 
 }
+
