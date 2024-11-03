@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Diagnostics;
 using System.Drawing;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
@@ -39,40 +40,32 @@ public class DiagnosticOptions
     public Level Level { get; set; } = Level.Debug;
     public Color Color { get; set; } = Color.PapayaWhip;
 
+    public Action<Correlation> Enrich { get; set; } = _ => { };
+
+
 }
 
 
-public class DiagnosticsMonitorMiddleware: IMiddleware
+public class DiagnosticsMonitorMiddleware( ICorrelation correlation, DiagnosticOptions options ) : IMiddleware
 {
 
-
-    public DiagnosticsMonitorMiddleware( ICorrelation correlation )
+    public DiagnosticsMonitorMiddleware( ICorrelation correlation ) : this(correlation, new DiagnosticOptions())
     {
-
-        Correlation = correlation;
-        Options = new DiagnosticOptions();
-
     }
 
-    public DiagnosticsMonitorMiddleware( ICorrelation correlation, DiagnosticOptions options )
-    {
+    private ICorrelation Correlation { get; } = correlation;
+    private DiagnosticOptions Options { get; } = options;
 
-        Correlation = correlation;
-        Options = options;
-
-    }
-
-    private ICorrelation Correlation { get; }
-    private DiagnosticOptions Options { get; }
-
-    public Task InvokeAsync( HttpContext context, RequestDelegate next )
+    public async Task InvokeAsync( HttpContext context, RequestDelegate next )
     {
             
         if (context == null) throw new ArgumentNullException(nameof(context));
         if (next == null) throw new ArgumentNullException(nameof(next));
 
-    
-        using( var logger = Correlation.GetLogger(this) )
+        var sw = new Stopwatch();
+        sw.Start();
+
+        using ( var logger = Correlation.GetLogger(this) )
         {
 
             var debug = false;
@@ -113,7 +106,20 @@ public class DiagnosticsMonitorMiddleware: IMiddleware
         }
 
 
-        return next(context);
+        // ****************************************************************************************
+        var lr = new LoggerRequest { Category = "Fabrica.Diagnostics.Http", CorrelationId = Correlation.Uid, Level = Level.Warning };
+        var diagLogger = WatchFactoryLocator.Factory.GetLogger(lr);
+
+        diagLogger.Debug("Diagnostics - Begin Correlation: {0}", Correlation.Uid );
+
+
+        await next(context);
+
+
+        // ****************************************************************************************
+        sw.Stop();
+        diagLogger.Debug("Diagnostics - End Correlation: {0} Duration: {1} millisecond(s)", Correlation.Uid, sw.ElapsedMilliseconds);
+
 
 
     }

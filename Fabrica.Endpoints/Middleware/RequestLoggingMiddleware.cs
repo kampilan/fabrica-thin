@@ -38,6 +38,7 @@ namespace Fabrica.Middleware;
 
 public class RequestLoggingMiddleware(RequestDelegate next)
 {
+
     private RequestDelegate Next { get; } = next;
 
 
@@ -53,20 +54,27 @@ public class RequestLoggingMiddleware(RequestDelegate next)
         var lr = new LoggerRequest {Category = "Fabrica.Diagnostics.Http", CorrelationId = correlation.Uid, Level = Level.Warning };
         var diagLogger = WatchFactoryLocator.Factory.GetLogger( lr );
 
-        if( diagLogger.IsDebugEnabled )
+
+        if( diagLogger.IsTraceEnabled )
         {
-
             var builder = new StringBuilder();
-            await BuildRequest(context, correlation, builder, diagLogger.IsTraceEnabled);
+            await BuildRequest(context, correlation, builder);
 
-            if( builder.Length > 0 )
+            if (builder.Length > 0)
             {
-                var le = diagLogger.CreateEvent(Level.Debug, $"HTTP Request - {context.Request.Method.ToUpper()} {context.Request.Path}", PayloadType.Text, builder.ToString());
+                var le = diagLogger.CreateEvent(Level.Trace, $"Diagnostics - HTTP Request {context.Request.Method.ToUpper()} {context.Request.Path}", PayloadType.Text, builder.ToString());
                 diagLogger.LogEvent(le);
             }
 
         }
 
+        else if ( diagLogger.IsDebugEnabled )
+        {
+
+            var le = diagLogger.CreateEvent(Level.Debug, $"Diagnostics - HTTP Request {context.Request.Method.ToUpper()} {context.Request.Path}", PayloadType.None);
+            diagLogger.LogEvent(le);
+
+        }
 
 
         // ****************************************************************************************
@@ -77,16 +85,8 @@ public class RequestLoggingMiddleware(RequestDelegate next)
         // ****************************************************************************************
         if ( diagLogger.IsDebugEnabled )
         {
-
-            var builder = new StringBuilder();
-            BuildResponse(context, builder);
-
-            if( builder.Length > 0 )
-            {
-                var le = diagLogger.CreateEvent(Level.Debug, $"HTTP Response - {context.Request.Method.ToUpper()} {context.Request.Path}", PayloadType.Text, builder.ToString());
-                diagLogger.LogEvent(le);
-            }
-
+            var le = diagLogger.CreateEvent(Level.Debug, $"Diagnostics - HTTP Response {context.Request.Method.ToUpper()} {context.Request.Path} - Status: {context.Response.StatusCode}", PayloadType.None );
+            diagLogger.LogEvent(le);
         }
 
 
@@ -94,7 +94,7 @@ public class RequestLoggingMiddleware(RequestDelegate next)
 
 
 
-    private async Task BuildRequest( HttpContext context, ICorrelation correlation, StringBuilder builder, bool includeBody )
+    private async Task BuildRequest( HttpContext context, ICorrelation correlation, StringBuilder builder )
     {
 
         using var logger = correlation.EnterMethod<RequestLoggingMiddleware>();
@@ -139,6 +139,24 @@ public class RequestLoggingMiddleware(RequestDelegate next)
 
                         break;
 
+                    case "X-Gateway-Identity-Token":
+
+                        if (values.Count <= 0)
+                            continue;
+
+                        value = $"Length: {values[0]?.Length??0}";
+
+                        break;
+
+                    case "X-Gateway-Identity":
+
+                        if (values.Count <= 0)
+                            continue;
+
+                        value = $"Length: {values[0]?.Length ?? 0}";
+
+                        break;
+
                     case "Cookie":
 
                         var names = context.Request.Cookies.Keys.ToList();
@@ -171,44 +189,41 @@ public class RequestLoggingMiddleware(RequestDelegate next)
 
             string bodyContent = "";
 
-            if( includeBody )
+
+            var body = new MemoryStream();
+            await context.Request.Body.CopyToAsync(body);
+            body.Seek(0, SeekOrigin.Begin);
+
+            if (context.Request.ContentType == "application/json")
             {
-
-                var body = new MemoryStream();
-                await context.Request.Body.CopyToAsync(body);
-                body.Seek(0, SeekOrigin.Begin);
-
-                if (context.Request.ContentType == "application/json")
-                {
-                    var reader = new StreamReader(body);
-                    var json   = await reader.ReadToEndAsync();
-                    if( !string.IsNullOrWhiteSpace(json) )
-                        bodyContent = MakeJsonPretty(json);
-                }
-                else if (context.Request.ContentType == "application/xml")
-                {
-                    var reader = new StreamReader(body);
-                    var xml    = await reader.ReadToEndAsync();
-                    if (!string.IsNullOrWhiteSpace(xml))
-                        bodyContent = MakeXmlPretty(xml);
-                }
-                else if (context.Request.ContentType == "application/x-www-form-urlencoded")
-                {
-                    var reader = new StreamReader(body);
-                    var form   = await reader.ReadToEndAsync();
-                    if (!string.IsNullOrWhiteSpace(form))
-                        bodyContent = MakeFormPretty(form);
-                }
-                else
-                {
-                    var reader = new StreamReader(body);
-                    bodyContent = await reader.ReadToEndAsync();
-                }
-
-                body.Seek(0, SeekOrigin.Begin);
-                context.Request.Body = body;
-
+                var reader = new StreamReader(body);
+                var json = await reader.ReadToEndAsync();
+                if (!string.IsNullOrWhiteSpace(json))
+                    bodyContent = MakeJsonPretty(json);
             }
+            else if (context.Request.ContentType == "application/xml")
+            {
+                var reader = new StreamReader(body);
+                var xml = await reader.ReadToEndAsync();
+                if (!string.IsNullOrWhiteSpace(xml))
+                    bodyContent = MakeXmlPretty(xml);
+            }
+            else if (context.Request.ContentType == "application/x-www-form-urlencoded")
+            {
+                var reader = new StreamReader(body);
+                var form = await reader.ReadToEndAsync();
+                if (!string.IsNullOrWhiteSpace(form))
+                    bodyContent = MakeFormPretty(form);
+            }
+            else
+            {
+                var reader = new StreamReader(body);
+                bodyContent = await reader.ReadToEndAsync();
+            }
+
+            body.Seek(0, SeekOrigin.Begin);
+            context.Request.Body = body;
+
 
 
             // *****************************************************************
@@ -285,26 +300,7 @@ public class RequestLoggingMiddleware(RequestDelegate next)
 
 
     }
-
-    private void BuildResponse( HttpContext context, StringBuilder builder )
-    {
-
-            builder.AppendLine();
-            builder.AppendLine();
-            builder.AppendLine("********************************************************************************");
-            builder.AppendLine("HTTP Response Details");
-            builder.AppendLine("********************************************************************************");
-            builder.AppendLine();
-
-            builder.AppendLine("Response");
-            builder.AppendLine("********************************************************************************");
-            builder.AppendFormat("Status Code : {0}", context.Response.StatusCode);
-            builder.AppendLine();
-            builder.AppendLine();
-            builder.AppendLine("********************************************************************************");
-
-    }
-
+    
 
     protected string MakeJsonPretty( string json )
     {

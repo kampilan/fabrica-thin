@@ -46,6 +46,13 @@ public static class MiddlewareExtensions
         return app;
     }
 
+    public static IApplicationBuilder UseDiagnosticsEnrichment(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<DiagnosticsEnrichmentMiddleware>();
+        return app;
+    }
+
+
     public static IServiceCollection AddDiagnosticMiddleware(this IServiceCollection collection, DiagnosticOptions? options = null)
     {
 
@@ -56,6 +63,19 @@ public static class MiddlewareExtensions
             options ??= new DiagnosticOptions();
 
             var mw = new DiagnosticsMonitorMiddleware(corr, options);
+
+            return mw;
+
+        });
+
+
+        collection.AddTransient(p =>
+        {
+
+            var corr = p.GetRequiredService<ICorrelation>();
+            options ??= new DiagnosticOptions();
+
+            var mw = new DiagnosticsEnrichmentMiddleware(corr, options);
 
             return mw;
 

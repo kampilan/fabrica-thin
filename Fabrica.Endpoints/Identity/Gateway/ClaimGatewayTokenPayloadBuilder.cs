@@ -2,10 +2,10 @@
 // ReSharper disable UnusedMember.Global
 
 using System.Collections.ObjectModel;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Fabrica.Watch;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Fabrica.Identity.Gateway;
 

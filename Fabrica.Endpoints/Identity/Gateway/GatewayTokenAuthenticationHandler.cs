@@ -132,14 +132,6 @@ public class GatewayTokenAuthenticationHandler : AuthenticationHandler<GatewayTo
         var result = AuthenticateResult.Success(ticket);
 
 
-        // *****************************************************************
-        logger.Debug("Attempting to set Caller on Correlation");
-        if ( Correlation is Correlation impl )
-        {
-            impl.CallerGatewayToken = token;
-            impl.Caller = result.Principal!;
-        }
-
 
         // *****************************************************************
         return Task.FromResult(result);
