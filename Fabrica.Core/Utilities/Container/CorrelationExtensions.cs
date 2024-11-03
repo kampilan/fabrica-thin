@@ -39,8 +39,10 @@ public static class CorrelationExtensions
 
     public static ClaimsIdentity ToIdentity(this ICorrelation correlation)
     {
+      
         var identity = correlation.Caller?.Identity as ClaimsIdentity ?? new AnonymousClaimsIdentity();
         return identity;
+
     }
 
     public static bool TryGetAuthenticatedIdentity(this ICorrelation correlation, out ClaimsIdentity? ci)
@@ -71,13 +73,17 @@ public static class CorrelationExtensions
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(category));
 
 
+        var subject = "";
+        if (correlation.Caller is ClaimsPrincipal cp)
+            subject = cp.GetName();
+
 
         // ******************************************************
         var request = new LoggerRequest
         {
-            Tenant = correlation.Tenant,
-            Subject = correlation.Caller?.Identity?.Name ?? "",
-            Category = category,
+            Tenant        = correlation.Tenant,
+            Subject       = subject,
+            Category      = category,
             CorrelationId = correlation.Uid
         };
 
@@ -90,7 +96,7 @@ public static class CorrelationExtensions
         }
 
 
-        request.FilterKeys.Add(("Subject", correlation.Caller?.Identity?.Name ?? ""));
+        request.FilterKeys.Add(("Subject", subject));
         request.FilterKeys.Add(("Tenant", correlation.Tenant));
 
 
