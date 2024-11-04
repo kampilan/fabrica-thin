@@ -75,7 +75,7 @@ public static class CorrelationExtensions
 
         var subject = "";
         if (correlation.Caller is ClaimsPrincipal cp)
-            subject = cp.GetName();
+            subject = cp.GetUserName();
 
 
         // ******************************************************

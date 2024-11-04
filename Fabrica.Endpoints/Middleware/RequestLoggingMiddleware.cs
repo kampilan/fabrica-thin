@@ -22,10 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Xml;
+using Fabrica.Identity;
 using Fabrica.Utilities.Container;
 using Fabrica.Utilities.Text;
 using Fabrica.Watch;
@@ -47,11 +49,14 @@ public class RequestLoggingMiddleware(RequestDelegate next)
 
         if (context == null) throw new ArgumentNullException(nameof(context));
         if (correlation == null) throw new ArgumentNullException(nameof(correlation));
-        
 
 
         // ****************************************************************************************
-        var lr = new LoggerRequest {Category = "Fabrica.Diagnostics.Http", CorrelationId = correlation.Uid, Level = Level.Warning };
+        var subject = "";
+        if (correlation.Caller is ClaimsPrincipal cp)
+            subject = cp.GetName();
+
+        var lr = new LoggerRequest {Category = "Fabrica.Diagnostics.Http", CorrelationId = correlation.Uid, Subject = subject, Level = Level.Warning };
         var diagLogger = WatchFactoryLocator.Factory.GetLogger( lr );
 
 
