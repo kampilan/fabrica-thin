@@ -8,6 +8,7 @@ using Fabrica.Utilities.Types;
 using Fabrica.Watch;
 using MediatR;
 using System.Runtime.CompilerServices;
+using Fabrica.Rql.Parser;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable SuspiciousTypeConversion.Global
@@ -183,6 +184,10 @@ public abstract class AbstractRequestMediator: IRequestMediator
 
             case ViolationsExistException ve:
                 error = Response.FailedValidation(ve.Explanation, ve.Violations);
+                break;
+
+            case RqlException pe:
+                error = Response.Failed( ErrorKind.BadRequest, "InvalidRQL", pe.Message );
                 break;
 
             case ExternalException ee:

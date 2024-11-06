@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Fabrica.Persistence.Mediator.Handlers;
 
-public abstract class CreateEntityCommand<TRequest, TEntity, TDelta>(ICommandService service) : CorrelatedObject(service.Correlation), IRequestHandler<TRequest, Response> where TRequest : BaseCreateEntityRequest<TDelta> where TEntity : class, IEntity, new() where TDelta : BaseDelta
+public abstract class CreateEntityCommand<TRequest, TEntity, TDelta>( ICommandService service ) : CorrelatedObject(service.Correlation), IRequestHandler<TRequest, Response> where TRequest : BaseCreateEntityRequest<TDelta> where TEntity : class, IEntity, new() where TDelta : BaseDelta
 {
 
     protected ICommandService Service { get; init; } = service;

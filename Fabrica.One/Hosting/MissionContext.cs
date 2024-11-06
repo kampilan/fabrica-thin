@@ -23,6 +23,8 @@ SOFTWARE.
 */
 
 
+using Fabrica.Utilities.Hosting;
+
 namespace Fabrica.One.Hosting;
 
 public class MissionContext : IMissionContext

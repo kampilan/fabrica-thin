@@ -3,6 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using Fabrica.One.Container;
 using Fabrica.One.Hosting;
 using Fabrica.Utilities.Container;
+using Fabrica.Utilities.Hosting;
 using Fabrica.Watch;
 using Fabrica.Watch.Bridges.MicrosoftImpl;
 using Fabrica.Watch.Switching;

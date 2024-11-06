@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+    <ProjectReference Include="..\Fabrica.Rql\Fabrica.Rql.csproj" />
     <ProjectReference Include="..\Fabrica.Rules\Fabrica.Rules.csproj" />
   </ItemGroup>
 
