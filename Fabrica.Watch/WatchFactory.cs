@@ -239,8 +239,11 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
         // Check for the special case of the diagnostic probe
         ISwitch sw;
-        if ( request.Debug )
-            sw = new Switch {Level = request.Level, Color = request.Color, Pattern = "", Tag = "Diagnostics"};
+        if( request.Debug )
+        {
+            var color = Switches.LookupColor(request.Category);
+            sw = new Switch {Level = request.Level, Color = color, Pattern = "", Tag = "Diagnostics"};
+        }
         else
             sw = Switches.Lookup( request.Category );
 

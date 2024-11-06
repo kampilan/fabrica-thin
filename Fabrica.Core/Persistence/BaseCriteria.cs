@@ -3,9 +3,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Fabrica.Rql;
+namespace Fabrica.Persistence;
 
-public class BaseCriteria: ICriteria
+public class BaseCriteria : ICriteria
 {
 
     public string[]? Rql { get; set; }

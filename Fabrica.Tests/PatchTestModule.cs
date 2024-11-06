@@ -11,6 +11,9 @@ using MediatR;
 
 namespace Fabrica.Tests;
 
+public class TestAbstractRequestMediator : AbstractRequestMediator;
+
+
 public class PatchTestModule : ServiceModule
 {
 
@@ -51,7 +54,7 @@ public class PatchTestModule : ServiceModule
         Builder.AddCorrelation();
         Builder.UseRules();
 
-        Builder.RegisterRequestMediator(this.GetType().Assembly);
+        Builder.RegisterRequestMediator<TestAbstractRequestMediator>( GetType().Assembly );
 
 
     }

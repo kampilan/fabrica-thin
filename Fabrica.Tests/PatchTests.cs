@@ -200,10 +200,11 @@ public class PatchTests
 
 
         var resolver = scope.Resolve<ResolverService>();
-        var requests = resolver.GetRequests(set).Select(e => (IRequest<Response>)e);
+        var batch = new CompositeRequest();
+        resolver.GetRequests(set).ForEach(e => batch.Components.Add( (IRequest<Response>)e ) );
 
         var mm = scope.Resolve<IRequestMediator>();
-        var res = await mm.Send(requests);
+        var res = await mm.Send(batch);
 
 
 

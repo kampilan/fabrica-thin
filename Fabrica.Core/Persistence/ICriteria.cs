@@ -1,4 +1,4 @@
-﻿namespace Fabrica.Rql
+﻿namespace Fabrica.Persistence
 {
 
     public interface ICriteria

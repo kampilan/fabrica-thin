@@ -22,4 +22,9 @@
 		<None Include="smithy.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+	</ItemGroup>
+
 </Project>

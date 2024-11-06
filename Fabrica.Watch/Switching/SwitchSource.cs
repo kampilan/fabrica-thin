@@ -167,6 +167,64 @@ public class SwitchSource : ISwitchSource
 
     }
 
+    public Color LookupColor(string category)
+    {
+
+        if (string.IsNullOrWhiteSpace(category))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(category));
+
+        try
+        {
+
+
+            _switchLock.EnterReadLock();
+
+
+            // ************************************************************************
+            if (Patterns.Count == 0)
+                return DefaultSwitch.Color;
+
+
+
+            // ************************************************************************
+            string? match = null;
+            var pc = Patterns.Count;
+            for (var i = 0; i < pc; i++)
+            {
+
+                if( !category.StartsWith(Patterns.ElementAt(i)) )
+                    continue;
+
+                match = Patterns.ElementAt(i);
+                break;
+
+            }
+
+            if( match is null )
+                return DefaultSwitch.Color;
+
+
+
+            // ************************************************************************
+            var lu2Found = Switches.TryGetValue(match, out var psw);
+            if( lu2Found && psw is not null )
+                return psw.Color;
+
+
+
+            // ************************************************************************
+            return DefaultSwitch.Color;
+
+
+        }
+        finally
+        {
+            _switchLock.ExitReadLock();
+        }
+
+
+
+    }
 
 
     public ISwitch GetDefaultSwitch()

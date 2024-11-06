@@ -5,6 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Fabrica.Rql</RootNamespace>
+    <PackageIcon>smithy.png</PackageIcon>
+    <Title>Fabrica.Rql.Parser</Title>
+    <Authors>Pond Hawk Technologies Inc.</Authors>
+    <Company>Pond Hawk Technologies Inc.</Company>
+    <Description>RQL Parser with AST</Description>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +19,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fabrica.Rql\Fabrica.Rql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="smithy.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

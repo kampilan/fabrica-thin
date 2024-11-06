@@ -3,7 +3,6 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
-using Fabrica.Utilities.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable UnusedMember.Global
@@ -13,7 +12,12 @@ namespace Fabrica.Mediator;
 public static class AutofacExtensions
 {
 
-    public static ContainerBuilder RegisterRequestMediator(this ContainerBuilder builder, params Assembly[] sources )
+    public static ContainerBuilder RegisterRequestMediator(this ContainerBuilder builder, params Assembly[] sources)
+    {
+        return RegisterRequestMediator<RequestMediator>(builder, sources);
+    }
+
+    public static ContainerBuilder RegisterRequestMediator<T>(this ContainerBuilder builder, params Assembly[] sources ) where T : AbstractRequestMediator, new()
     {
 
         var services = new ServiceCollection();
@@ -32,7 +36,8 @@ public static class AutofacExtensions
                 var corr  = c.Resolve<ICorrelation>();
                 var rules = c.Resolve<IRuleSet>();
 
-                var comp = new RequestMediator(scope, corr, rules);
+                var comp = new T();
+                comp.Configure(scope, corr, rules);
 
                 return comp;
 

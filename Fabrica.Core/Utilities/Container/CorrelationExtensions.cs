@@ -74,7 +74,7 @@ public static class CorrelationExtensions
 
 
         var subject = "";
-        if (correlation.Caller is ClaimsPrincipal cp)
+        if( correlation.Caller is ClaimsPrincipal cp )
             subject = cp.GetUserName();
 
 
@@ -92,7 +92,6 @@ public static class CorrelationExtensions
         {
             request.Debug = true;
             request.Level = impl.Level;
-            request.Color = impl.Color;
         }
 
 

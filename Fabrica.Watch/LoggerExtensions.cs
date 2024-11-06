@@ -1,5 +1,6 @@
 ﻿using Fabrica.Watch.Sink;
 using System.Runtime.CompilerServices;
+using Fabrica.Watch.Utilities;
 
 // ReSharper disable UnusedMember.Global
 
@@ -503,12 +504,23 @@ public static class LoggerExtensions
     public static void LogObject( this ILogger logger, string title, object? source )
     {
 
-        if (!logger.IsDebugEnabled)
-            return;
+        if( logger.IsTraceEnabled )
+        {
+            var le = logger.CreateEvent(Level.Debug, title, source ?? new { });
+            logger.LogEvent(le);
+        }
+        else if( logger.IsDebugEnabled && source is not null )
+        {
+            var payload = $"{source.GetType().GetConciseFullName()}: ({source})";
+            var le = logger.CreateEvent(Level.Debug, title, PayloadType.Text, payload);
+            logger.LogEvent(le);
+        }
+        else if( logger.IsDebugEnabled )
+        {
+            var le = logger.CreateEvent(Level.Debug, title, PayloadType.Text, "null");
+            logger.LogEvent(le);
+        }
 
-        var le = logger.CreateEvent(Level.Debug, title, source ?? new { });
-
-        logger.LogEvent(le);
 
     }
 

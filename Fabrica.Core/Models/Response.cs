@@ -10,11 +10,17 @@ public interface IResponse
 
     bool IsSuccessful { get; }
 
+    string Uid { get; }
+
+    long Affected { get; }
+
     ErrorKind Kind { get; }
     string ErrorCode { get; }
     string Explanation { get; }
 
     List<EventDetail> Details { get; }
+
+    string CorrelationId { get; }
 
 }
 
@@ -48,6 +54,10 @@ public class Response: IResponse
 
     public void Failure() => _successful = false;
 
+    public string Uid { get; set; } = string.Empty;
+
+    public long Affected { get; set; } = 0;
+
 
     public ErrorKind Kind { get; protected set; } = ErrorKind.System;
     public string ErrorCode { get; protected set; } = string.Empty;
@@ -55,10 +65,12 @@ public class Response: IResponse
 
     public List<EventDetail> Details { get; protected set; } = [];
 
+    public string CorrelationId { get; set; } = string.Empty;
 
-    public static Response Ok()
+
+    public static Response Ok( string uid="", long affected=0 )
     {
-        var response = new Response();
+        var response = new Response {Uid = uid, Affected = affected};
         response.Success();
         return response;
     }
@@ -174,6 +186,7 @@ public interface IValueResponse
 {
     
     bool IsSuccessful { get; }
+
     object Value { get; }
 
     ErrorKind Kind { get;  }
@@ -182,11 +195,12 @@ public interface IValueResponse
 
     List<EventDetail> Details { get; }
 
+    string CorrelationId { get; }
+
 }
 
 public class Response<TResponse> : IValueResponse where TResponse : class
 {
-
 
 
     public static implicit operator Response<TResponse>(TResponse value)
@@ -243,6 +257,8 @@ public class Response<TResponse> : IValueResponse where TResponse : class
     public string Explanation { get; protected set; } = string.Empty;
 
     public List<EventDetail> Details { get; protected set; } = [];
+
+    public string CorrelationId { get; set; } = string.Empty;
 
 
     public static Response<TResponse> Ok(TResponse value)

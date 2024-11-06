@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Drawing;
+
 namespace Fabrica.Watch.Switching;
 
 public interface ISwitchSource
@@ -32,6 +34,8 @@ public interface ISwitchSource
 
 
     ISwitch Lookup( string category );
+
+    Color LookupColor(string category);
 
     IList<SwitchDef> CurrentSwitchDefs { get; }
     void Update( IEnumerable<SwitchDef> switchSource );

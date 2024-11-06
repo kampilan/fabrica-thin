@@ -23,6 +23,8 @@
 
 
 	<ItemGroup>
+		<PackageReference Include="Mapster" Version="7.4.0" />
+		<PackageReference Include="MediatR" Version="12.4.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
 		<PackageReference Include="OneOf" Version="3.0.271" />
@@ -32,6 +34,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+	  <ProjectReference Include="..\Fabrica.Rql\Fabrica.Rql.csproj" />
 	  <ProjectReference Include="..\Fabrica.Rules\Fabrica.Rules.csproj" />
 	</ItemGroup>
 

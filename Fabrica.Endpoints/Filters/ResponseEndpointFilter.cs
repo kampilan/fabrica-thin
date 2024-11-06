@@ -44,13 +44,13 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
 
             var problemDetail = new ProblemDetail
             {
-                Type = er.Kind.ToString(),
-                Title = er.ErrorCode,
-                Detail = er.Explanation,
-                StatusCode = status,
-                Instance = context.HttpContext.Request.Path,
+                Type          = er.Kind.ToString(),
+                Title         = er.ErrorCode,
+                Detail        = er.Explanation,
+                StatusCode    = status,
+                Instance      = context.HttpContext.Request.Path,
                 CorrelationId = Correlation.Uid,
-                Segments = er.Details
+                Segments      = er.Details
             };
 
             logger.LogObject(nameof(problemDetail), problemDetail);
@@ -59,20 +59,20 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
 
         }
 
-        if (result is IResponse { IsSuccessful: false } er2)
+        if( result is IResponse { IsSuccessful: false } er2 )
         {
 
             var status = MapToStatus(er2.Kind);
 
             var problemDetail = new ProblemDetail
             {
-                Type = er2.Kind.ToString(),
-                Title = er2.ErrorCode,
-                Detail = er2.Explanation,
-                StatusCode = status,
-                Instance = context.HttpContext.Request.Path,
+                Type          = er2.Kind.ToString(),
+                Title         = er2.ErrorCode,
+                Detail        = er2.Explanation,
+                StatusCode    = status,
+                Instance      = context.HttpContext.Request.Path,
                 CorrelationId = Correlation.Uid,
-                Segments = er2.Details
+                Segments      = er2.Details
             };
 
             logger.LogObject(nameof(problemDetail), problemDetail);

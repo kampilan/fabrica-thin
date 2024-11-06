@@ -23,12 +23,15 @@
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Humanizer.Core" Version="2.14.1" />
 		<PackageReference Include="jose-jwt" Version="5.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.10" />
 		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+	  <ProjectReference Include="..\Fabrica.Mediator\Fabrica.Mediator.csproj" />
 	</ItemGroup>
 
 </Project>

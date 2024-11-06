@@ -26,6 +26,7 @@ SOFTWARE.
 // ReSharper disable UnusedMember.Global
 
 using System.Reflection;
+using Fabrica.Persistence;
 
 
 namespace Fabrica.Rql.Builder;

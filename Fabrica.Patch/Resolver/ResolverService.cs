@@ -138,7 +138,7 @@ public class ResolverService( TypeSource source ) : IRequiresStart
         {
 
             var obj = Activator.CreateInstance(entry.Request)!;
-            if (obj is IPatchRequest pr)
+            if( obj is IPatchRequest pr )
             {
                 pr.FromPatch(patch);
                 return pr;

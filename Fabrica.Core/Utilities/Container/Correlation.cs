@@ -48,7 +48,6 @@ public class Correlation: ICorrelation
     public bool Debug { get; set; }
 
     public Level Level { get; set; } = Level.Debug;
-    public Color Color { get; set; } = Color.PapayaWhip;
 
 
     public void PopulateCaller(IClaimSet claimSet)
@@ -66,11 +65,13 @@ public class Correlation: ICorrelation
         {
             Uid = Uid,
             Caller = Caller,
+
             CallerGatewayToken = CallerGatewayToken,
-            Color = Color,
-            Debug = Debug,
-            Level = Level,
+
+            Debug  = Debug,
+            Level  = Level,
             Tenant = Tenant
+
         };
 
         return c;

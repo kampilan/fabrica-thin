@@ -7,7 +7,6 @@ public class LoggerRequest
 
     public bool Debug { get; set; } = false;
     public Level Level { get; set; } = Level.Debug;
-    public Color Color { get; set; } = Color.PapayaWhip;
 
     public string Tenant { get; set; } = "";
     public string Subject { get; set; } = "";

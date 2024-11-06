@@ -38,7 +38,6 @@ public class DiagnosticOptions
 
     public string HeaderName { get; set; } = "X-Diagnostics-Probe";
     public Level Level { get; set; } = Level.Debug;
-    public Color Color { get; set; } = Color.PapayaWhip;
 
     public Action<Correlation> Enrich { get; set; } = _ => { };
 
@@ -99,7 +98,6 @@ public class DiagnosticsMonitorMiddleware( ICorrelation correlation, DiagnosticO
             {
                 impl.Debug = true;
                 impl.Level = Options.Level;
-                impl.Color = Options.Color;
             }
 
 
@@ -110,15 +108,16 @@ public class DiagnosticsMonitorMiddleware( ICorrelation correlation, DiagnosticO
         var lr = new LoggerRequest { Category = "Fabrica.Diagnostics.Http", CorrelationId = Correlation.Uid, Level = Level.Warning };
         var diagLogger = WatchFactoryLocator.Factory.GetLogger(lr);
 
-        diagLogger.Debug("Diagnostics - Begin Correlation: {0}", Correlation.Uid );
+        diagLogger.Debug("Diagnostics - Begin Correlation" );
 
 
         await next(context);
 
 
+
         // ****************************************************************************************
         sw.Stop();
-        diagLogger.Debug("Diagnostics - End Correlation: {0} Duration: {1} millisecond(s)", Correlation.Uid, sw.ElapsedMilliseconds);
+        diagLogger.Debug("Diagnostics - End Correlation Duration: {0} millisecond(s)", sw.ElapsedMilliseconds);
 
 
 
