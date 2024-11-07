@@ -41,6 +41,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabrica.Watch.Realtime", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabrica.Rql.Parser", "Fabrica.Rql.Parser\Fabrica.Rql.Parser.csproj", "{2FA732A1-F113-4772-9579-51E96E13305D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.Api.Support", "Fabrica.Api.Support\Fabrica.Api.Support.csproj", "{5988A0FD-D1AD-4675-82EC-F11C272EFA42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{BF72ECF5-12FF-43CB-B33A-4D2F58DFCF3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +119,10 @@ Global
 		{2FA732A1-F113-4772-9579-51E96E13305D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FA732A1-F113-4772-9579-51E96E13305D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FA732A1-F113-4772-9579-51E96E13305D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5988A0FD-D1AD-4675-82EC-F11C272EFA42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5988A0FD-D1AD-4675-82EC-F11C272EFA42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5988A0FD-D1AD-4675-82EC-F11C272EFA42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5988A0FD-D1AD-4675-82EC-F11C272EFA42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +133,7 @@ Global
 		{8D542A1B-5E5B-4165-95C1-29F1D395012C} = {FA9CA22D-7653-43F1-AD17-A79198BF8725}
 		{56EC47FD-9053-43B2-AAF1-E061266C53D0} = {FA9CA22D-7653-43F1-AD17-A79198BF8725}
 		{838A5F5C-8A65-4126-8C93-13F8B4F8E198} = {FA9CA22D-7653-43F1-AD17-A79198BF8725}
+		{5988A0FD-D1AD-4675-82EC-F11C272EFA42} = {BF72ECF5-12FF-43CB-B33A-4D2F58DFCF3E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {835BD9F5-1849-41B4-95D7-E9B12C1FA738}
