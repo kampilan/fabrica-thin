@@ -1,4 +1,5 @@
 ﻿using Fabrica.Persistence.UnitOfWork;
+using Fabrica.Rules;
 using Fabrica.Utilities.Container;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +11,11 @@ public interface ICommandService
 
     ICorrelation Correlation { get; }
 
+    IRuleSet Rules { get; }
+    IMapper Mapper { get; }
+
     IUnitOfWork Uow { get; }
     DbContext DbContext { get; }
 
-    IMapper Mapper { get; }
 
 }
