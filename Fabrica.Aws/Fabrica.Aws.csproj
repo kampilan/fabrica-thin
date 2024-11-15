@@ -24,9 +24,15 @@
 
 	<ItemGroup>
 		<PackageReference Include="Autofac" Version="8.1.1" />
-		<PackageReference Include="AWSSDK.S3" Version="3.7.405.9" />
-		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.45" />
-		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.400.45" />
+		<PackageReference Include="AWSSDK.S3" Version="3.7.406.1" />
+		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.52" />
+		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.401.1" />
+		<PackageReference Include="AWSSDK.SQS" Version="3.7.400.52" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
 	</ItemGroup>
 
 </Project>

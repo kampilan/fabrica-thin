@@ -3,7 +3,11 @@ using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.SecurityToken;
+using Amazon.SQS;
+using Amazon.SQS.Model.Internal.MarshallTransformations;
 using Autofac;
+using Fabrica.Utilities.Queue;
+using Microsoft.Extensions.Configuration;
 
 // ReSharper disable UnusedMember.Global
 
@@ -96,6 +100,105 @@ public static class AwsConfigAutofacExtensions
     }
 
 
+
+    public static ContainerBuilder AddSqsClient(this ContainerBuilder builder, string regionName)
+    {
+
+        builder.Register(c =>
+            {
+
+                RegionEndpoint? region = null;
+                if (!string.IsNullOrWhiteSpace(regionName))
+                    region = RegionEndpoint.GetBySystemName(regionName);
+
+                var credentials = c.ResolveOptional<AWSCredentials>();
+
+                if (credentials is not null && region is not null)
+                    return new AmazonSQSClient(credentials, region);
+
+                if (credentials is not null)
+                    return new AmazonSQSClient(credentials);
+
+                if (region is not null)
+                    return new AmazonSQSClient(region);
+
+                return new AmazonSQSClient();
+
+
+            })
+            .As<IAmazonS3>()
+            .SingleInstance();
+
+
+        return builder;
+
+    }
+
+
+    public static ContainerBuilder AddSqsClient(this ContainerBuilder builder)
+    {
+
+        builder.Register(c =>
+            {
+
+                var credentials = c.ResolveOptional<AWSCredentials>();
+
+                if (credentials is not null)
+                    return new AmazonSQSClient(credentials);
+
+
+                return new AmazonSQSClient();
+
+
+            })
+            .As<IAmazonS3>()
+            .SingleInstance();
+
+
+        return builder;
+
+    }
+
+
+    public static ContainerBuilder AddHubMessageQueue(this ContainerBuilder builder, string queueName, string signingKey)
+    {
+
+        builder.Register(c =>
+            {
+                var client = c.Resolve<IAmazonSQS>();
+
+                return new SqsHubQueue(client, queueName, signingKey);
+
+            })
+            .As<IHubMessageSink>()
+            .As<IHubMessageSource>()
+            .InstancePerDependency();
+
+
+        return builder;
+
+    }
+
+    public static ContainerBuilder AddWorkMessageQueue(this ContainerBuilder builder, string queueName, string signingKey)
+    {
+
+        builder.Register(c =>
+            {
+                var client = c.Resolve<IAmazonSQS>();
+
+                return new SqsWorkQueue(client, queueName, signingKey);
+
+            })
+            .As<IWorkMessageSink>()
+            .As<IWorkMessageSource>()
+            .InstancePerDependency();
+
+
+        return builder;
+
+    }
+
+
     public static ContainerBuilder AddStsClient(this ContainerBuilder builder, string regionName)
     {
 
@@ -150,6 +253,7 @@ public static class AwsConfigAutofacExtensions
         return builder;
 
     }
+
 
     public static ContainerBuilder AddStsConfiguration(this ContainerBuilder builder, string roleArn, string policy, TimeSpan duration)
     {

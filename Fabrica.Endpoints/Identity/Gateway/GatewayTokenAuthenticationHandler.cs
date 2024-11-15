@@ -42,6 +42,15 @@ public static class ServiceCollectionExtensions
             })
             .AddGatewayToken();
 
+
+        services.AddKeyedScoped<IAccessTokenSource>("Fabrica.Gateway", (c,_) =>
+        {
+            var corr = c.GetRequiredService<ICorrelation>();
+            var comp = new GatewayAmbientTokenSource(corr);
+            return comp;
+
+        });
+
         return services;
 
     }
@@ -61,6 +70,7 @@ public static class AuthenticationBuilderExtensions
     }
 
 }
+
 
 
 public class GatewayTokenAuthenticationHandler : AuthenticationHandler<GatewayTokenAuthenticationSchemeOptions>
@@ -139,5 +149,21 @@ public class GatewayTokenAuthenticationHandler : AuthenticationHandler<GatewayTo
 
     }
 
+
+}
+
+public class GatewayAmbientTokenSource(ICorrelation correlation) : IAccessTokenSource
+{
+
+    private ICorrelation Correlation { get; } = correlation;
+
+    public string Name => "Fabrica.Gateway";
+    public bool HasExpired => false;
+
+    public Task<string> GetToken()
+    {
+        var token = Correlation.CallerGatewayToken;
+        return Task.FromResult(token);
+    }
 
 }
