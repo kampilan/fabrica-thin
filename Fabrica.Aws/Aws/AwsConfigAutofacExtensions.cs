@@ -128,7 +128,7 @@ public static class AwsConfigAutofacExtensions
 
 
             })
-            .As<IAmazonS3>()
+            .As<IAmazonSQS>()
             .SingleInstance();
 
 
@@ -153,7 +153,7 @@ public static class AwsConfigAutofacExtensions
 
 
             })
-            .As<IAmazonS3>()
+            .As<IAmazonSQS>()
             .SingleInstance();
 
 
@@ -312,7 +312,7 @@ public static class AwsConfigAutofacExtensions
                 return dbc;
 
             })
-            .AsSelf()
+            .As<IDynamoDBContext>()
             .InstancePerLifetimeScope();
 
 
