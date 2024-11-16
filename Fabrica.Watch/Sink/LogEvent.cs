@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -71,4 +71,43 @@ public class LogEvent: ILogEvent
     }
 
 }
+
+
+public ref struct LogEventS
+{
+
+
+    public string Category { get; set; }
+    public string CorrelationId { get; set; }
+
+    public string Title { get; set; }
+
+    public string Tenant { get; set; }
+    public string Subject { get; set; }
+    public string Tag { get; set; }
+
+    public int Level { get; set; }
+    public int Color { get; set; }
+    public int Nesting { get; set; }
+
+    public DateTime Occurred { get; set; }
+
+    public int Type { get; set; }
+    public string? Base64 { get; set; }
+
+
+    public object? Object { get; set; }
+
+
+    public Exception? Error { get; set; }
+    public object? ErrorContext { get; set; }
+
+
+    public string? Payload { get; set; }
+
+
+}
+
+
+
 

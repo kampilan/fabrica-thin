@@ -26,15 +26,10 @@ using System.Collections.Concurrent;
 
 namespace Fabrica.Watch.Sink;
 
-public class BatchEventSink: IEventSink
+public class BatchEventSink(IEventSink targetSink) : IEventSink
 {
 
-    public BatchEventSink( IEventSink targetSink )
-    {
-        TargetSink = targetSink;
-    }
-
-    private IEventSink TargetSink { get; }
+    private IEventSink TargetSink { get; } = targetSink;
 
 
     private ConcurrentQueue<ILogEvent> Queue { get; } = new ();

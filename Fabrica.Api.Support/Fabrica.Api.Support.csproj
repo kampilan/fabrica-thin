@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
     <ProjectReference Include="..\Fabrica.Endpoints\Fabrica.Endpoints.csproj" />
     <ProjectReference Include="..\Fabrica.Mediator\Fabrica.Mediator.csproj" />
+    <ProjectReference Include="..\Fabrica.One\Fabrica.One.csproj" />
     <ProjectReference Include="..\Fabrica.Patch\Fabrica.Patch.csproj" />
     <ProjectReference Include="..\Fabrica.Persistence.Ef\Fabrica.Persistence.Ef.csproj" />
     <ProjectReference Include="..\Fabrica.Rql.Parser\Fabrica.Rql.Parser.csproj" />
