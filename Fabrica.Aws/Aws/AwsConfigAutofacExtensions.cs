@@ -1,4 +1,6 @@
 ﻿using Amazon;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
@@ -275,6 +277,54 @@ public static class AwsConfigAutofacExtensions
         return builder;
 
     }
+
+
+    public static ContainerBuilder AddDynamodbClient(this ContainerBuilder builder, string tablePrefix="" )
+    {
+
+
+        builder.Register(c =>
+            {
+
+                var credentials = c.ResolveOptional<AWSCredentials>();
+
+                if( credentials is not null )
+                    return new AmazonDynamoDBClient(credentials);
+
+
+                return new AmazonDynamoDBClient();
+
+
+            })
+            .As<IAmazonDynamoDB>()
+            .SingleInstance();
+
+
+        builder.Register(c =>
+            {
+
+                var db = c.Resolve<IAmazonDynamoDB>();
+
+
+                var cfg = new DynamoDBContextConfig { TableNamePrefix = tablePrefix, IsEmptyStringValueEnabled = true };
+                var dbc = new DynamoDBContext(db, cfg);
+
+                return dbc;
+
+            })
+            .AsSelf()
+            .InstancePerLifetimeScope();
+
+
+        return builder;
+
+
+    }
+
+
+
+
+
 
 
 
