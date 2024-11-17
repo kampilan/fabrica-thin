@@ -45,7 +45,7 @@ public class WorkQueueService( ILifetimeScope rootScope, IEnumerable<WorkRequest
 {
 
 
-    private ImmutableDictionary<string, WorkerEntry> _workers = null!;
+    protected ImmutableDictionary<string, WorkerEntry> Workers { get; private set; } = null!;
 
 
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -71,17 +71,56 @@ public class WorkQueueService( ILifetimeScope rootScope, IEnumerable<WorkRequest
 
             entries.Add(attr.Topic, entry );
 
-
-
         }
 
 
         logger.LogObject(nameof(entries), entries);
 
 
-        _workers = ImmutableDictionary.CreateRange(entries);
+        Workers = ImmutableDictionary.CreateRange(entries);
 
         await base.StartAsync(cancellationToken);
+
+
+    }
+
+
+    protected virtual CompositeRequest MapMessageToRequest(WorkQueueMessage message)
+    {
+
+        using var logger = this.EnterMethod();
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to lookup worker request for topic: ({0)", message.Topic);
+        if (!Workers.TryGetValue(message.Topic, out var entry))
+        {
+            logger.Warning("Could not find a worker request for topic: ({0)", message.Topic);
+            return new CompositeRequest();
+        }
+
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to deserialize worker request");
+        var obj = JsonSerializer.Deserialize(message.Body, entry.Request);
+        if (obj is null || obj is not IRequest<Response> request)
+        {
+            logger.Warning("Could not deserialize worker request for topic: ({0)", message.Topic);
+            return new CompositeRequest();
+        }
+
+
+
+        // *****************************************************************
+        logger.Debug("Attempting to build CompositeRequest");
+        var composite = new CompositeRequest();
+        composite.Components.Add(request);
+
+
+
+        // *****************************************************************
+        return composite;
 
 
     }
@@ -106,23 +145,8 @@ public class WorkQueueService( ILifetimeScope rootScope, IEnumerable<WorkRequest
 
 
             // *****************************************************************
-            logger.Debug("Attempting to lookup worker request for topic: ({0)", message.Topic);
-            if ( !_workers.TryGetValue(message.Topic, out var entry) )
-            {       
-                logger.Warning( "Could not find a worker request for topic: ({0)", message.Topic );
-                continue;
-            }
-
-
-
-            // *****************************************************************
-            logger.Debug("Attempting to deserialize worker request");
-            var obj = JsonSerializer.Deserialize(message.Body, entry.Request);
-            if (obj is null || obj is not IRequest<Response> request)
-            {
-                logger.Warning("Could not deserialize worker request for topic: ({0)", message.Topic);
-                continue;
-            }
+            logger.Debug("Attempting to map message to Composite request");
+            var composite = MapMessageToRequest(message);
 
 
 
@@ -154,7 +178,7 @@ public class WorkQueueService( ILifetimeScope rootScope, IEnumerable<WorkRequest
 
             // *****************************************************************
             logger.Debug("Attempting to send request vis mediator");
-            var response = await mediator.Send(request, mustStop);
+            var response = await mediator.Send( composite, mustStop );
 
             logger.LogObject(nameof(response), response);
 
