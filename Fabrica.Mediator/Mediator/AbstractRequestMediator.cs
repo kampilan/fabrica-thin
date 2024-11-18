@@ -348,9 +348,22 @@ public abstract class AbstractRequestMediator: IRequestMediator
                 return error;
 
 
-            var innerRes = await inner.Send(request, cancellationToken);
+            // *****************************************************************
+            logger.Debug("Attempting to send request via inner Mediator");
+            Response innerRes;
+            try
+            {
+                innerRes = await inner.Send(request, cancellationToken);
+                logger.Debug("Send completed without Exception");
+            }
+            catch (Exception cause)
+            {
+                logger.Debug("Send completed WITH Exception");
+                innerRes = await HandleException(request, cause);
+            }
 
-            if( logger.IsDebugEnabled )
+
+            if ( logger.IsDebugEnabled )
             {
                 var ctx = new { innerRes.IsSuccessful, innerRes.ErrorCode, innerRes.Explanation, innerRes.Details };
                 logger.LogObject(nameof(innerRes), ctx);
@@ -391,7 +404,20 @@ public abstract class AbstractRequestMediator: IRequestMediator
                 return Response<TModel>.Failed(error.Kind, error.ErrorCode, error.Explanation, error.Details);
 
 
-            var innerRes = await inner.Send(request, cancellationToken);
+            // *****************************************************************
+            logger.Debug("Attempting to send request via inner Mediator");
+            Response innerRes;
+            try
+            {
+                innerRes = await inner.Send(request, cancellationToken);
+                logger.Debug("Send completed without Exception");
+            }
+            catch (Exception cause)
+            {
+                logger.Debug("Send completed WITH Exception");
+                innerRes = await HandleException(request, cause);
+            }
+
 
             if (logger.IsDebugEnabled)
             {
@@ -416,9 +442,24 @@ public abstract class AbstractRequestMediator: IRequestMediator
                 return Response<TModel>.Failed(error.Kind, error.ErrorCode, error.Explanation, error.Details);
 
 
-            var innerRes = await inner.Send(request, cancellationToken);
 
-            if( logger.IsDebugEnabled )
+            // *****************************************************************
+            logger.Debug("Attempting to send request via inner Mediator");
+            Response<TModel> innerRes;
+            try
+            {
+                innerRes = await inner.Send(request, cancellationToken);
+                logger.Debug("Send completed without Exception");
+            }
+            catch (Exception cause)
+            {
+                logger.Debug("Send completed WITH Exception");
+                innerRes = await HandleException(request, cause);
+            }
+
+
+
+            if ( logger.IsDebugEnabled )
             {
                 var ctx = new { innerRes.IsSuccessful, innerRes.ErrorCode, innerRes.Explanation, innerRes.Details };
                 logger.LogObject(nameof(innerRes), ctx);
