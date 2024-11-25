@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,28 +41,30 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     private int InitialPoolSize { get; set; } = initialPoolSize;
     private int MaxPoolSize { get; set; } = maxPoolSize;
-    private Pool<Logger> Pool { get; set; } = null!;
+    private Pool<Logger> LoggerPool { get; set; } = null!;
+    private Pool<LogEvent> EventPool { get; set; } = null!;
 
 
     public bool Quiet { get; set; }
 
     public ISwitchSource Switches { get; set; } = null!;
-    public IEventSink Sink { get; set; } = null!;
 
-    public IEventSink? GetSink<T>() where T : class, IEventSink
+    private CompositeSink _composite = null!;
+
+    public IEventSink Sink
+    {
+        get => _composite;
+        private set
+        {
+            if( value is CompositeSink cs )
+                _composite = cs;
+        }
+    }
+
+    public IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider
     {
 
-        IEventSink? snk = null;
-        switch (Sink)
-        {
-            case CompositeSink cs:
-                snk = cs.InnerSinks.FirstOrDefault(s => s is T);
-                break;
-            case T _:
-                snk = Sink;
-                break;
-        }
-
+        var snk = _composite.InnerSinks.FirstOrDefault(s => s is T);
         return snk;
 
     }
@@ -102,10 +104,18 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
     {
 
 
-        Pool = new Pool<Logger>(() => new Logger(l => Pool.Return(l)), MaxPoolSize);
+        LoggerPool = new Pool<Logger>(() => new Logger(l => LoggerPool.Return(l)), MaxPoolSize);
+        LoggerPool.Warm( InitialPoolSize );
 
-        for (var i = 0; i < InitialPoolSize; i++)
-            Pool.Return(new Logger(Pool.Return));
+
+        EventPool = new Pool<LogEvent>(() =>
+        {
+            var le = new LogEvent();
+            le.OnDispose = e => EventPool.Return(e);
+            return le;
+
+        }, MaxPoolSize);
+        EventPool.Warm( InitialPoolSize );
 
 
         Switches.Start();
@@ -140,8 +150,13 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
         try
         {
-            Pool.Clear();
-            Pool = null!;
+
+            EventPool.Clear();
+            EventPool = null!;
+
+            LoggerPool.Clear();
+            LoggerPool = null!;
+
         }
         catch
         {
@@ -167,14 +182,14 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     }
 
-    public int PooledCount => Pool.Count;
+    public int PooledCount => LoggerPool.Count;
 
 
     public virtual ILogger GetLogger( string category, bool retroOn=true )
     {
 
         // Overall Quiet
-        if (Quiet)
+        if( Quiet )
             return Silencer;
 
 
@@ -188,7 +203,7 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
 
         // Acquire a new logger from the pool
-        var logger = Pool.Acquire(0);
+        var logger = LoggerPool.Acquire(0);
 
 
 
@@ -205,8 +220,7 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
     public virtual ILogger GetLogger<T>( bool retroOn = true )
     {
 
-        var category = typeof(T).FullName??"";
-        var logger   = GetLogger( category, retroOn );
+        var logger = GetLogger( typeof(T).FullName ?? string.Empty, retroOn );
 
         return logger;
 
@@ -217,8 +231,7 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
     public virtual ILogger GetLogger( Type type, bool retroOn = true)
     {
 
-        var category = type.FullName??"";
-        var logger   = GetLogger( category, retroOn );
+        var logger = GetLogger(type.FullName ?? string.Empty, retroOn );
 
         return logger;
 
@@ -226,10 +239,8 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
 
 
-    public ILogger GetLogger( LoggerRequest request, bool retroOn = true )
+    public ILogger GetLogger( ref LoggerRequest request, bool retroOn = true )
     {
-
-        if (request == null) throw new ArgumentNullException(nameof(request));
 
 
         // Overall Quiet
@@ -242,7 +253,7 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
         if( request.Debug )
         {
             var color = Switches.LookupColor(request.Category);
-            sw = new Switch {Level = request.Level, Color = color, Pattern = "", Tag = "Diagnostics"};
+            sw = new Switch {Level = request.Level, Color = color, Pattern = string.Empty, Tag = "Diagnostics"};
         }
         else
             sw = Switches.Lookup( request.Category );
@@ -255,7 +266,7 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
 
         // Acquire a new logger from the pool
-        var logger = Pool.Acquire(0);
+        var logger = LoggerPool.Acquire(0);
 
 
         // Config the acquired logger
@@ -268,8 +279,19 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     }
 
+    public LogEvent AcquireLogEvent()
+    {
 
-    public void Enrich( ILogEvent logEvent )
+        var le =  EventPool.Acquire(0);
+        le.Reset();
+
+        return le;
+
+    }
+
+    public void ReturnLogEvent( LogEvent le ) => EventPool.Return(le);
+
+    public void Enrich( LogEvent logEvent )
     {
 
         if( !string.IsNullOrWhiteSpace(logEvent.Payload) )
@@ -278,25 +300,26 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
         if( logEvent.Error is not null )
         {
             var (type, source) = ForException.Serialize(logEvent.Error, logEvent.ErrorContext);
-            logEvent.Type = type;
+            logEvent.Type = (int)type;
             logEvent.Payload = source;
         }
         else if( logEvent.Object is not null )
         {
             var (type, source) = ForObject.Serialize(logEvent.Object);
-            logEvent.Type = type;
+            logEvent.Type = (int)type;
             logEvent.Payload = source;
         }
 
     }
 
-    public void Encode( ILogEvent logEvent )
+    public void Encode( LogEvent logEvent )
     {
 
         if( !string.IsNullOrWhiteSpace(logEvent.Payload) && string.IsNullOrWhiteSpace(logEvent.Base64) )
             logEvent.Base64 = WatchPayloadEncoder.Encode(logEvent.Payload);
 
     }
+
 
 
 }

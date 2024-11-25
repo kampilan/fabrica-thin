@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ SOFTWARE.
 
 namespace Fabrica.Watch.Sink;
 
-public class ConsoleEventSink: IEventSink
+public class ConsoleEventSink: IEventSinkProvider
 {
 
 
@@ -39,17 +39,10 @@ public class ConsoleEventSink: IEventSink
     }
 
 
-    public virtual Task Accept( ILogEvent logEvent )
-    {
-        _write( logEvent );
-        return Task.CompletedTask;
-    }
-
-
-    public virtual Task Accept( IEnumerable<ILogEvent> batch )
+    public virtual Task Accept( LogEventBatch batch )
     {
 
-        foreach ( var le in batch )
+        foreach ( var le in batch.Events )
             _write(le);
 
         return Task.CompletedTask;
@@ -57,31 +50,31 @@ public class ConsoleEventSink: IEventSink
     }
 
 
-    private void _write( ILogEvent le)
+    private void _write( LogEvent le)
     {
 
         WatchFactoryLocator.Factory.Enrich(le);
 
         switch (le.Level)
         {
-            case Level.Trace:
-            case Level.Debug:
+            case (int)Level.Trace:
+            case (int)Level.Debug:
                 Console.ForegroundColor = ConsoleColor.Green;
                 break;
 
-            case Level.Info:
+            case (int)Level.Info:
                 Console.ForegroundColor = ConsoleColor.Blue;
                 break;
 
-            case Level.Warning:
+            case (int)Level.Warning:
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 break;
 
-            case Level.Error:
+            case (int)Level.Error:
                 Console.ForegroundColor = ConsoleColor.Red;
                 break;
 
-            case Level.Quiet:
+            case (int)Level.Quiet:
                 Console.ForegroundColor = ConsoleColor.White;
                 break;
         }
@@ -91,7 +84,7 @@ public class ConsoleEventSink: IEventSink
 
         var message = $"{le.Occurred:T} - {le.Level.ToString().ToUpper()} - {le.Category} - {le.Title}";
         Console.Out.WriteLine(message);
-        if (le.Type != PayloadType.None)
+        if (le.Type != (int)PayloadType.None)
         {
             Console.Out.WriteLine("--------------------------------------------------------------------------------");
             Console.Out.WriteLine(le.Payload);

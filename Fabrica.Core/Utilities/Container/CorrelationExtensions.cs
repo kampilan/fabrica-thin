@@ -95,13 +95,13 @@ public static class CorrelationExtensions
         }
 
 
-        request.FilterKeys.Add(("Subject", subject));
-        request.FilterKeys.Add(("Tenant", correlation.Tenant));
+        //request.FilterKeys.Add(("Subject", subject));
+        //request.FilterKeys.Add(("Tenant", correlation.Tenant));
 
 
 
         // ******************************************************
-        var logger = WatchFactoryLocator.Factory.GetLogger(request);
+        var logger = WatchFactoryLocator.Factory.GetLogger( ref request );
 
 
 

@@ -162,13 +162,13 @@ public static class SqlSerializerExtensions
         if( string.IsNullOrWhiteSpace(pair.sql) && builder.RowLimit > 0 )
         {
             var query = $"select {string.Join(",",projection)} from {tableName} limit {builder.RowLimit}";
-            return (query, new object[]{});
+            return (query, []);
         }
 
         if( string.IsNullOrWhiteSpace(pair.sql) )
         {
             var query = $"select {string.Join(",", projection)} from {tableName}";
-            return (query, new object[] { });
+            return (query, []);
         }
             
         if( builder.RowLimit > 0)

@@ -44,7 +44,7 @@ public static class LoggerExtensions
 
     }
 
-    public static void Trace(this ILogger logger, string template, params object?[] args )
+    public static void TraceFormat(this ILogger logger, string template, params object?[] args )
     {
 
         if( !logger.IsTraceEnabled )
@@ -107,7 +107,7 @@ public static class LoggerExtensions
 
     }
 
-    public static void Debug(this ILogger logger, string template, params object?[] args)
+    public static void DebugFormat(this ILogger logger, string template, params object?[] args)
     {
 
         if (!logger.IsDebugEnabled)
@@ -171,7 +171,7 @@ public static class LoggerExtensions
 
     }
 
-    public static void Info(this ILogger logger, string template, params object?[] args)
+    public static void InfoFormat(this ILogger logger, string template, params object?[] args)
     {
 
         if (!logger.IsInfoEnabled)
@@ -237,7 +237,7 @@ public static class LoggerExtensions
 
     }
 
-    public static void Warning(this ILogger logger, string template, params object?[] args)
+    public static void WarningFormat(this ILogger logger, string template, params object?[] args)
     {
 
         if (!logger.IsWarningEnabled)
@@ -314,7 +314,7 @@ public static class LoggerExtensions
 
     }
 
-    public static void Error(this ILogger logger, string template, params object?[] args)
+    public static void ErrorFormat(this ILogger logger, string template, params object?[] args)
     {
 
         if (!logger.IsErrorEnabled)

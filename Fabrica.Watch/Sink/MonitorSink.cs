@@ -2,7 +2,7 @@
 
 namespace Fabrica.Watch.Sink;
 
-public class MonitorSink: IEventSink
+public class MonitorSink: IEventSinkProvider
 {
 
     public void Start()
@@ -13,13 +13,15 @@ public class MonitorSink: IEventSink
     {
     }
 
-    private ConcurrentQueue<ILogEvent> Events { get; } = new();
+    private ConcurrentQueue<LogEvent> Events { get; } = new();
 
     public bool Accumulate { get; set; }
+    public TimeSpan WorkDelay { get; set; } = TimeSpan.MinValue;
+
 
     public int Total => _total;
     public int Count => Events.Count; 
-    public IEnumerable<ILogEvent> GetEvents() => Events;
+    public IEnumerable<LogEvent> GetEvents() => Events;
 
 
     public void Flush()
@@ -29,23 +31,11 @@ public class MonitorSink: IEventSink
 
 
     private int _total;
-    public Task Accept(ILogEvent logEvent)
+
+    public async Task Accept( LogEventBatch batch )
     {
 
-
-        if( Accumulate )
-            Events.Enqueue(logEvent);
-
-        Interlocked.Increment(ref _total);
-
-        return Task.CompletedTask;
-
-    }
-
-    public Task Accept(IEnumerable<ILogEvent> batch)
-    {
-
-        foreach (var le in batch)
+        foreach (var le in batch.Events)
         {
 
             if( Accumulate )
@@ -55,7 +45,8 @@ public class MonitorSink: IEventSink
 
         }
 
-        return Task.CompletedTask;
+        if(WorkDelay != TimeSpan.MinValue)
+            await Task.Delay(WorkDelay);
 
     }
 

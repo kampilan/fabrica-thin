@@ -38,7 +38,7 @@ public interface IWatchFactory
     IEventSink Sink { get; }
 
 
-    IEventSink? GetSink<T>() where T : class, IEventSink;
+    IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider;
        
 
     TType? GetInfrastructure<TType>() where TType : class;
@@ -53,9 +53,11 @@ public interface IWatchFactory
     ILogger GetLogger<T>( bool retroOn = true );
     ILogger GetLogger( Type type, bool retroOn = true );
 
-    ILogger GetLogger( LoggerRequest request, bool retroOn = true );
+    ILogger GetLogger( ref LoggerRequest request, bool retroOn = true );
 
-    void Enrich(ILogEvent logEvent);
-    void Encode(ILogEvent logEvent);
+    LogEvent AcquireLogEvent();
+
+    void Enrich( LogEvent logEvent );
+    void Encode( LogEvent logEvent );
 
 }

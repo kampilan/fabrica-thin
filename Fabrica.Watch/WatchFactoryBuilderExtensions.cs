@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,25 +34,9 @@ public static class WatchFactoryBuilderExtensions
     public static ConsoleEventSink UseConsoleSink( this WatchFactoryBuilder builder )
     {
         var console = new ConsoleEventSink();
-        builder.Sinks.AddSink( console );
+        builder.Sink.AddSink( console );
         return console;
     }
-
-    public static QueueEventSink UseQueueSink( this WatchFactoryBuilder builder, int maxQueueLength=1000)
-    {
-
-        var sink = new QueueEventSink
-        {
-            MaximumCount = maxQueueLength
-
-        };
-
-        builder.Sinks.AddSink(sink);
-
-        return sink;
-
-    }
-
 
 
     public static SwitchSource UseLocalSwitchSource( this WatchFactoryBuilder builder )

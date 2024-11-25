@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using Fabrica.Utilities.Types;
-using System.Runtime.Serialization;
 using MemoryPack;
-using MessagePack;
 using NUnit.Framework;
 using MemoryPack.Compression;
 
@@ -21,7 +19,7 @@ public partial class EnvelopeM
 public partial class LogEntityM
 {
 
-    public string Id { get; set; } = Ulid.NewUlid();
+    public string Uid { get; set; } = Ulid.NewUlid();
 
     public string? Category { get; set; }
     public string? CorrelationId { get; set; }

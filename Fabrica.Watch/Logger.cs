@@ -24,9 +24,9 @@ SOFTWARE.
 
 using System.Drawing;
 using Fabrica.Watch.Sink;
-using Fabrica.Watch.Utilities;
 
 namespace Fabrica.Watch;
+
 
 public class Logger : ILogger
 {
@@ -89,65 +89,57 @@ public class Logger : ILogger
     internal IEventSink Sink { get; set; } = null!;
 
 
-    public string Category { get; protected set; } = "";
+    public string Category { get; protected set; } = string.Empty;
 
-    internal string Tenant { get; set; } = "";
-    internal string Subject { get; set; } = "";
-    internal string Tag { get; set; } = "";
+    internal string Tenant { get; set; } = string.Empty;
+    internal string Subject { get; set; } = string.Empty;
+    internal string Tag { get; set; } = string.Empty;
 
-    internal string CorrelationId { get; set; } = "";
+    internal string CorrelationId { get; set; } = string.Empty;
 
     internal Level Level { get; set; }
     internal Color Color { get; set; }
 
 
-    public virtual ILogEvent CreateEvent( Level level, object? title )
+    public virtual LogEvent CreateEvent( Level level, object? title )
     {
 
-        if (string.IsNullOrWhiteSpace(CorrelationId))
-            CorrelationId = Ulid.NewUlid();
 
-        var le = new LogEvent
-        {
-            Tenant        = Tenant,
-            Subject       = Subject,
-            Tag           = Tag,
-            Category      = Category,
-            CorrelationId = CorrelationId,
-            Level         = level,
-            Color         = Color.ToArgb(),
-            Title         = title?.ToString() ?? "",
-            Occurred      = DateTime.UtcNow,
-        };
+        var le = WatchFactoryLocator.Factory.AcquireLogEvent();
+
+        le.Tenant = Tenant;
+        le.Subject = Subject;
+        le.Tag = Tag;
+        le.Category = Category;
+        le.CorrelationId = CorrelationId;
+        le.Level = (int)level;
+        le.Color = Color.ToArgb();
+        le.Title = title?.ToString() ?? string.Empty;
 
         return le;
 
     }
 
-    public virtual ILogEvent CreateEvent( Level level, object? title, PayloadType type, string? content )
+    public virtual LogEvent CreateEvent( Level level, object? title, PayloadType type, string? content )
     {
 
-        if (string.IsNullOrWhiteSpace(CorrelationId))
-            CorrelationId = Ulid.NewUlid();
 
-        var le = new LogEvent
-        {
-            Tenant        = Tenant,
-            Subject       = Subject,
-            Tag           = Tag,
-            Category      = Category,
-            CorrelationId = CorrelationId,
-            Level         = level,
-            Color         = Color.ToArgb(),
-            Title         = title?.ToString() ?? "",
-            Occurred      = DateTime.UtcNow,
-            Type          = PayloadType.None,
-        };
+        var le = WatchFactoryLocator.Factory.AcquireLogEvent();
 
-        if( string.IsNullOrWhiteSpace(content) )
+        le.Tenant = Tenant;
+        le.Subject = Subject;
+        le.Tag = Tag;
+        le.Category = Category;
+        le.CorrelationId = CorrelationId;
+        le.Level = (int)level;
+        le.Color = Color.ToArgb();
+        le.Title = title?.ToString() ?? string.Empty;
+
+
+        if ( string.IsNullOrWhiteSpace(content) )
             return le;
        
-        le.Type   = type;
+        le.Type   = (int)type;
         le.Payload = content;
 
         return le;
@@ -155,27 +147,21 @@ public class Logger : ILogger
     }
 
 
-    public virtual ILogEvent CreateEvent(Level level, object? title, object? obj )
+    public virtual LogEvent CreateEvent(Level level, object? title, object? obj )
     {
 
-        if( string.IsNullOrWhiteSpace(CorrelationId) )
-            CorrelationId = Ulid.NewUlid();
+        var le = WatchFactoryLocator.Factory.AcquireLogEvent();
 
-        var le = new LogEvent
-        {
-            Tenant        = Tenant,
-            Subject       = Subject,
-            Tag           = Tag,
-            Category      = Category,
-            CorrelationId = CorrelationId,
-            Level         = level,
-            Color         = Color.ToArgb(),
-            Title         = title?.ToString() ?? "",
-            Occurred      = DateTime.UtcNow,
-            Type          = PayloadType.None,
-        };
+        le.Tenant = Tenant;
+        le.Subject = Subject;
+        le.Tag = Tag;
+        le.Category = Category;
+        le.CorrelationId = CorrelationId;
+        le.Level = (int)level;
+        le.Color = Color.ToArgb();
+        le.Title = title?.ToString() ?? string.Empty;
 
-        if( obj is null )
+        if ( obj is null )
             return le;
 
         le.Object = obj;
@@ -185,33 +171,29 @@ public class Logger : ILogger
     }
 
 
-    public virtual ILogEvent CreateEvent(Level level, object? title, Exception ex,  object? context )
+    public virtual LogEvent CreateEvent(Level level, object? title, Exception ex,  object? context )
     {
 
-        if( string.IsNullOrWhiteSpace(CorrelationId) )
-            CorrelationId = Ulid.NewUlid();
 
-        var le = new LogEvent
-        {
-            Tenant        = Tenant,
-            Subject       = Subject,
-            Tag           = Tag,
-            Category      = Category,
-            CorrelationId = CorrelationId,
-            Level         = level,
-            Color         = Color.ToArgb(),
-            Title         = title?.ToString() ?? "",
-            Occurred      = DateTime.UtcNow,
-            Error         = ex,
-            ErrorContext  = context,
-        };
+        var le = WatchFactoryLocator.Factory.AcquireLogEvent();
+
+        le.Tenant = Tenant;
+        le.Subject = Subject;
+        le.Tag = Tag;
+        le.Category = Category;
+        le.CorrelationId = CorrelationId;
+        le.Level = (int)level;
+        le.Color = Color.ToArgb();
+        le.Title = title?.ToString() ?? string.Empty;
+        le.Error = ex;
+        le.ErrorContext = context;
 
         return le;
 
     }
 
 
-    public virtual void LogEvent( ILogEvent logEvent )
+    public virtual void LogEvent( LogEvent logEvent )
     {
 
         WatchFactoryLocator.Factory.Enrich(logEvent);
@@ -221,7 +203,7 @@ public class Logger : ILogger
     }
 
 
-    private string CurrentScope { get; set; } = "";
+    private string CurrentScope { get; set; } = string.Empty;
     public string GetCurrentScope() => CurrentScope;
     public void SetCurrentScope(string name)
     {

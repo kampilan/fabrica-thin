@@ -151,7 +151,7 @@ public class SwitchSource : ISwitchSource
             // ************************************************************************
             var lu2Found = Switches.TryGetValue( match, out var psw );
             if (lu2Found)
-                return psw;
+                return psw!;
 
 
 

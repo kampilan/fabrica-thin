@@ -66,8 +66,35 @@ public static class DateTimeHelpers
     public static IReadOnlyCollection<IDateTimeRange> AllModels { get; }
 
     public static DateTime Epoch { get; } = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-    public static long ToTimestamp(DateTime target) => (long)(target.ToUniversalTime() - Epoch).TotalSeconds;
+    public static long ToTimestamp(DateTime target)
+    {
+
+        if( target == default )
+            target = DateTime.Now;
+
+        var ts = (long)(target.ToUniversalTime() - Epoch).TotalSeconds;
+
+        return ts;
+
+    }
+    
     public static DateTime FromTimestamp(long ts) => Epoch.AddSeconds(ts).ToLocalTime();
+
+    public static long ToTimestampMilli(DateTime target=default) 
+    {
+
+        if( target == default)
+            target = DateTime.Now;
+
+        var ts = (long)(target.ToUniversalTime() - Epoch).TotalMilliseconds;
+
+        return ts;
+
+    }
+
+    public static DateTime FromTimestampMilli(long ts) => Epoch.AddMilliseconds(ts).ToLocalTime();
+
+
 
     public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek = DayOfWeek.Sunday)
     {

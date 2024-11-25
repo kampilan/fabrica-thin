@@ -114,18 +114,18 @@ public class MongoSwitchSource: SwitchSource
 
 
         }
-        catch (Exception cause)
+        catch( Exception cause )
         {
 
             var le = new LogEvent
             {
                 Category = GetType().FullName!,
-                Level    = Level.Debug,
+                Level    = (int)Level.Debug,
                 Title    = cause.Message,
                 Error    = cause
             };
 
-            DebugSink.Accept( le );
+            DebugSink.Accept( LogEventBatch.Single(le) );
                 
         }
 
@@ -159,7 +159,6 @@ public class MongoSwitchSource: SwitchSource
 
         try
         {
-
 
             var domCursor = DomainCollection.Find(d => d.Name == DomainName);
             var domain    = domCursor.SingleOrDefault();
@@ -216,12 +215,12 @@ public class MongoSwitchSource: SwitchSource
             var le = new LogEvent
             {
                 Category = GetType().FullName!,
-                Level    = Level.Debug,
+                Level    = (int)Level.Debug,
                 Title    = cause.Message,
                 Error    = cause
             };
 
-            DebugSink.Accept( le );
+            DebugSink.Accept( LogEventBatch.Single(le) );
                 
         }
 

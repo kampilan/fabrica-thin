@@ -164,7 +164,7 @@ public static class HttpClientExtensions
                 logger.Debug("Attempting to add custom headers");
                 foreach (var pair in request.CustomHeaders)
                 {
-                    logger.Debug("{0} = ({1})", pair.Key, pair.Value);
+                    logger.DebugFormat("{0} = ({1})", pair.Key, pair.Value);
                     innerRequest.Headers.Remove(pair.Key);
                     innerRequest.Headers.Add(pair.Key, pair.Value);
                 }

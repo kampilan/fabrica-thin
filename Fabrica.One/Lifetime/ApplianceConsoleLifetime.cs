@@ -70,8 +70,8 @@ public class ApplianceConsoleLifetime : IHostLifetime, IDisposable
         using var logger = this.EnterMethod();
 
         logger.Info("Application started.");
-        logger.Info("Hosting environment: {0}", Environment.EnvironmentName);
-        logger.Info("Content root path: {0}", Environment.ContentRootPath);
+        logger.InfoFormat("Hosting environment: {0}", Environment.EnvironmentName);
+        logger.InfoFormat("Content root path: {0}", Environment.ContentRootPath);
 
     }
 

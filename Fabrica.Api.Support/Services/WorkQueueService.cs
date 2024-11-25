@@ -92,10 +92,10 @@ public class WorkQueueService( ILifetimeScope rootScope, IEnumerable<WorkRequest
 
 
         // *****************************************************************
-        logger.Debug("Attempting to lookup worker request for topic: ({0)", message.Topic);
+        logger.DebugFormat("Attempting to lookup worker request for topic: ({0)", message.Topic);
         if (!Workers.TryGetValue(message.Topic, out var entry))
         {
-            logger.Warning("Could not find a worker request for topic: ({0)", message.Topic);
+            logger.WarningFormat("Could not find a worker request for topic: ({0)", message.Topic);
             return new CompositeRequest();
         }
 
@@ -106,7 +106,7 @@ public class WorkQueueService( ILifetimeScope rootScope, IEnumerable<WorkRequest
         var obj = JsonSerializer.Deserialize(message.Body, entry.Request);
         if (obj is null || obj is not IRequest<Response> request)
         {
-            logger.Warning("Could not deserialize worker request for topic: ({0)", message.Topic);
+            logger.WarningFormat("Could not deserialize worker request for topic: ({0)", message.Topic);
             return new CompositeRequest();
         }
 

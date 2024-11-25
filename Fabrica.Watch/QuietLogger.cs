@@ -5,39 +5,39 @@ namespace Fabrica.Watch;
 public class QuietLogger: ILogger
 {
 
-    private static ILogEvent QuietEvent { get; } =  new LogEvent { Level = Level.Quiet };
+    private static LogEvent QuietEvent { get; } =  new LogEvent { Level = (int)Level.Quiet };
 
     public void AddToRetro(string message)
     {
     }
 
-    public ILogEvent CreateEvent( Level level, object? title )
+    public LogEvent CreateEvent( Level level, object? title )
     {
         return QuietEvent;
     }
 
-    public ILogEvent CreateEvent( Level level, object? title, PayloadType type, string? payload )
+    public LogEvent CreateEvent( Level level, object? title, PayloadType type, string? payload )
     {
         return QuietEvent;
     }
 
-    public ILogEvent CreateEvent( Level level, object? title, object? payload )
+    public LogEvent CreateEvent( Level level, object? title, object? payload )
     {
         return QuietEvent;
     }
 
-    public ILogEvent CreateEvent( Level level, object? title, Exception ex, object? context )
+    public LogEvent CreateEvent( Level level, object? title, Exception ex, object? context )
     {
         return QuietEvent;
     }
 
-    public void LogEvent(ILogEvent logEvent)
+    public void LogEvent( LogEvent logEvent )
     {
     }
 
     public string GetCurrentScope()
     {
-        return "";
+        return string.Empty;
     }
 
     public void SetCurrentScope(string name)

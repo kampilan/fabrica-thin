@@ -26,34 +26,32 @@ using System.Collections.Concurrent;
 
 namespace Fabrica.Watch.Pool;
 
-public class Pool<TPooled>: IDisposable where TPooled : class
+public class Pool<TPooled>( Func<TPooled> factory, int maxSize = int.MaxValue ) : IDisposable where TPooled : class
 {
 
+    private Func<TPooled> Factory { get; } = factory ?? throw new ArgumentNullException(nameof(factory));
 
-    public Pool( Func<TPooled> factory, int maxSize=int.MaxValue )
-    {
+    private int MaxSize { get; } = maxSize;
 
-        Queue          = new ConcurrentQueue<TPooled>();
-        AvailableEvent = new AutoResetEvent(false);
+    private ConcurrentQueue<TPooled> Queue { get; } = new();
 
-        Factory = factory ?? throw new ArgumentNullException(nameof(factory));
-        MaxSize = maxSize;
-
-    }
-
-
-    private Func<TPooled> Factory { get; }
-
-    private int MaxSize { get; }
-
-    private ConcurrentQueue<TPooled> Queue { get; }
-
-    private AutoResetEvent AvailableEvent { get; }
+    private AutoResetEvent AvailableEvent { get; } = new(false);
 
 
     public int Count => Queue.Count;
 
     public void Clear() => Queue.Clear();
+
+
+    public void Warm( int count )
+    {
+
+        for (var i = 0; i < count; i++)
+        {
+            Queue.Enqueue(Factory());
+        }
+
+    }
 
     public TPooled Acquire( int waitDuration=int.MaxValue )
     {
@@ -75,13 +73,11 @@ public class Pool<TPooled>: IDisposable where TPooled : class
 
         if (item == null) throw new ArgumentNullException(nameof(item));
 
-        var size=0;
-        if( Interlocked.CompareExchange(ref size, Queue.Count, MaxSize) == 0 )
+        if( MaxSize > 0 && Queue.Count < MaxSize )
         {
             Queue.Enqueue( item );
             AvailableEvent.Set();
         }
-
 
     }
 

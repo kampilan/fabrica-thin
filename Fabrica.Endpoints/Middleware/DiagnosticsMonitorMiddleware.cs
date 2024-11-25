@@ -76,7 +76,7 @@ public class DiagnosticsMonitorMiddleware( ICorrelation correlation, DiagnosticO
 
                 var df = header.FirstOrDefault();
 
-                logger.Debug("{0} IS present", Options.HeaderName);
+                logger.DebugFormat("{0} IS present", Options.HeaderName);
 
                 logger.Inspect(nameof(df), df);
 
@@ -90,7 +90,7 @@ public class DiagnosticsMonitorMiddleware( ICorrelation correlation, DiagnosticO
             }
             else
             {
-                logger.Debug("{0} IS NOT present", Options.HeaderName);
+                logger.DebugFormat("{0} IS NOT present", Options.HeaderName);
             }
 
 
@@ -106,7 +106,7 @@ public class DiagnosticsMonitorMiddleware( ICorrelation correlation, DiagnosticO
 
         // ****************************************************************************************
         var lr = new LoggerRequest { Category = "Fabrica.Diagnostics.Http", CorrelationId = Correlation.Uid, Level = Level.Warning };
-        var diagLogger = WatchFactoryLocator.Factory.GetLogger(lr);
+        var diagLogger = WatchFactoryLocator.Factory.GetLogger( ref lr );
 
         diagLogger.Debug("Diagnostics - Begin Correlation" );
 
@@ -117,7 +117,7 @@ public class DiagnosticsMonitorMiddleware( ICorrelation correlation, DiagnosticO
 
         // ****************************************************************************************
         sw.Stop();
-        diagLogger.Debug("Diagnostics - End Correlation Duration: {0} millisecond(s)", sw.ElapsedMilliseconds);
+        diagLogger.DebugFormat("Diagnostics - End Correlation Duration: {0} millisecond(s)", sw.ElapsedMilliseconds);
 
 
 

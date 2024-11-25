@@ -73,7 +73,7 @@ public static class WatchFactoryBuilderExtensions
             DomainName = module.WatchDomainName
         };
 
-        builder.Sinks.AddSink(mongoSink);
+        builder.Sink.AddSink(mongoSink);
 
 
         return builder;
@@ -90,7 +90,7 @@ public static class WatchFactoryBuilderExtensions
             DomainName = domainName
         };
 
-        builder.Sinks.AddSink(mongoSink);
+        builder.Sink.AddSink(mongoSink);
 
 
         return builder;

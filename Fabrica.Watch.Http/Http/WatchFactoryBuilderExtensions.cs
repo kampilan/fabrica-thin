@@ -17,7 +17,7 @@ public static class WatchFactoryBuilderExtensions
             Port = port
         };
 
-        builder.Sinks.AddSink(sink);
+        builder.Sink.AddSink(sink);
 
         return sink;
 
@@ -41,7 +41,7 @@ public static class WatchFactoryBuilderExtensions
             Domain = domain
         };
 
-        builder.Sinks.AddSink(sink);
+        builder.Sink.AddSink(sink);
 
         return sink;
 

@@ -24,7 +24,7 @@ SOFTWARE.
 
 namespace Fabrica.Watch.Sink;
 
-public class QuietSink: IEventSink
+public class QuietSink: IEventSinkProvider
 {
 
 
@@ -36,12 +36,7 @@ public class QuietSink: IEventSink
     {
     }
 
-    public Task Accept(ILogEvent logEvent)
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task Accept(IEnumerable<ILogEvent> batch)
+    public Task Accept( LogEventBatch batch )
     {
         return Task.CompletedTask;
     }

@@ -50,7 +50,7 @@ public static class EndpointExtensions
             try
             {
 
-                logger.Debug("Attempting to load Endpoint Module: {0}", module.GetType().GetConciseName());
+                logger.DebugFormat("Attempting to load Endpoint Module: {0}", module.GetType().GetConciseName());
 
                 var group = root.MapGroup(module.BasePath);
 

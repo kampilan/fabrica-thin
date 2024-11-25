@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Drawing;
 using System.Security.Claims;
 using System.Security.Principal;
 using Fabrica.Identity;
@@ -36,14 +35,16 @@ namespace Fabrica.Utilities.Container;
 public class Correlation: ICorrelation
 {
 
+    private static readonly NullUser TheNullUser = new ();
+
 
     public string Uid { get; init; } = Ulid.NewUlid().ToString();
 
     public string CallerGatewayToken { get; set; } = string.Empty;
 
-    public string Tenant { get; set; } = "";
+    public string Tenant { get; set; } = string.Empty;
 
-    public IPrincipal Caller { get; set; } = new NullUser();
+    public IPrincipal Caller { get; set; } = TheNullUser;
 
     public bool Debug { get; set; }
 

@@ -337,21 +337,21 @@ public class KeycloakIdentityProvider(ICorrelation correlation, IHttpClientFacto
 
             if (!string.IsNullOrWhiteSpace(request.NewFirstName))
             {
-                logger.Debug("Updating FirstName to {0}", request.NewFirstName);
+                logger.DebugFormat("Updating FirstName to {0}", request.NewFirstName);
                 user.FirstName = request.NewFirstName;
                 perform = true;
             }
 
             if (!string.IsNullOrWhiteSpace(request.NewLastName))
             {
-                logger.Debug("Updating LastName to {0}", request.NewLastName);
+                logger.DebugFormat("Updating LastName to {0}", request.NewLastName);
                 user.LastName = request.NewLastName;
                 perform = true;
             }
 
             if (!string.IsNullOrWhiteSpace(request.NewEmail))
             {
-                logger.Debug("Updating Email to {0}", request.NewEmail);
+                logger.DebugFormat("Updating Email to {0}", request.NewEmail);
                 user.Email = request.NewEmail;
                 user.EmailVerified = !request.MustVerifyEmail;
                 perform = true;
@@ -359,7 +359,7 @@ public class KeycloakIdentityProvider(ICorrelation correlation, IHttpClientFacto
 
             if( request.NewEnabled.HasValue )
             {
-                logger.Debug("Updating Enabled to {0}", request.NewEnabled);
+                logger.DebugFormat("Updating Enabled to {0}", request.NewEnabled);
                 user.Enabled = request.NewEnabled.Value;
                 perform = true;
             }

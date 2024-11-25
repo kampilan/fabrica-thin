@@ -29,7 +29,7 @@ public class Logger: Microsoft.Extensions.Logging.ILogger
 
         var level = _map(logLevel);
 
-        ILogEvent le;
+        LogEvent le;
 
         if (exception != null)
             le = InternalLogger.CreateEvent(level, title, exception, null! );

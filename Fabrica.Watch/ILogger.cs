@@ -44,13 +44,13 @@ public interface ILogger: IDisposable
     bool IsErrorEnabled { get; }
 
 
-    ILogEvent CreateEvent(Level level, object? title);
-    ILogEvent CreateEvent(Level level, object? title, PayloadType type, string? payload);
-    ILogEvent CreateEvent(Level level, object? title, object? payload);
-    ILogEvent CreateEvent( Level level, object? title, Exception ex, object? context );
+    LogEvent CreateEvent(Level level, object? title);
+    LogEvent CreateEvent(Level level, object? title, PayloadType type, string? payload);
+    LogEvent CreateEvent(Level level, object? title, object? payload);
+    LogEvent CreateEvent( Level level, object? title, Exception ex, object? context );
 
 
-    void LogEvent( ILogEvent logEvent );
+    void LogEvent( LogEvent logEvent );
 
     string GetCurrentScope();
     void SetCurrentScope(string name);

@@ -212,7 +212,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
         using var logger = EnterMethod();
 
-        logger.Debug("For: {0} with Limit: {1}", typeof(TEntity).GetConciseFullName(), limit);
+        logger.DebugFormat("For: {0} with Limit: {1}", typeof(TEntity).GetConciseFullName(), limit);
 
         try
         {

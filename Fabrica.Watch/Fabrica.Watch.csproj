@@ -23,7 +23,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+    <PackageReference Include="MemoryPack" Version="1.21.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
   </ItemGroup>
 
 </Project>

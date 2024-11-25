@@ -13,7 +13,7 @@ using Polly.Extensions.Http;
 namespace Fabrica.Watch.Http.Sink
 {
 
-    public class HttpEventSink: IEventSink
+    public class HttpEventSink: IEventSinkProvider
     {
 
         public string WatchEndpoint { get; set; } = "";
@@ -62,16 +62,8 @@ namespace Fabrica.Watch.Http.Sink
             Container.Dispose();
         }
 
-        public async Task Accept( ILogEvent logEvent )
-        {
 
-            var batch = new [] { logEvent };
-
-            await Accept( batch );
-
-        }
-
-        public async Task Accept(IEnumerable<ILogEvent> batch)
+        public async Task Accept( LogEventBatch batch )
         {
 
             try
@@ -91,12 +83,12 @@ namespace Fabrica.Watch.Http.Sink
                 var le = new LogEvent
                 {
                     Category = GetType().FullName??"",
-                    Level = Level.Debug,
+                    Level = (int)Level.Debug,
                     Title = cause.Message,
                     Payload = cause.StackTrace??""
                 };
 
-                await DebugSink.Accept(le);
+                await DebugSink.Accept( LogEventBatch.Single(le) );
 
             }
 

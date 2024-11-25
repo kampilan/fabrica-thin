@@ -40,12 +40,9 @@ public class WatchFactoryBuilder
     public int MaxPoolSize { get; set; } = 500;
 
 
-    public CompositeSink Sinks { get; } = new ();
+    public CompositeSink Sink { get; } = new ();
 
     public ISwitchSource Source { get; set; } = new SwitchSource();
-
-    public IList<object> Infrastructure { get; } = new List<object>();
-
 
     private bool Quiet { get; set; }
 
@@ -55,21 +52,14 @@ public class WatchFactoryBuilder
         return this;
     }
 
-
-
-    private bool WillUseBatching { get; set; }
-    private int BatchSize { get; set; } = 10;
-    private TimeSpan PollingInterval { get; set; } = TimeSpan.FromMilliseconds(50);
     
-    public WatchFactoryBuilder UseBatching( int batchSize=10, TimeSpan pollingInterval=default ) 
+    public WatchFactoryBuilder UseBatching( int batchSize=10, TimeSpan pollingInterval=default )
     {
 
-        WillUseBatching = true;
-
-        BatchSize = batchSize;
+        Sink.BatchSize = batchSize;
 
         if ( pollingInterval != default)
-            PollingInterval = pollingInterval;
+            Sink.PollingInterval = pollingInterval;
 
         return this;
 
@@ -77,37 +67,14 @@ public class WatchFactoryBuilder
 
 
 
-    private IEventSink _buildSink()
-    {
-
-        if( WillUseBatching )
-        {
-            var sinks = new BatchEventSink(Sinks)
-            {
-                BatchSize = BatchSize,
-                PollingInterval = PollingInterval
-            };
-            return sinks;
-        }
-            
-        return Sinks;
-
-    }
-
-
 
 
     public void Build<TFactory>() where TFactory : class, IWatchFactory, new()
     {
 
-        var sink = _buildSink();
-
         var factory = new TFactory();
 
-        foreach( var i in Infrastructure)
-            factory.AddInfrastructure(i);
-
-        factory.Configure( Source, sink, Quiet );
+        factory.Configure( Source, Sink, Quiet );
 
         WatchFactoryLocator.SetFactory( factory );
 
@@ -116,14 +83,9 @@ public class WatchFactoryBuilder
     public void Build<TFactory>( Func<TFactory> builder ) where TFactory : class, IWatchFactory
     {
 
-        var sink = _buildSink();
-
         var factory = builder();
 
-        foreach (var i in Infrastructure)
-            factory.AddInfrastructure(i);
-
-        factory.Configure(Source, sink, Quiet );
+        factory.Configure(Source, Sink, Quiet );
 
         WatchFactoryLocator.SetFactory( factory );
 
@@ -132,14 +94,9 @@ public class WatchFactoryBuilder
     public void Build()
     {
 
-        var sink = _buildSink();
-
         var factory = new WatchFactory(InitialPoolSize, MaxPoolSize);
 
-        foreach (var i in Infrastructure)
-            factory.AddInfrastructure(i);
-
-        factory.Configure( Source, sink, Quiet );
+        factory.Configure( Source, Sink, Quiet );
 
         WatchFactoryLocator.SetFactory(factory);
 
@@ -150,14 +107,9 @@ public class WatchFactoryBuilder
     public IWatchFactory BuildNoSet()
     {
 
-        var sink = _buildSink();
-
         var factory = new WatchFactory(InitialPoolSize);
 
-        foreach (var i in Infrastructure)
-            factory.AddInfrastructure(i);
-
-        factory.Configure(Source, sink, Quiet);
+        factory.Configure(Source, Sink, Quiet);
 
         return factory;
 

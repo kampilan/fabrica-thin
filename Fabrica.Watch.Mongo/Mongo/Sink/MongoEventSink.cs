@@ -33,7 +33,7 @@ using MongoDB.Driver;
 
 namespace Fabrica.Watch.Mongo.Sink;
 
-public class MongoEventSink: IEventSink
+public class MongoEventSink: IEventSinkProvider
 {
 
     // ReSharper disable once ClassNeverInstantiated.Local
@@ -144,46 +144,18 @@ public class MongoEventSink: IEventSink
 
 
     private IMongoCollection<BsonDocument> Collection { get; set; } = null!;
-    private MemoryStream Stream { get; } = new();
-
+    
 
     private ConsoleEventSink DebugSink { get; } = new();
 
-    public async Task Accept( ILogEvent logEvent )
+
+    public async Task Accept( LogEventBatch batch )
     {
 
         try
         {
 
-            var document = _buildDocument(logEvent);
-
-            await Collection.InsertOneAsync( document );
-
-        }
-        catch (Exception cause)
-        {
-            var le = new LogEvent
-            {
-                Category = GetType().FullName!,
-                Level    = Level.Debug,
-                Title    = cause.Message,
-                Error    = cause
-            };
-
-            await DebugSink.Accept( le );
-
-        }
-
-
-    }
-
-    public async Task Accept( IEnumerable<ILogEvent> batch )
-    {
-
-        try
-        {
-
-            var list = batch.Select(_buildDocument).ToList();
+            var list = batch.Events.Select(_buildDocument).ToList();
 
             await Collection.InsertManyAsync(list);
 
@@ -194,12 +166,12 @@ public class MongoEventSink: IEventSink
             var le = new LogEvent
             {
                 Category = GetType().FullName!,
-                Level    = Level.Debug,
+                Level    = (int)Level.Debug,
                 Title    = cause.Message,
                 Error   =  cause
             };
 
-            await DebugSink.Accept( le );
+            await DebugSink.Accept( LogEventBatch.Single(le) );
 
         }
 
@@ -210,12 +182,12 @@ public class MongoEventSink: IEventSink
     }
 
 
-    private BsonDocument _buildDocument( ILogEvent logEvent )
+    private BsonDocument _buildDocument( LogEvent logEvent )
     {
 
 
         var timeToLive = NonDebugTimeToLive;
-        if (logEvent.Level == Level.Debug || logEvent.Level == Level.Trace)
+        if( logEvent.Level is (int)Level.Debug or (int)Level.Trace )
             timeToLive = DebugTimeToLive;
 
 
@@ -230,11 +202,11 @@ public class MongoEventSink: IEventSink
             Subject       = logEvent.Subject,
             Tag           = logEvent.Tag,
 
-            Level         = (int)logEvent.Level,
+            Level         = logEvent.Level,
             Color         = logEvent.Color,
             Nesting       = logEvent.Nesting,
 
-            Type          = (int)logEvent.Type,
+            Type          = logEvent.Type,
             Payload       = logEvent.Base64,
                 
             Occurred      = logEvent.Occurred,

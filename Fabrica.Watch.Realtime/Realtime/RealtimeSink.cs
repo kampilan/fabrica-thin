@@ -28,7 +28,7 @@ using System.Text;
 
 namespace Fabrica.Watch.Realtime;
 
-public class RealtimeSink: IEventSink
+public class RealtimeSink: IEventSinkProvider
 {
 
 
@@ -53,66 +53,59 @@ public class RealtimeSink: IEventSink
         Si.Dispose();
     }
 
-    public Task Accept(ILogEvent logEvent)
+    public Task Accept( LogEventBatch batch )
     {
 
-        var entry = _mapToLogEntry(logEvent);
-        Si.SendLogEntry( entry );
-
-        return Task.CompletedTask;
-
-    }
-
-    public Task Accept(IEnumerable<ILogEvent> batch)
-    {
-
-        foreach( var le in batch )
-            Accept(le);
+        foreach (var le in batch.Events)
+        {
+            var entry = _mapToLogEntry(le);
+            Si.SendLogEntry(entry);
+        }
 
         return Task.CompletedTask;
 
     }
 
 
-    private static Gurock.SmartInspect.Level _mapToSILevel(Level level)
+    private static Gurock.SmartInspect.Level _mapToSILevel(int level)
     {
         return level switch
         {
-            Level.Trace => Gurock.SmartInspect.Level.Debug,
-            Level.Debug => Gurock.SmartInspect.Level.Debug,
-            Level.Info => Gurock.SmartInspect.Level.Message,
-            Level.Warning => Gurock.SmartInspect.Level.Warning,
-            Level.Error => Gurock.SmartInspect.Level.Error,
+            (int)Level.Trace => Gurock.SmartInspect.Level.Debug,
+            (int)Level.Debug => Gurock.SmartInspect.Level.Debug,
+            (int)Level.Info => Gurock.SmartInspect.Level.Message,
+            (int)Level.Warning => Gurock.SmartInspect.Level.Warning,
+            (int)Level.Error => Gurock.SmartInspect.Level.Error,
             _ => Gurock.SmartInspect.Level.Fatal
         };
     }
 
 
-    private static LogEntry _mapToLogEntry( ILogEvent le )
+    private static LogEntry _mapToLogEntry( LogEvent le )
     {
 
 
         var entryType = LogEntryType.Debug;
         switch (le.Level)
         {
-            case Level.Trace:
+            case (int)Level.Trace:
                 entryType = LogEntryType.Debug;
                 break;
 
-            case Level.Debug:
+            case (int)Level.Debug:
                 entryType = LogEntryType.Debug;
                 break;
 
-            case Level.Info:
+            case (int)Level.Info:
                 entryType = LogEntryType.Message;
                 break;
 
-            case Level.Warning:
+            case (int)Level.Warning:
                 entryType = LogEntryType.Warning;
                 break;
 
-            case Level.Quiet:
-            case Level.Error:
+            case (int)Level.Quiet:
+            case (int)Level.Error:
                 entryType = LogEntryType.Error;
                 break;
 
@@ -127,7 +120,7 @@ public class RealtimeSink: IEventSink
 
         MemoryStream data = null!;
         var viewerId  = ViewerId.Title;
-        if( le.Type != PayloadType.None && !string.IsNullOrWhiteSpace(le.Base64) )
+        if( le.Type != (int)PayloadType.None && !string.IsNullOrWhiteSpace(le.Base64) )
         {
 
             var buf = Convert.FromBase64String(le.Base64);
@@ -142,27 +135,27 @@ public class RealtimeSink: IEventSink
             switch (le.Type)
             {
 
-                case PayloadType.Json:
+                case (int)PayloadType.Json:
                     entryType = LogEntryType.Source;
                     viewerId  = ViewerId.JavaScriptSource;
                     break;
 
-                case PayloadType.Sql:
+                case (int)PayloadType.Sql:
                     entryType = LogEntryType.Source;
                     viewerId  = ViewerId.SqlSource;
                     break;
 
-                case PayloadType.Xml:
+                case (int)PayloadType.Xml:
                     entryType = LogEntryType.Source;
                     viewerId  = ViewerId.XmlSource;
                     break;
 
-                case PayloadType.Text:
+                case (int)PayloadType.Text:
                     entryType = LogEntryType.Source;
                     viewerId  = ViewerId.Data;
                     break;
 
-                case PayloadType.Yaml:
+                case (int)PayloadType.Yaml:
                     entryType = LogEntryType.Source;
                     viewerId  = ViewerId.JavaScriptSource;
                     break;

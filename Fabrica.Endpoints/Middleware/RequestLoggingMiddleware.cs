@@ -57,7 +57,7 @@ public class RequestLoggingMiddleware(RequestDelegate next)
             subject = cp.GetName();
 
         var lr = new LoggerRequest {Category = "Fabrica.Diagnostics.Http", CorrelationId = correlation.Uid, Subject = subject, Level = Level.Warning };
-        var diagLogger = WatchFactoryLocator.Factory.GetLogger( lr );
+        var diagLogger = WatchFactoryLocator.Factory.GetLogger( ref lr );
 
 
         if( diagLogger.IsTraceEnabled )

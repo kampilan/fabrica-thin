@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,33 +24,13 @@ SOFTWARE.
 
 namespace Fabrica.Watch.Sink;
 
-public interface ILogEvent: IDisposable
+public interface IEventSinkProvider
 {
 
-    string Category { get; set; }
-    string CorrelationId { get; set; }
+    void Start();
+    void Stop();
 
-    string Title { get; set; }
 
-    string Tenant { get; set; }
-    string Subject { get; set; }
-    string Tag { get; set; }
-
-    Level Level { get; set; }
-    int Color { get; set; }
-    int Nesting { get; set; }
-
-    DateTime Occurred { get; set; }
-
-    PayloadType Type { get; set; }
-
-    object? Object { get; set; }
-
-    Exception? Error { get; set; }
-    object? ErrorContext { get; set; }
-
-    string? Payload { get; set; }
-    string? Base64 { get; set; }
-
+    Task Accept( LogEventBatch batch );
 
 }
