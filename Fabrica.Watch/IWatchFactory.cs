@@ -39,10 +39,7 @@ public interface IWatchFactory
 
 
     IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider;
-       
 
-    TType? GetInfrastructure<TType>() where TType : class;
-    void AddInfrastructure( object item );
 
     void Start();
     void Stop();

@@ -5,6 +5,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
+using Fabrica.Watch.Realtime;
 using Fabrica.Watch.Sink;
 
 var config = DefaultConfig.Instance.WithArtifactsPath("e:/benchmarks");
@@ -56,8 +57,8 @@ public class WatchBenchmark
             .WhenMatched("WatchBenchmark", "", Level.Debug, Color.Bisque)
             .WhenNotMatched(Level.Quiet);
 
-        maker.UseBatching(50, TimeSpan.FromMilliseconds(50));
-        maker.Sink.AddSink(TheSink);
+//        maker.UseBatching(50, TimeSpan.FromMilliseconds(50));
+        maker.Sink.AddSink(new RealtimeSink());
 
         //maker.UseQuiet();
 

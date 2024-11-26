@@ -69,19 +69,6 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     }
 
-    private readonly ConcurrentBag<object> _infrastructure = new ();
-    public TType? GetInfrastructure<TType>() where TType: class
-    {
-        var item = _infrastructure.FirstOrDefault(i => i is TType);
-        return item as TType;
-    }
-
-    public void AddInfrastructure( object item )
-    {
-        _infrastructure.Add(item);
-    }
-
-
     public virtual void Configure( ISwitchSource switches, IEventSink sink, bool quiet=false )
     {
 
@@ -99,19 +86,35 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     }
 
+    private void _return(Logger lg)
+    {
+        LoggerPool.Return(lg);
+    }
+
+    private void _return(LogEvent le)
+    {
+        EventPool.Return(le);
+    }
+
 
     public virtual void Start()
     {
 
 
-        LoggerPool = new Pool<Logger>(() => new Logger(l => LoggerPool.Return(l)), MaxPoolSize);
+        LoggerPool = new Pool<Logger>(() =>
+        {
+
+            var lg = new Logger(_return);
+            return lg;
+
+        }, MaxPoolSize);
         LoggerPool.Warm( InitialPoolSize );
 
 
         EventPool = new Pool<LogEvent>(() =>
         {
             var le = new LogEvent();
-            le.OnDispose = e => EventPool.Return(e);
+            le.OnDispose = _return;
             return le;
 
         }, MaxPoolSize);
@@ -161,22 +164,6 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
         catch
         {
             // ignored
-        }
-
-
-        try
-        {
-
-            foreach( var item in _infrastructure )
-            {
-                if( item is IDisposable disp )
-                    disp.Dispose();
-            }
-
-        }
-        catch
-        {
-            //ignored
         }
 
 
