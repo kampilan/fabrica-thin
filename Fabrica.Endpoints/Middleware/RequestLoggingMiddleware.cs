@@ -54,7 +54,7 @@ public class RequestLoggingMiddleware(RequestDelegate next)
         // ****************************************************************************************
         var subject = "";
         if (correlation.Caller is ClaimsPrincipal cp)
-            subject = cp.GetName();
+            subject = cp.GetUserName();
 
         var lr = new LoggerRequest {Category = "Fabrica.Diagnostics.Http", CorrelationId = correlation.Uid, Subject = subject, Level = Level.Warning };
         var diagLogger = WatchFactoryLocator.Factory.GetLogger( ref lr );
