@@ -31,14 +31,19 @@ public class CompositeSink: IEventSink
 
     }
 
+    private IWatchFactory _factory = null!;
+
     private bool _started;
-    public void Start()
+    public void Start( IWatchFactory factory )
     {
 
         if (_started)
             return;
 
-        foreach( var sink in Sinks )
+        _factory = factory;
+
+
+        foreach ( var sink in Sinks )
             sink.Start();
 
         Task.Run(_process);
@@ -65,7 +70,8 @@ public class CompositeSink: IEventSink
     public void Accept( LogEvent logEvent )
     {
 
-        WatchFactoryLocator.Factory.Encode(logEvent);
+        _factory.Enrich(logEvent);
+        _factory.Encode(logEvent);
 
         Queue.Enqueue( logEvent );
 

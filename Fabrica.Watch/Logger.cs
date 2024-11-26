@@ -56,10 +56,10 @@ public class Logger : ILogger
 
     }
 
-    internal void Config( IEventSink sink, string tenant, string subject, string tag, string category, string correlationId, Level level, Color color )
+    internal void Config( IWatchFactory factory, string tenant, string subject, string tag, string category, string correlationId, Level level, Color color )
     {
 
-        Sink = sink;
+        Factory = factory;
 
         Tenant  = tenant;
         Subject = subject;
@@ -86,7 +86,7 @@ public class Logger : ILogger
 
 
 
-    internal IEventSink Sink { get; set; } = null!;
+    internal IWatchFactory Factory { get; set; } = null!;
 
 
     public string Category { get; protected set; } = string.Empty;
@@ -105,7 +105,7 @@ public class Logger : ILogger
     {
 
 
-        var le = WatchFactoryLocator.Factory.AcquireLogEvent();
+        var le = Factory.AcquireLogEvent();
 
         le.Tenant = Tenant;
         le.Subject = Subject;
@@ -124,7 +124,7 @@ public class Logger : ILogger
     {
 
 
-        var le = WatchFactoryLocator.Factory.AcquireLogEvent();
+        var le = Factory.AcquireLogEvent();
 
         le.Tenant = Tenant;
         le.Subject = Subject;
@@ -150,7 +150,7 @@ public class Logger : ILogger
     public virtual LogEvent CreateEvent(Level level, object? title, object? obj )
     {
 
-        var le = WatchFactoryLocator.Factory.AcquireLogEvent();
+        var le = Factory.AcquireLogEvent();
 
         le.Tenant = Tenant;
         le.Subject = Subject;
@@ -175,7 +175,7 @@ public class Logger : ILogger
     {
 
 
-        var le = WatchFactoryLocator.Factory.AcquireLogEvent();
+        var le = Factory.AcquireLogEvent();
 
         le.Tenant = Tenant;
         le.Subject = Subject;
@@ -196,9 +196,9 @@ public class Logger : ILogger
     public virtual void LogEvent( LogEvent logEvent )
     {
 
-        WatchFactoryLocator.Factory.Enrich(logEvent);
+        Factory.Enrich(logEvent);
 
-        Sink.Accept( logEvent );
+        Factory.Sink.Accept( logEvent );
 
     }
 

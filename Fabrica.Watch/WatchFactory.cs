@@ -82,6 +82,27 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
             MaxPoolSize = 0;
         }
 
+
+    }
+
+    private void _return(Logger lg)
+    {
+         LoggerPool.Return(lg);
+    }
+
+    private void _return(LogEvent le)
+    {
+        EventPool.Return(le);
+    }
+
+    private bool _started;
+    public virtual void Start()
+    {
+
+        if (_started)
+            return;
+
+
         LoggerPool = new Pool<Logger>(() =>
         {
 
@@ -102,27 +123,12 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
         EventPool.Warm(InitialPoolSize);
 
 
-    }
-
-    private void _return(Logger lg)
-    {
-         LoggerPool.Return(lg);
-    }
-
-    private void _return(LogEvent le)
-    {
-        EventPool.Return(le);
-    }
-
-
-    public virtual void Start()
-    {
-
-        Console.WriteLine("Factory Stopping");
-
         Switches.Start();
 
-        Sink.Start();
+        Sink.Start(this);
+
+        _started = true;
+
 
     }
 
@@ -130,7 +136,10 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
     public virtual void Stop()
     {
 
-        Console.WriteLine("Factory Stopping");
+        if (!_started)
+            return;
+
+        _started = false;
 
         try
         {
@@ -196,7 +205,7 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
 
         // Config the acquired logger
-        logger.Config( Sink, string.Empty, string.Empty, sw.Tag, category, string.Empty, sw.Level, sw.Color );
+        logger.Config( this, string.Empty, string.Empty, sw.Tag, category, string.Empty, sw.Level, sw.Color );
 
 
         // **************************************
@@ -258,7 +267,7 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
 
         // Config the acquired logger
-        logger.Config( Sink, request.Tenant, request.Subject, sw.Tag, request.Category, request.CorrelationId, sw.Level, sw.Color );
+        logger.Config( this, request.Tenant, request.Subject, sw.Tag, request.Category, request.CorrelationId, sw.Level, sw.Color );
 
 
         // ************************************************************

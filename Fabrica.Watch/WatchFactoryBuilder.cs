@@ -24,6 +24,7 @@ SOFTWARE.
 
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
+using System.Drawing;
 
 namespace Fabrica.Watch;
 
@@ -35,6 +36,8 @@ public class WatchFactoryBuilder
     {
         return new WatchFactoryBuilder();
     }
+
+
 
     public int InitialPoolSize { get; set; } = 50;
     public int MaxPoolSize { get; set; } = 500;

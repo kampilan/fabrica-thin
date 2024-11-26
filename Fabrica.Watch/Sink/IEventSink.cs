@@ -27,7 +27,7 @@ namespace Fabrica.Watch.Sink;
 public interface IEventSink
 {
 
-    void Start();
+    void Start( IWatchFactory factory );
     void Stop();
     
     void Accept( LogEvent logEvent );

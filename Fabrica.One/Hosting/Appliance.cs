@@ -16,12 +16,14 @@ public static class Appliance
     public static async Task<IAppliance> Bootstrap<TBootstrap>(string path = "", string localConfigFile = null!) where TBootstrap : IBootstrap
     {
 
+        var factory = WatchFactoryLocator.StartBootFactory();
+
         IBootstrap bootstrap = null!;
         IAppliance app;
         try
         {
 
-            using var logger = WatchFactoryLocator.Factory.GetLogger("Fabrica.Appliance.Bootstrap");
+            using var logger = factory.GetLogger("Fabrica.Appliance.Bootstrap");
 
 
             // *****************************************************************
@@ -68,6 +70,9 @@ public static class Appliance
             el.ErrorWithContext(cause, bootstrap, "Bootstrap failed");
             throw;
         }
+
+
+        factory.Stop();
 
 
         // *****************************************************************

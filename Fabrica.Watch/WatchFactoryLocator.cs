@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,18 +29,23 @@ namespace Fabrica.Watch;
 public static class WatchFactoryLocator
 {
 
-    static WatchFactoryLocator()
+
+    public static IWatchFactory StartBootFactory(Level level = Level.Debug)
     {
 
         var builder = new WatchFactoryBuilder();
 
         builder.UseConsoleSink();
         builder.UseLocalSwitchSource()
-            .WhenNotMatched(Level.Warning, Color.Green);
+            .WhenNotMatched(level, Color.Green);
 
-        builder.Build();
+        var factory = builder.BuildNoSet();
+        factory.Start();
+
+        return factory;
 
     }
+
 
     public static void SetFactory( IWatchFactory factory )
     {

@@ -53,8 +53,6 @@ public class ConsoleEventSink: IEventSinkProvider
     private void _write( LogEvent le)
     {
 
-        WatchFactoryLocator.Factory.Enrich(le);
-
         switch (le.Level)
         {
             case (int)Level.Trace:
