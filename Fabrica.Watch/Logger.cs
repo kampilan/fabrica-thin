@@ -24,6 +24,7 @@ SOFTWARE.
 
 using System.Drawing;
 using Fabrica.Watch.Sink;
+using Fabrica.Watch.Utilities;
 
 namespace Fabrica.Watch;
 
@@ -61,12 +62,12 @@ public class Logger : ILogger
 
         Factory = factory;
 
-        Tenant  = tenant;
+        Category = category;
+        CorrelationId = correlationId;
+
+        Tenant = tenant;
         Subject = subject;
         Tag     = tag;
-
-        Category      = category;
-        CorrelationId = correlationId;
 
         Level = level;
         Color = color;
@@ -100,6 +101,15 @@ public class Logger : ILogger
     internal Level Level { get; set; }
     internal Color Color { get; set; }
 
+    private string GetCorrelationId()
+    {
+
+        if( string.IsNullOrWhiteSpace(CorrelationId) )
+            CorrelationId = Ulid.NewUlid();
+
+        return CorrelationId;
+
+    }
 
     public virtual LogEvent CreateEvent( Level level, object? title )
     {
@@ -111,7 +121,7 @@ public class Logger : ILogger
         le.Subject = Subject;
         le.Tag = Tag;
         le.Category = Category;
-        le.CorrelationId = CorrelationId;
+        le.CorrelationId = GetCorrelationId();
         le.Level = (int)level;
         le.Color = Color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
@@ -130,7 +140,7 @@ public class Logger : ILogger
         le.Subject = Subject;
         le.Tag = Tag;
         le.Category = Category;
-        le.CorrelationId = CorrelationId;
+        le.CorrelationId = GetCorrelationId();
         le.Level = (int)level;
         le.Color = Color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
@@ -156,7 +166,7 @@ public class Logger : ILogger
         le.Subject = Subject;
         le.Tag = Tag;
         le.Category = Category;
-        le.CorrelationId = CorrelationId;
+        le.CorrelationId = GetCorrelationId();
         le.Level = (int)level;
         le.Color = Color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
@@ -181,7 +191,7 @@ public class Logger : ILogger
         le.Subject = Subject;
         le.Tag = Tag;
         le.Category = Category;
-        le.CorrelationId = CorrelationId;
+        le.CorrelationId = GetCorrelationId();
         le.Level = (int)level;
         le.Color = Color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
@@ -195,8 +205,6 @@ public class Logger : ILogger
 
     public virtual void LogEvent( LogEvent logEvent )
     {
-
-        Factory.Enrich(logEvent);
 
         Factory.Sink.Accept( logEvent );
 

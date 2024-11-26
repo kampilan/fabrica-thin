@@ -48,16 +48,15 @@ public class WatchBenchmark
     public void Setup()
     {
 
-
         var maker = new WatchFactoryBuilder();
         maker.InitialPoolSize = 100;
         maker.MaxPoolSize = 1000;
         maker.UseLocalSwitchSource()
-            .WhenMatched(Category, "", Level.Debug, Color.Bisque)
-            .WhenMatched("WatchBenchmark", "", Level.Debug, Color.Bisque)
+            .WhenMatched(Category, "", Level.Warning, Color.Bisque)
+            .WhenMatched("WatchBenchmark", "", Level.Warning, Color.Bisque)
             .WhenNotMatched(Level.Quiet);
 
-//        maker.UseBatching(50, TimeSpan.FromMilliseconds(50));
+        maker.UseBatching(50, TimeSpan.FromMilliseconds(50));
         maker.Sink.AddSink(new RealtimeSink());
 
         //maker.UseQuiet();
