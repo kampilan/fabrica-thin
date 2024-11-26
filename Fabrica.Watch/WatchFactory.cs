@@ -118,6 +118,8 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
     public virtual void Start()
     {
 
+        Console.WriteLine("Factory Stopping");
+
         Switches.Start();
 
         Sink.Start();
@@ -127,6 +129,8 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     public virtual void Stop()
     {
+
+        Console.WriteLine("Factory Stopping");
 
         try
         {
