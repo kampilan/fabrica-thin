@@ -88,7 +88,8 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     private void _return(Logger lg)
     {
-        LoggerPool.Return(lg);
+        if( LoggerPool is not null)
+            LoggerPool.Return(lg);
     }
 
     private void _return(LogEvent le)
