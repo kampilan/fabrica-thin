@@ -58,7 +58,7 @@ public static class WatchFactoryLocator
     }
 
 
-    public static IWatchFactory Factory { get; private set; }
+    public static IWatchFactory Factory { get; private set; } = null!;
 
 
 }

@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Concurrent;
 using Fabrica.Watch.Pool;
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
@@ -83,13 +82,31 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
             MaxPoolSize = 0;
         }
 
+        LoggerPool = new Pool<Logger>(() =>
+        {
+
+            var lg = new Logger(_return);
+            return lg;
+
+        }, MaxPoolSize);
+        LoggerPool.Warm(InitialPoolSize);
+
+
+        EventPool = new Pool<LogEvent>(() =>
+        {
+            var le = new LogEvent();
+            le.OnDispose = _return;
+            return le;
+
+        }, MaxPoolSize);
+        EventPool.Warm(InitialPoolSize);
+
 
     }
 
     private void _return(Logger lg)
     {
-        if( LoggerPool is not null)
-            LoggerPool.Return(lg);
+         LoggerPool.Return(lg);
     }
 
     private void _return(LogEvent le)
@@ -100,27 +117,6 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     public virtual void Start()
     {
-
-
-        LoggerPool = new Pool<Logger>(() =>
-        {
-
-            var lg = new Logger(_return);
-            return lg;
-
-        }, MaxPoolSize);
-        LoggerPool.Warm( InitialPoolSize );
-
-
-        EventPool = new Pool<LogEvent>(() =>
-        {
-            var le = new LogEvent();
-            le.OnDispose = _return;
-            return le;
-
-        }, MaxPoolSize);
-        EventPool.Warm( InitialPoolSize );
-
 
         Switches.Start();
 
