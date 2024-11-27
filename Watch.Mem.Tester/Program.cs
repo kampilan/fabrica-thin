@@ -52,12 +52,11 @@ public class WatchBenchmark
         maker.InitialPoolSize = 100;
         maker.MaxPoolSize = 1000;
         maker.UseLocalSwitchSource()
-            .WhenMatched(Category, "", Level.Warning, Color.Bisque)
-            .WhenMatched("WatchBenchmark", "", Level.Warning, Color.Bisque)
+            .WhenMatched(Category, "", Level.Debug, Color.Bisque)
+            .WhenMatched("WatchBenchmark", "", Level.Debug, Color.Bisque)
             .WhenNotMatched(Level.Quiet);
 
-        maker.UseBatching(50, TimeSpan.FromMilliseconds(50));
-        maker.Sink.AddSink(new RealtimeSink());
+        maker.AddSink(new RealtimeSink());
 
         //maker.UseQuiet();
 
@@ -91,13 +90,11 @@ public class WatchBenchmark
         logger.Debug(VarName);
 
         logger.Inspect(VarName, 1);
-
-//        logger.LogObject(ModelName, TheModel);
    
 
     }
 
-    //[Benchmark]
+    [Benchmark]
     public void EnterMethodBenchmark()
     {
 
@@ -106,8 +103,6 @@ public class WatchBenchmark
         logger.Debug(VarName);
 
         logger.Inspect(VarName, 1);
-
-        //        logger.LogObject(ModelName, TheModel);
 
 
     }

@@ -31,8 +31,7 @@ public class LogEventBatchSerializationTests
             .WhenMatched("Fabrica.Tests.LogEventBatchSerializationTests", "", Level.Debug, Color.Bisque)
             .WhenNotMatched(Level.Quiet);
 
-        maker.UseBatching(50, TimeSpan.FromMilliseconds(50));
-        maker.Sink.AddSink(TheSink);
+        maker.AddSink(TheSink);
 
         //maker.UseQuiet();
 

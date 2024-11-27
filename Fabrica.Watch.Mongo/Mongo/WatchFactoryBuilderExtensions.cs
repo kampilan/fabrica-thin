@@ -38,24 +38,20 @@ public static class WatchFactoryBuilderExtensions
     public static WatchFactoryBuilder UseMongo( this WatchFactoryBuilder builder, IWatchMongoModule module )
     {
 
-        builder.UseBatching();
 
         builder.UseMongoSink( module );
-        builder.UseWatchSwitchSource( module );
+        builder.UseMongoSwitchSource( module );
 
         return builder;
 
     }
 
 
-    public static WatchFactoryBuilder UseMongo( this WatchFactoryBuilder builder, string serverUri, string domainName, bool useBatching = true )
+    public static WatchFactoryBuilder UseMongo( this WatchFactoryBuilder builder, string serverUri, string domainName )
     {
 
-        if( useBatching )
-            builder.UseBatching();
-
         builder.UseMongoSink( serverUri, domainName );
-        builder.UseWatchSwitchSource( serverUri, domainName );
+        builder.UseMongoSwitchSource( serverUri, domainName );
 
         return builder;
 
@@ -73,7 +69,7 @@ public static class WatchFactoryBuilderExtensions
             DomainName = module.WatchDomainName
         };
 
-        builder.Sink.AddSink(mongoSink);
+        builder.AddSink(mongoSink);
 
 
         return builder;
@@ -90,7 +86,7 @@ public static class WatchFactoryBuilderExtensions
             DomainName = domainName
         };
 
-        builder.Sink.AddSink(mongoSink);
+        builder.AddSink(mongoSink);
 
 
         return builder;
@@ -98,7 +94,7 @@ public static class WatchFactoryBuilderExtensions
     }
 
 
-    public static WatchFactoryBuilder UseWatchSwitchSource( this WatchFactoryBuilder builder, IWatchMongoModule module )
+    public static WatchFactoryBuilder UseMongoSwitchSource( this WatchFactoryBuilder builder, IWatchMongoModule module )
     {
 
         var source = new MongoSwitchSource
@@ -118,7 +114,7 @@ public static class WatchFactoryBuilderExtensions
 
 
 
-    public static WatchFactoryBuilder UseWatchSwitchSource( this WatchFactoryBuilder builder, string serverUri, string domainName )
+    public static WatchFactoryBuilder UseMongoSwitchSource( this WatchFactoryBuilder builder, string serverUri, string domainName )
     {
 
         var source = new MongoSwitchSource

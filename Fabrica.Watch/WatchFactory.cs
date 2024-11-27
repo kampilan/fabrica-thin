@@ -26,10 +26,30 @@ using Fabrica.Watch.Pool;
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
 using Fabrica.Watch.Utilities;
+using System.Collections.Concurrent;
 
 namespace Fabrica.Watch;
 
-public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWatchFactory
+public class WatchFactoryConfig
+{
+
+    public bool Quiet { get; init; } = false;
+
+    public int InitialPoolSize { get; set; } = 50;
+    public int MaxPoolSize { get; set; } = 500;
+
+    public int BatchSize { get; set; } = 10;
+    public TimeSpan PollingInterval { get; set; } = TimeSpan.FromMilliseconds(50);
+    public TimeSpan WaitForStopInterval { get; set; } = TimeSpan.FromSeconds(5);
+
+    public required ISwitchSource Switches { get; init; }
+
+    public required IEnumerable<IEventSinkProvider> Sinks { get; init; }
+
+
+}
+
+public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
 {
 
     private static readonly ILogger Silencer = new QuietLogger();
@@ -38,50 +58,34 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
     private IWatchExceptionSerializer ForException { get; set; } = new TextExceptionSerializer();
 
 
-    private int InitialPoolSize { get; set; } = initialPoolSize;
-    private int MaxPoolSize { get; set; } = maxPoolSize;
+    private int InitialPoolSize { get;  } = config.InitialPoolSize;
+    private int MaxPoolSize { get; } = config.MaxPoolSize;
     private Pool<Logger> LoggerPool { get; set; } = null!;
     private Pool<LogEvent> EventPool { get; set; } = null!;
 
 
-    public bool Quiet { get; set; }
+    private ConcurrentQueue<LogEvent> Queue { get; } = new();
+    private EventWaitHandle MustStop { get; } = new(false, EventResetMode.ManualReset);
+    private EventWaitHandle Stopped { get; } = new(false, EventResetMode.ManualReset);
 
-    public ISwitchSource Switches { get; set; } = null!;
+    private List<IEventSinkProvider> Sinks { get; } = [..config.Sinks];
 
-    private CompositeSink _composite = null!;
 
-    public IEventSink Sink
-    {
-        get => _composite;
-        private set
-        {
-            if( value is CompositeSink cs )
-                _composite = cs;
-        }
-    }
+    private int BatchSize { get;  } = config.BatchSize;
+    private TimeSpan PollingInterval { get;  } = config.PollingInterval;
+    private TimeSpan WaitForStopInterval { get;  } = config.WaitForStopInterval;
+
+
+
+    private bool Quiet { get; } = config.Quiet;
+
+    public ISwitchSource Switches { get; private set; } = config.Switches;
 
     public IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider
     {
 
-        var snk = _composite.InnerSinks.FirstOrDefault(s => s is T);
+        var snk = Sinks.FirstOrDefault(s => s is T);
         return snk;
-
-    }
-
-    public virtual void Configure( ISwitchSource switches, IEventSink sink, bool quiet=false )
-    {
-
-        Quiet = quiet;
-
-        Switches = switches ?? throw new ArgumentNullException(nameof(switches));
-        Sink     = sink ?? throw new ArgumentNullException(nameof(sink));
-
-        if( Quiet )
-        {
-            InitialPoolSize = 0;
-            MaxPoolSize = 0;
-        }
-
 
     }
 
@@ -125,7 +129,12 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
         Switches.Start();
 
-        Sink.Start(this);
+        foreach (var sink in Sinks)
+            sink.Start();
+
+
+        Task.Run(_process);
+
 
         _started = true;
 
@@ -141,6 +150,10 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
         _started = false;
 
+        MustStop.Set();
+
+        Stopped.WaitOne(WaitForStopInterval);
+
         try
         {
             Switches.Stop();
@@ -153,8 +166,12 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
         try
         {
-            Sink.Stop();
-            Sink = null!;
+
+            foreach (var sink in Sinks)
+                sink.Stop();
+
+            Sinks.Clear();
+
         }
         catch
         {
@@ -179,7 +196,65 @@ public class WatchFactory(int initialPoolSize = 50, int maxPoolSize = 500) : IWa
 
     }
 
-    public int PooledCount => LoggerPool.Count;
+
+    public void Accept( LogEvent logEvent )
+    {
+
+        Enrich(logEvent);
+        Encode(logEvent);
+
+        Queue.Enqueue(logEvent);
+
+    }
+
+
+    private async Task _process()
+    {
+
+        while (!MustStop.WaitOne(PollingInterval))
+            await Drain(false);
+
+        await Drain(true);
+
+        Stopped.Set();
+
+    }
+
+    private readonly LogEventBatch _batch = new();
+
+    protected virtual async Task Drain(bool all)
+    {
+
+        if (Queue.IsEmpty)
+            return;
+
+        _batch.Events.Clear();
+
+        while (!Queue.IsEmpty)
+        {
+
+            if (!all && _batch.Events.Count >= BatchSize)
+                break;
+
+            if (!Queue.TryDequeue(out var le))
+                break;
+
+            _batch.Events.Add(le);
+
+        }
+
+        if (_batch.Events.Count > 0)
+        {
+
+            foreach (var sink in Sinks)
+                await sink.Accept(_batch);
+
+            _batch.Events.ForEach(e => e.Dispose());
+
+        }
+
+
+    }
 
 
     public virtual ILogger GetLogger( string category, bool retroOn=true )

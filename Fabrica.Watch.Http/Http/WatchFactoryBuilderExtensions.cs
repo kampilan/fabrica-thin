@@ -6,34 +6,25 @@ public static class WatchFactoryBuilderExtensions
 {
 
 
-    public static RelayEventSink UseRelaySink(this WatchFactoryBuilder builder, int port = 5246, string? domain = null, bool useBatching=false)
+    public static RelayEventSink UseRelaySink(this WatchFactoryBuilder builder, int port = 5246, string? domain = null )
     {
-
-        if( useBatching)
-            builder.UseBatching();
 
         var sink = new RelayEventSink
         {
             Port = port
         };
 
-        builder.Sink.AddSink(sink);
+        builder.AddSink(sink);
 
         return sink;
 
     }
 
 
-    public static HttpEventSink UseHttpSink(this WatchFactoryBuilder builder, string uri, string domain, bool useBatching = true, TimeSpan pollingInterval = default)
+    public static HttpEventSink UseHttpSink(this WatchFactoryBuilder builder, string uri, string domain, TimeSpan pollingInterval = default)
     {
 
-        if (useBatching)
-        {
-            if (pollingInterval == default)
-                pollingInterval = TimeSpan.FromMilliseconds(50);
-
-            builder.UseBatching(20, pollingInterval);
-        }
+        builder.PollingInterval = pollingInterval != default?pollingInterval:TimeSpan.FromMilliseconds(50);
 
         var sink = new HttpEventSink
         {
@@ -41,7 +32,7 @@ public static class WatchFactoryBuilderExtensions
             Domain = domain
         };
 
-        builder.Sink.AddSink(sink);
+        builder.AddSink(sink);
 
         return sink;
 

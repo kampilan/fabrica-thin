@@ -206,7 +206,7 @@ public class Logger : ILogger
     public virtual void LogEvent( LogEvent logEvent )
     {
 
-        Factory.Sink.Accept( logEvent );
+        Factory.Accept( logEvent );
 
     }
 

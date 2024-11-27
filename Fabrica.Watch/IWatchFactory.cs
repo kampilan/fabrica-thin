@@ -27,24 +27,18 @@ using Fabrica.Watch.Switching;
 
 namespace Fabrica.Watch;
 
+
 public interface IWatchFactory
 {
 
-    void Configure( ISwitchSource switches,  IEventSink sink, bool quiet=false );
-
-    bool Quiet { get; } 
-
     ISwitchSource Switches { get; }
-    IEventSink Sink { get; }
-
 
     IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider;
-
 
     void Start();
     void Stop();
 
-    int PooledCount { get; }
+    void Accept( LogEvent logEvent );
 
     ILogger GetLogger( string category, bool retroOn = true );
     ILogger GetLogger<T>( bool retroOn = true );
@@ -54,7 +48,5 @@ public interface IWatchFactory
 
     LogEvent AcquireLogEvent();
 
-    void Enrich( LogEvent logEvent );
-    void Encode( LogEvent logEvent );
 
 }

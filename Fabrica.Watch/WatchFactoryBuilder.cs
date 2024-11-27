@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ SOFTWARE.
 
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
-using System.Drawing;
 
 namespace Fabrica.Watch;
 
@@ -37,15 +36,25 @@ public class WatchFactoryBuilder
         return new WatchFactoryBuilder();
     }
 
-
-
     public int InitialPoolSize { get; set; } = 50;
     public int MaxPoolSize { get; set; } = 500;
 
 
-    public CompositeSink Sink { get; } = new ();
+    public int BatchSize { get; set; } = 10;
+    public TimeSpan PollingInterval { get; set; } = TimeSpan.FromMilliseconds(50);
+    public TimeSpan WaitForStopInterval { get; set; } = TimeSpan.FromSeconds(5);
+
 
     public ISwitchSource Source { get; set; } = new SwitchSource();
+
+
+    private readonly List<IEventSinkProvider> _sinks = new List<IEventSinkProvider>();
+    public void AddSink(IEventSinkProvider sink)
+    {
+        _sinks.Add(sink);
+    }
+
+
 
     private bool Quiet { get; set; }
 
@@ -55,71 +64,54 @@ public class WatchFactoryBuilder
         return this;
     }
 
-    
-    public WatchFactoryBuilder UseBatching( int batchSize=10, TimeSpan pollingInterval=default )
-    {
-
-        Sink.BatchSize = batchSize;
-
-        if ( pollingInterval != default)
-            Sink.PollingInterval = pollingInterval;
-
-        return this;
-
-    }
-
-
-
-
-
-    public void Build<TFactory>() where TFactory : class, IWatchFactory, new()
-    {
-
-        var factory = new TFactory();
-
-        factory.Configure( Source, Sink, Quiet );
-
-        WatchFactoryLocator.SetFactory( factory );
-
-    }
-
-    public void Build<TFactory>( Func<TFactory> builder ) where TFactory : class, IWatchFactory
-    {
-
-        var factory = builder();
-
-        factory.Configure(Source, Sink, Quiet );
-
-        WatchFactoryLocator.SetFactory( factory );
-
-    }
 
     public void Build()
     {
 
-        var factory = new WatchFactory(InitialPoolSize, MaxPoolSize);
+        var config = new WatchFactoryConfig
+        {
+            Quiet = Quiet,
+            InitialPoolSize = InitialPoolSize,
+            MaxPoolSize = MaxPoolSize,
+            BatchSize = BatchSize,
+            PollingInterval = PollingInterval,
+            WaitForStopInterval = WaitForStopInterval,
 
-        factory.Configure( Source, Sink, Quiet );
+            Switches = Source,
+            Sinks = _sinks
+
+        };
+
+        var factory = new WatchFactory(config);
+
 
         WatchFactoryLocator.SetFactory(factory);
 
     }
 
 
-
     public IWatchFactory BuildNoSet()
     {
 
-        var factory = new WatchFactory(InitialPoolSize);
+        var config = new WatchFactoryConfig
+        {
+            Quiet = Quiet,
+            InitialPoolSize = InitialPoolSize,
+            MaxPoolSize = MaxPoolSize,
+            BatchSize = BatchSize,
+            PollingInterval = PollingInterval,
+            WaitForStopInterval = WaitForStopInterval,
 
-        factory.Configure(Source, Sink, Quiet);
+            Switches = Source,
+            Sinks = _sinks
+
+        };
+
+        var factory = new WatchFactory(config);
 
         return factory;
 
     }
-
-
-
 
 
 }

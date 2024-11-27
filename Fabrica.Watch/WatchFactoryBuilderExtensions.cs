@@ -34,7 +34,7 @@ public static class WatchFactoryBuilderExtensions
     public static ConsoleEventSink UseConsoleSink( this WatchFactoryBuilder builder )
     {
         var console = new ConsoleEventSink();
-        builder.Sink.AddSink( console );
+        builder.AddSink( console );
         return console;
     }
 

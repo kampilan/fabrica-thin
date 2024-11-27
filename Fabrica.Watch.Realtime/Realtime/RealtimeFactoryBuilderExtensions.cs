@@ -35,11 +35,9 @@ public static class RealtimeFactoryBuilderExtensions
     public static WatchFactoryBuilder UseRealtime( this WatchFactoryBuilder builder )
     {
 
-        builder.UseBatching();
-
         var sink = new RealtimeSink();
 
-        builder.Sink.AddSink(sink);
+        builder.AddSink(sink);
 
         return builder;
 
@@ -54,7 +52,7 @@ public static class RealtimeFactoryBuilderExtensions
 
         var sink = new RealtimeSink();
 
-        builder.Sink.AddSink(sink);
+        builder.AddSink(sink);
 
         return builder;
 
