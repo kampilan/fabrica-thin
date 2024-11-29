@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watch.Mem.Tester", "Watch.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Watch.DotMemory.Tester", "Watch.DotMemory.Tester\Watch.DotMemory.Tester.csproj", "{0AE96813-D1EA-4DF1-B792-B6CF6B477F8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.Watch.SqlIte", "Fabrica.Watch.SqlIte\Fabrica.Watch.SqlIte.csproj", "{DB97A2EF-436E-42E0-ACFD-443B8C47390F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,10 @@ Global
 		{0AE96813-D1EA-4DF1-B792-B6CF6B477F8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AE96813-D1EA-4DF1-B792-B6CF6B477F8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AE96813-D1EA-4DF1-B792-B6CF6B477F8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB97A2EF-436E-42E0-ACFD-443B8C47390F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB97A2EF-436E-42E0-ACFD-443B8C47390F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB97A2EF-436E-42E0-ACFD-443B8C47390F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB97A2EF-436E-42E0-ACFD-443B8C47390F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,6 +154,7 @@ Global
 		{5988A0FD-D1AD-4675-82EC-F11C272EFA42} = {BF72ECF5-12FF-43CB-B33A-4D2F58DFCF3E}
 		{1ED2BFC7-970F-474F-A51E-56FF377C415B} = {C1854E5A-AB42-491F-864E-969B81AA1AF1}
 		{0AE96813-D1EA-4DF1-B792-B6CF6B477F8D} = {C1854E5A-AB42-491F-864E-969B81AA1AF1}
+		{DB97A2EF-436E-42E0-ACFD-443B8C47390F} = {FA9CA22D-7653-43F1-AD17-A79198BF8725}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {835BD9F5-1849-41B4-95D7-E9B12C1FA738}

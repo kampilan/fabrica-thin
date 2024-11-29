@@ -35,8 +35,8 @@ public interface IWatchFactory
 
     IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider;
 
-    void Start();
-    void Stop();
+    Task Start();
+    Task Stop();
 
     void Accept( LogEvent logEvent );
 

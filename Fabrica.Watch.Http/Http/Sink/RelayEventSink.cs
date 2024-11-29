@@ -22,7 +22,7 @@ public class RelayEventSink : IEventSinkProvider
     private DateTime _pauseUntil = DateTime.MinValue;
 
 
-    public void Start()
+    public Task Start()
     {
 
         var builder = new ContainerBuilder();
@@ -49,11 +49,17 @@ public class RelayEventSink : IEventSinkProvider
 
         Factory = Container.Resolve<IHttpClientFactory>();
 
+        return Task.CompletedTask;
+
     }
 
-    public void Stop()
+    public Task Stop()
     {
+
         Container.Dispose();
+
+        return Task.CompletedTask;
+
     }
 
 

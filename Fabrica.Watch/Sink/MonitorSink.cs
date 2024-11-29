@@ -5,12 +5,14 @@ namespace Fabrica.Watch.Sink;
 public class MonitorSink: IEventSinkProvider
 {
 
-    public void Start()
+    public Task Start()
     {
+        return Task.CompletedTask;
     }
 
-    public void Stop()
+    public Task Stop()
     {
+        return Task.CompletedTask;
     }
 
     private ConcurrentQueue<LogEvent> Events { get; } = new();

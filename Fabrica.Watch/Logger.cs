@@ -115,7 +115,7 @@ public class Logger : ILogger
     {
 
 
-        var le = Factory.AcquireLogEvent();
+        var le = new LogEvent();
 
         le.Tenant = Tenant;
         le.Subject = Subject;

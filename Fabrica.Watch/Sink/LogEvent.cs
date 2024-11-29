@@ -35,6 +35,9 @@ namespace Fabrica.Watch.Sink;
 public partial class LogEvent: IDisposable
 {
 
+    public static LogEvent Single { get; } = new ();
+
+
     [MemoryPackIgnore]
     internal Action<LogEvent> OnDispose { get; set; } = _ => { };
 

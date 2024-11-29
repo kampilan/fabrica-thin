@@ -83,7 +83,7 @@ public class MongoEventSink: IEventSinkProvider
     public TimeSpan NonDebugTimeToLive { get; set; } = TimeSpan.FromDays(7);
 
 
-    public void Start()
+    public Task Start()
     {
 
 
@@ -112,6 +112,9 @@ public class MongoEventSink: IEventSinkProvider
         var models = EnsureIndexes();
         if( models.Count > 0 )
             Collection.Indexes.CreateMany(models);
+
+        return Task.CompletedTask;
+
 
     }
 
@@ -177,8 +180,11 @@ public class MongoEventSink: IEventSinkProvider
 
     }
 
-    public void Stop()
+    public Task Stop()
     {
+
+        return Task.CompletedTask;
+
     }
 
 

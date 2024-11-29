@@ -27,8 +27,8 @@ namespace Fabrica.Watch.Sink;
 public interface IEventSinkProvider
 {
 
-    void Start();
-    void Stop();
+    Task Start();
+    Task Stop();
 
 
     Task Accept( LogEventBatch batch );

@@ -34,7 +34,7 @@ public class RealtimeSink: IEventSinkProvider
 
     private SmartInspect Si { get; set; } = null!;
 
-    public void Start()
+    public Task Start()
     {
 
         Si = new SmartInspect("Fabrica")
@@ -44,13 +44,17 @@ public class RealtimeSink: IEventSinkProvider
             Level = Gurock.SmartInspect.Level.Debug
         };
 
+        return Task.CompletedTask;
 
     }
 
-    public void Stop()
+    public Task Stop()
     {
         Si.Enabled = false;
         Si.Dispose();
+
+        return Task.CompletedTask;
+
     }
 
     public Task Accept( LogEventBatch batch )

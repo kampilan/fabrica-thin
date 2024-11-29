@@ -5,6 +5,8 @@ namespace Fabrica.Watch;
 public class QuietLogger: ILogger
 {
 
+    public static ILogger Single { get; } = new QuietLogger();
+
     private static LogEvent QuietEvent { get; } =  new LogEvent { Level = (int)Level.Quiet };
 
     public void AddToRetro(string message)

@@ -100,7 +100,7 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
     }
 
     private bool _started;
-    public virtual void Start()
+    public virtual async Task Start()
     {
 
         if (_started)
@@ -130,19 +130,23 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
         Switches.Start();
 
         foreach (var sink in Sinks)
-            sink.Start();
+            await sink.Start();
 
 
+#pragma warning disable CS4014
         Task.Run(_process);
+#pragma warning restore CS4014
 
 
         _started = true;
 
 
+
+
     }
 
 
-    public virtual void Stop()
+    public virtual async Task Stop()
     {
 
         if (!_started)
@@ -168,7 +172,7 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
         {
 
             foreach (var sink in Sinks)
-                sink.Stop();
+                await sink.Stop();
 
             Sinks.Clear();
 

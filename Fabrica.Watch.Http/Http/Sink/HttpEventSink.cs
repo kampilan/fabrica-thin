@@ -25,7 +25,7 @@ namespace Fabrica.Watch.Http.Sink
         private ConsoleEventSink DebugSink { get; } = new();
 
 
-        public void Start()
+        public Task Start()
         {
 
             var builder = new ContainerBuilder();
@@ -55,11 +55,18 @@ namespace Fabrica.Watch.Http.Sink
 
             Factory = Container.Resolve<IHttpClientFactory>();
 
+
+            return Task.CompletedTask;
+
         }
 
-        public void Stop()
+        public Task Stop()
         {
+
             Container.Dispose();
+
+            return Task.CompletedTask;
+
         }
 
 
