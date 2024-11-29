@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2024 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -152,7 +152,7 @@ public class MongoEventSink: IEventSinkProvider
     private ConsoleEventSink DebugSink { get; } = new();
 
 
-    public async Task Accept( LogEventBatch batch )
+    public async Task Accept( LogEventBatch batch, CancellationToken ct=default )
     {
 
         try
@@ -160,21 +160,15 @@ public class MongoEventSink: IEventSinkProvider
 
             var list = batch.Events.Select(_buildDocument).ToList();
 
-            await Collection.InsertManyAsync(list);
+            await Collection.InsertManyAsync(list, cancellationToken: ct);
 
         }
         catch (Exception cause)
         {
 
-            var le = new LogEvent
-            {
-                Category = GetType().FullName!,
-                Level    = (int)Level.Debug,
-                Title    = cause.Message,
-                Error   =  cause
-            };
+            var logger = DebugSink.GetLogger<MongoEventSink>();
 
-            await DebugSink.Accept( LogEventBatch.Single(le) );
+            logger.Error(cause, "Failed to accept batch");
 
         }
 

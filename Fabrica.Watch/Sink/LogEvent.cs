@@ -28,6 +28,7 @@ using MemoryPack.Compression;
 using Microsoft.IO;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using Fabrica.Watch.Utilities;
 
 namespace Fabrica.Watch.Sink;
 
@@ -112,11 +113,14 @@ public partial class LogEventBatch
 
     public static readonly LogEventBatch Empty = new ();
 
-    public static LogEventBatch Single(LogEvent one)
+    public static LogEventBatch Single( string domain, LogEvent one )
     {
-        return new LogEventBatch { Events = [one]};
-    }                
- 
+        return new LogEventBatch { Domain = domain, Events = [one] };
+    }
+
+    public string Uid { get; private set; } = Ulid.NewUlid();
+    public string Domain { get; set; } = string.Empty;
+
     public List<LogEvent> Events { get; set; } = [];
 
 }
@@ -124,8 +128,23 @@ public partial class LogEventBatch
 public static class LogEventBatchSerializer
 {
 
-
     private static readonly RecyclableMemoryStreamManager Manager = new ();
+
+    public static async Task<Stream> ToStream( LogEventBatch batch )
+    {
+
+        using var compressor = new BrotliCompressor();
+
+        MemoryPackSerializer.Serialize(compressor, batch);
+
+        var stream = Manager.GetStream();
+
+        await compressor.CopyToAsync(stream);
+
+        return stream;
+
+    }
+
 
     public static async Task ToStream( LogEventBatch batch, Stream target )
     {

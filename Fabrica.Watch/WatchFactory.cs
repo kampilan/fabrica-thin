@@ -65,8 +65,7 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
 
 
     private ConcurrentQueue<LogEvent> Queue { get; } = new();
-    private EventWaitHandle MustStop { get; } = new(false, EventResetMode.ManualReset);
-    private EventWaitHandle Stopped { get; } = new(false, EventResetMode.ManualReset);
+    private CancellationTokenSource MustStop { get; } = new ();
 
     private List<IEventSinkProvider> Sinks { get; } = [..config.Sinks];
 
@@ -154,9 +153,7 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
 
         _started = false;
 
-        MustStop.Set();
-
-        Stopped.WaitOne(WaitForStopInterval);
+        await MustStop.CancelAsync();
 
         try
         {
@@ -215,12 +212,10 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
     private async Task _process()
     {
 
-        while (!MustStop.WaitOne(PollingInterval))
+        while (!MustStop.IsCancellationRequested)
             await Drain(false);
 
         await Drain(true);
-
-        Stopped.Set();
 
     }
 
@@ -249,6 +244,9 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
 
         if (_batch.Events.Count > 0)
         {
+
+            using var cts = new CancellationTokenSource();
+            var ct = cts.Token;
 
             foreach (var sink in Sinks)
                 await sink.Accept(_batch);

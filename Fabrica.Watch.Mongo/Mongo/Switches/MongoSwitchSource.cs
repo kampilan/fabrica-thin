@@ -116,17 +116,9 @@ public class MongoSwitchSource: SwitchSource
         }
         catch( Exception cause )
         {
+            var logger  = DebugSink.GetLogger<MongoSwitchSource>();
 
-            var le = new LogEvent
-            {
-                Category = GetType().FullName!,
-                Level    = (int)Level.Debug,
-                Title    = cause.Message,
-                Error    = cause
-            };
-
-            DebugSink.Accept( LogEventBatch.Single(le) );
-                
+            logger.Error(cause, "Failed to start");
         }
 
 
@@ -212,15 +204,9 @@ public class MongoSwitchSource: SwitchSource
         catch (Exception cause)
         {
 
-            var le = new LogEvent
-            {
-                Category = GetType().FullName!,
-                Level    = (int)Level.Debug,
-                Title    = cause.Message,
-                Error    = cause
-            };
+            var logger = DebugSink.GetLogger<MongoSwitchSource>();
 
-            DebugSink.Accept( LogEventBatch.Single(le) );
+            logger.Error(cause, "Failed to fetch switches");
                 
         }
 

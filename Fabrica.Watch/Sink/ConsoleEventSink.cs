@@ -43,7 +43,7 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
     }
 
 
-    public virtual Task Accept( LogEventBatch batch )
+    public virtual Task Accept( LogEventBatch batch, CancellationToken ct=default )
     {
 
         foreach ( var le in batch.Events )
@@ -263,7 +263,7 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
 
     void ILogger.LogEvent(LogEvent logEvent)
     {
-        Accept(LogEventBatch.Single(logEvent));
+        Accept(LogEventBatch.Single("",logEvent));
     }
 
     private string _scope = string.Empty;

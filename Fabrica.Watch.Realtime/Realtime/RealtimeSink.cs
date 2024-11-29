@@ -24,6 +24,7 @@ SOFTWARE.
 
 using Fabrica.Watch.Sink;
 using Gurock.SmartInspect;
+using Microsoft.IO;
 using System.Text;
 
 namespace Fabrica.Watch.Realtime;
@@ -31,6 +32,7 @@ namespace Fabrica.Watch.Realtime;
 public class RealtimeSink: IEventSinkProvider
 {
 
+    private static readonly RecyclableMemoryStreamManager Manager = new();
 
     private SmartInspect Si { get; set; } = null!;
 
@@ -57,10 +59,10 @@ public class RealtimeSink: IEventSinkProvider
 
     }
 
-    public Task Accept( LogEventBatch batch )
+    public Task Accept( LogEventBatch batch, CancellationToken ct=default )
     {
 
-        foreach (var le in batch.Events)
+        foreach( var le in batch.Events )
         {
             var entry = _mapToLogEntry(le);
             Si.SendLogEntry(entry);
@@ -130,7 +132,7 @@ public class RealtimeSink: IEventSinkProvider
             var buf = Convert.FromBase64String(le.Base64);
             var clear = Encoding.ASCII.GetString(buf);
 
-            data = new MemoryStream();
+            data = Manager.GetStream();
             var writer = new StreamWriter(data);
             writer.Write(clear);
             writer.Flush();
