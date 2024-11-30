@@ -113,13 +113,13 @@ public partial class LogEventBatch
 
     public static readonly LogEventBatch Empty = new ();
 
-    public static LogEventBatch Single( string domain, LogEvent one )
+    public static LogEventBatch Single( string domainUid, LogEvent one )
     {
-        return new LogEventBatch { Domain = domain, Events = [one] };
+        return new LogEventBatch { DomainUid = domainUid, Events = [one] };
     }
 
     public string Uid { get; private set; } = Ulid.NewUlid();
-    public string Domain { get; set; } = string.Empty;
+    public string DomainUid { get; set; } = string.Empty;
 
     public List<LogEvent> Events { get; set; } = [];
 

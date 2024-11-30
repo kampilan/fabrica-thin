@@ -7,13 +7,13 @@ public static class WatchFactoryBuilderExtensions
 {
 
 
-    public static JsonHttpEventSinkProvider UseRelaySink(this WatchFactoryBuilder builder, int port = 5246, string? domain = null )
+    public static JsonHttpEventSinkProvider UseRelaySink(this WatchFactoryBuilder builder, int port = 5246, string? domainUid = null )
     {
 
         var sink = new JsonHttpEventSinkProvider
         {
             SinkEndpoint = $"http://localhost:{port}",
-            Domain = domain??""
+            DomainUid    = domainUid??""
         };
 
 
@@ -24,7 +24,7 @@ public static class WatchFactoryBuilderExtensions
     }
 
 
-    public static JsonHttpEventSinkProvider UseHttpSink(this WatchFactoryBuilder builder, string uri, string domain, TimeSpan pollingInterval = default)
+    public static JsonHttpEventSinkProvider UseHttpSink(this WatchFactoryBuilder builder, string uri, string domainUid, TimeSpan pollingInterval = default)
     {
 
         builder.PollingInterval = pollingInterval != default?pollingInterval:TimeSpan.FromMilliseconds(50);
@@ -32,7 +32,7 @@ public static class WatchFactoryBuilderExtensions
         var sink = new JsonHttpEventSinkProvider
         {
             SinkEndpoint = uri,
-            Domain = domain
+            DomainUid    = domainUid
         };
 
         builder.AddSink(sink);

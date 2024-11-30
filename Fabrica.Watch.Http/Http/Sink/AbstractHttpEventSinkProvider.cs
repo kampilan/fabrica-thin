@@ -17,7 +17,7 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
     private static readonly string Key = "Fabrica.Watch.Http.Sink";
 
     public string SinkEndpoint { get; set; } = "";
-    public string Domain { get; set; } = "";
+    public string DomainUid { get; set; } = "";
 
     private IContainer Container { get; set; } = null!;
     private IHttpClientFactory Factory { get; set; } = null!;
@@ -86,11 +86,11 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
         {
 
 
-            if( string.IsNullOrWhiteSpace(batch.Domain) )
-                batch.Domain = Domain;
+            if( string.IsNullOrWhiteSpace(batch.DomainUid) )
+                batch.DomainUid = DomainUid;
 
             logger.Inspect(nameof(batch.Uid), batch.Uid);
-            logger.Inspect(nameof(batch.Domain), batch.Domain);
+            logger.Inspect(nameof(batch.DomainUid), batch.DomainUid);
 
 
             await using var scope = Container.BeginLifetimeScope();

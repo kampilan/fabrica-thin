@@ -96,7 +96,7 @@ public class WatchTests
 
         await sink.Start();
 
-        var batch = new LogEventBatch {Domain = "Test123"};
+        var batch = new LogEventBatch {DomainUid = "Test123"};
 
         for( var i = 0; i < 26667; i++ )
         {
