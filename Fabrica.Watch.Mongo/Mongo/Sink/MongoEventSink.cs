@@ -158,9 +158,36 @@ public class MongoEventSink: IEventSinkProvider
         try
         {
 
-            var list = batch.Events.Select(_buildDocument).ToList();
+            var documents = new List<BsonDocument>();
+            foreach (var le in batch.Events)
+            {
 
-            await Collection.InsertManyAsync(list, cancellationToken: ct);
+                var ttl = le.Level <= (int)Level.Debug ? Convert.ToInt64( le.Occurred + DebugTimeToLive.TotalMicroseconds ) : Convert.ToInt64( le.Occurred + NonDebugTimeToLive.TotalMicroseconds );
+
+                var doc = new BsonDocument
+                {
+                    {"Category", le.Category},
+                    {"CorrelationId", le.CorrelationId},
+                    {"Tenant", le.Tenant},
+                    {"Subject", le.Subject},
+                    {"Tag", le.Tag},
+                    {"Title", le.Title},
+                    {"Level", le.Level},
+                    {"Color", le.Color},
+                    {"Nesting", le.Nesting},
+                    {"Type", le.Type},
+                    {"Payload", le.Base64},
+                    {"Occurred", le.Occurred},
+                    {"TimeToLive", ttl},
+                };
+
+                documents.Add(doc);
+
+            }
+
+
+
+            await Collection.InsertManyAsync(documents, cancellationToken: ct);
 
         }
         catch (Exception cause)
@@ -178,47 +205,6 @@ public class MongoEventSink: IEventSinkProvider
     {
 
         return Task.CompletedTask;
-
-    }
-
-
-    private BsonDocument _buildDocument( LogEvent logEvent )
-    {
-
-
-        var timeToLive = NonDebugTimeToLive;
-        if( logEvent.Level is (int)Level.Debug or (int)Level.Trace )
-            timeToLive = DebugTimeToLive;
-
-
-        var entity = new MongoLogEntity
-        {
-            Category      = logEvent.Category,
-            CorrelationId = logEvent.CorrelationId,
-
-            Title         = logEvent.Title,
-
-            Tenant        = logEvent.Tenant,
-            Subject       = logEvent.Subject,
-            Tag           = logEvent.Tag,
-
-            Level         = logEvent.Level,
-            Color         = logEvent.Color,
-            Nesting       = logEvent.Nesting,
-
-            Type          = logEvent.Type,
-            Payload       = logEvent.Base64,
-                
-            Occurred      = logEvent.Occurred,
-            TimeToLive    = (logEvent.Occurred + timeToLive),
-            
-        };
-
-
-        var document = entity.ToBsonDocument();
-
-
-        return document;
 
     }
 

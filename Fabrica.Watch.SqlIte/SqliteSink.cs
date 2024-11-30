@@ -218,12 +218,7 @@ public class SqliteSink: IEventSinkProvider
             foreach (var le in batch.Events)
             {
 
-                var ttl = le.Occurred + NonDebugTimeToLive;
-                if (le.Level < (int) Level.Info)
-                    ttl = le.Occurred + DebugTimeToLive;
-
-                var ots = ToTimestamp(le.Occurred);
-                var tts = ToTimestamp(ttl);
+                var ttl = le.Level <= (int)Level.Debug ? Convert.ToInt64(le.Occurred + DebugTimeToLive.TotalMicroseconds) : Convert.ToInt64(le.Occurred + NonDebugTimeToLive.TotalMicroseconds);
 
                 Set(cmd, "Domain", Domain);
                 Set(cmd, nameof(LogEvent.CorrelationId), le.CorrelationId);
@@ -237,8 +232,8 @@ public class SqliteSink: IEventSinkProvider
                 Set(cmd, nameof(LogEvent.Title), le.Title);
                 Set(cmd, nameof(LogEvent.Type), le.Type);
                 Set(cmd, nameof(LogEvent.Payload), le.Payload ?? "");
-                Set(cmd, nameof(LogEvent.Occurred), ots);
-                Set(cmd, "TimeToLive", tts);
+                Set(cmd, nameof(LogEvent.Occurred), le.Occurred);
+                Set(cmd, "TimeToLive", ttl);
 
                 await cmd.ExecuteNonQueryAsync(ct);
 

@@ -5,6 +5,7 @@ using System.Drawing;
 using Fabrica.Utilities.Types;
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.SqlIte;
+using Fabrica.Watch.Utilities;
 using NUnit.Framework;
 
 namespace Fabrica.Tests;
@@ -113,7 +114,7 @@ public class WatchTests
                 Nesting = 0,
                 Type = 0,
                 Payload = "",
-                Occurred = DateTime.Now
+                Occurred = WatchHelpers.ToWatchTimestamp()
             };
 
             batch.Events.Add(le);

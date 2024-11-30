@@ -84,7 +84,8 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
 
         Console.WriteLine("================================================================================");
 
-        var message = $"{le.Occurred:T} - {le.Level.ToString().ToUpper()} - {le.Category} - {le.Title}";
+        var dt = WatchHelpers.FromWatchTimestamp(le.Occurred);
+        var message = $"{dt:T} - {le.Level.ToString().ToUpper()} - {le.Category} - {le.Title}";
         Console.Out.WriteLine(message);
         if (le.Type != (int)PayloadType.None)
         {

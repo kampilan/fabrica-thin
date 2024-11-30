@@ -58,7 +58,7 @@ public partial class LogEvent: IDisposable
         Level = 0;
         Color = 0;
         Nesting = 0;
-        Occurred = DateTime.UtcNow;
+        Occurred = WatchHelpers.ToWatchTimestamp();
         Type = 0;
         Object = null;
         Error = null;
@@ -81,7 +81,7 @@ public partial class LogEvent: IDisposable
     public int Color { get; set; }
     public int Nesting { get; set; }
 
-    public DateTime Occurred { get; set; } = DateTime.UtcNow;
+    public long Occurred { get; set; }
 
     public int Type { get; set; }
     public string? Base64 { get; set; }
