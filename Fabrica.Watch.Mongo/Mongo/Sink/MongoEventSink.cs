@@ -48,6 +48,8 @@ public class MongoEventSink: IEventSinkProvider
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
 
+        public long NonDebugTimeToLiveSeconds { get; set; }
+        public long DebugTimeToLiveSeconds { get; set; }
 
         public string ServerUri { get; set; } = "";
         public string Database { get; set; } = "";
