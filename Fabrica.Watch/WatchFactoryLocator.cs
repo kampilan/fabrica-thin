@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Drawing;
+using Fabrica.Watch.Sink;
 
 namespace Fabrica.Watch;
 
@@ -31,27 +31,10 @@ public static class WatchFactoryLocator
 
     static WatchFactoryLocator()
     {
-        DefaultFactory = StartBootFactory();
+        FallbackFactory = new ConsoleLoggerFactory();
     }
 
-    private static readonly IWatchFactory DefaultFactory;
-
-    public static IWatchFactory StartBootFactory(Level level = Level.Debug)
-    {
-
-        var builder = new WatchFactoryBuilder();
-
-        builder.UseConsoleSink();
-        builder.UseLocalSwitchSource()
-            .WhenNotMatched(level, Color.Green);
-
-        var factory = builder.BuildNoSet();
-        factory.Start();
-
-        return factory;
-
-    }
-
+    private static readonly IWatchFactory FallbackFactory;
 
     public static void SetFactory( IWatchFactory factory )
     {
@@ -71,7 +54,7 @@ public static class WatchFactoryLocator
     private static IWatchFactory? _actualFactory;
     public static IWatchFactory Factory
     {
-        get => _actualFactory ?? DefaultFactory;
+        get => _actualFactory ?? FallbackFactory;
         private set => _actualFactory = value;
     }
 

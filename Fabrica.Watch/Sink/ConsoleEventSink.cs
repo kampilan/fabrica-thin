@@ -25,6 +25,7 @@ SOFTWARE.
 using Fabrica.Watch.Utilities;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using Fabrica.Watch.Switching;
 
 namespace Fabrica.Watch.Sink;
 
@@ -53,6 +54,10 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
 
     }
 
+    public void Accept(LogEvent logEvent)
+    {
+        _write(logEvent);
+    }
 
     private void _write( LogEvent le)
     {
@@ -84,14 +89,17 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
 
         Console.WriteLine("================================================================================");
 
+        var level = (Level)le.Level;
         var dt = WatchHelpers.FromWatchTimestamp(le.Occurred);
-        var message = $"{dt:T} - {le.Level.ToString().ToUpper()} - {le.Category} - {le.Title}";
+
+        var message = $"{dt:T} - {level.ToString().ToUpper()} - {le.Category} - {le.Title}";
         Console.WriteLine(message);
         if (le.Type != (int)PayloadType.None)
         {
             Console.WriteLine("--------------------------------------------------------------------------------");
             Console.WriteLine(le.Payload);
         }
+
         Console.ResetColor();
 
     }
@@ -100,10 +108,22 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
 
 
     public bool Quiet { get; set; }
-    public ILogger GetLogger<T>() where T: class
+    public ILogger GetLogger(string category, bool retro=false)
     {
 
         if(Quiet)
+            return QuietLogger.Single;
+
+        Category = category;
+
+        return this;
+
+    }
+
+    public ILogger GetLogger<T>( bool retro=false )
+    {
+
+        if (Quiet)
             return QuietLogger.Single;
 
         Category = typeof(T).GetConciseFullName();
@@ -112,7 +132,21 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
 
     }
 
-    public ILogger EnterMethod<T>( [CallerMemberName] string name = "" ) where T : class
+    public ILogger GetLogger( Type target, bool retro = false)
+    {
+
+        if (Quiet)
+            return QuietLogger.Single;
+
+        target.GetConciseFullName();
+
+        return this;
+
+    }
+
+
+
+    public ILogger EnterMethod<T>( [CallerMemberName] string name = "" )
     {
 
         if( Quiet )
@@ -285,6 +319,73 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
     IDisposable ILogger.BeginScope<TState>(TState state)
     {
         throw new NotImplementedException();
+    }
+
+
+}
+
+public class ConsoleLoggerFactory : IWatchFactory
+{
+
+    private ConsoleEventSink TheSink { get; } = new();
+
+    public ISwitchSource Switches { get; set; } = null!;
+
+    public IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider
+    {
+        return TheSink;
+    }
+
+    public async Task Start()
+    {
+
+        var ss = new SwitchSource();
+        ss.WhenNotMatched(Level.Debug, Color.Green);
+
+        Switches = ss;
+        
+        await TheSink.Start();
+
+    }
+
+    public async Task Stop()
+    {
+        await TheSink.Stop();
+    }
+
+    public void Accept(LogEvent logEvent)
+    {
+        TheSink.Accept(logEvent);
+    }
+
+    public ILogger GetLogger(string category, bool retroOn = true)
+    {
+        return TheSink.GetLogger(category, retroOn);
+    }
+
+    public ILogger GetLogger<T>(bool retroOn = true)
+    {
+        return TheSink.GetLogger<T>( retroOn);
+    }
+
+    public ILogger GetLogger(Type type, bool retroOn = true)
+    {
+        return TheSink.GetLogger( type, retroOn );
+    }
+
+    public ILogger GetLogger(ref LoggerRequest request, bool retroOn = true)
+    {
+        return TheSink.GetLogger(request.Category, retroOn);
+    }
+
+    public LogEvent AcquireLogEvent()
+    {
+
+        var le = new LogEvent();
+        le.Reset();
+
+        return le;
+
     }
 
 
