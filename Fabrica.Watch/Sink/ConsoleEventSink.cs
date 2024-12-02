@@ -86,11 +86,11 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
 
         var dt = WatchHelpers.FromWatchTimestamp(le.Occurred);
         var message = $"{dt:T} - {le.Level.ToString().ToUpper()} - {le.Category} - {le.Title}";
-        Console.Out.WriteLine(message);
+        Console.WriteLine(message);
         if (le.Type != (int)PayloadType.None)
         {
-            Console.Out.WriteLine("--------------------------------------------------------------------------------");
-            Console.Out.WriteLine(le.Payload);
+            Console.WriteLine("--------------------------------------------------------------------------------");
+            Console.WriteLine(le.Payload);
         }
         Console.ResetColor();
 
@@ -188,6 +188,7 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
         le.Level = (int)level;
         le.Color = _color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
+        le.Occurred = WatchHelpers.ToWatchTimestamp();
 
         return le;
 
@@ -210,6 +211,7 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
         le.Level = (int)level;
         le.Color = _color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
+        le.Occurred = WatchHelpers.ToWatchTimestamp();
 
         return le;
 
@@ -232,6 +234,7 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
         le.Level = (int)level;
         le.Color = _color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
+        le.Occurred = WatchHelpers.ToWatchTimestamp();
 
         return le;
 
@@ -253,6 +256,7 @@ public class ConsoleEventSink: IEventSinkProvider, ILogger
         le.Level = (int)level;
         le.Color = _color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
+        le.Occurred = WatchHelpers.ToWatchTimestamp();
 
         var (type, source) = ForException.Serialize(ex, context);
         le.Type = (int)type;

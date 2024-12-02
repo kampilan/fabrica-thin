@@ -16,15 +16,12 @@ public static class Appliance
     public static async Task<IAppliance> Bootstrap<TBootstrap>(string path = "", string localConfigFile = null!) where TBootstrap : IBootstrap
     {
 
-        var factory = WatchFactoryLocator.StartBootFactory();
+        using var logger = WatchFactoryLocator.Factory.GetLogger("Fabrica.One.Hosting.Appliance");
 
         IBootstrap bootstrap = null!;
         IAppliance app;
         try
         {
-
-            using var logger = factory.GetLogger("Fabrica.Appliance.Bootstrap");
-
 
             // *****************************************************************
             logger.Debug("Loading Configuration");
@@ -66,13 +63,9 @@ public static class Appliance
         }
         catch (Exception cause)
         {
-            var el = WatchFactoryLocator.Factory.GetLogger("Fabrica.One.Appliance.Bootstrap");
-            el.ErrorWithContext(cause, bootstrap, "Bootstrap failed");
+            logger.ErrorWithContext(cause, bootstrap, "Bootstrap failed");
             throw;
         }
-
-
-        factory.Stop();
 
 
         // *****************************************************************

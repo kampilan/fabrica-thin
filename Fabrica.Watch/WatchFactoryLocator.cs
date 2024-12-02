@@ -29,6 +29,12 @@ namespace Fabrica.Watch;
 public static class WatchFactoryLocator
 {
 
+    static WatchFactoryLocator()
+    {
+        DefaultFactory = StartBootFactory();
+    }
+
+    private static readonly IWatchFactory DefaultFactory;
 
     public static IWatchFactory StartBootFactory(Level level = Level.Debug)
     {
@@ -52,8 +58,7 @@ public static class WatchFactoryLocator
 
         if (factory == null) throw new ArgumentNullException(nameof(factory));
 
-
-        var previous = Factory;
+        var previous = _actualFactory;
 
         factory.Start();
         Factory = factory;
@@ -63,7 +68,12 @@ public static class WatchFactoryLocator
     }
 
 
-    public static IWatchFactory Factory { get; private set; } = null!;
+    private static IWatchFactory? _actualFactory;
+    public static IWatchFactory Factory
+    {
+        get => _actualFactory ?? DefaultFactory;
+        private set => _actualFactory = value;
+    }
 
 
 }

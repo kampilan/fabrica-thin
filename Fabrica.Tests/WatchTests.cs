@@ -18,13 +18,10 @@ public class WatchTests
     public void Test_0620_0100_Default_Watch_Factory_Should_Log()
     {
 
-        var factory = WatchFactoryLocator.StartBootFactory();
+        using var logger = WatchFactoryLocator.Factory.GetLogger<WatchTests>();
 
-        var loggerPre = factory.GetLogger("Test");
+        logger.Debug("Pre Logging. Should be in Console");
 
-        loggerPre.Warning("Pre Logging. Should be in Console");
-
-        factory.Stop();
 
     }
 
