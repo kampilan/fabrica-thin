@@ -178,7 +178,7 @@ public class MongoEventSink: IEventSinkProvider
                     {"Color", le.Color},
                     {"Nesting", le.Nesting},
                     {"Type", le.Type},
-                    {"Payload", le.Base64},
+                    {"Payload", le.Base64??""},
                     {"Occurred", le.Occurred},
                     {"TimeToLive", ttl},
                 };
