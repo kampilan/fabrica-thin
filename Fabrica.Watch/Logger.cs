@@ -125,8 +125,8 @@ public class Logger : ILogger
         le.Level = (int)level;
         le.Color = Color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
-        le.Occurred = WatchHelpers.ToWatchTimestamp();
-
+        le.Occurred = DateTime.UtcNow;
+        
         return le;
 
     }
@@ -145,7 +145,7 @@ public class Logger : ILogger
         le.Level = (int)level;
         le.Color = Color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
-        le.Occurred = WatchHelpers.ToWatchTimestamp();
+        le.Occurred = DateTime.UtcNow;
 
         if ( string.IsNullOrWhiteSpace(content) )
             return le;
@@ -171,7 +171,7 @@ public class Logger : ILogger
         le.Level = (int)level;
         le.Color = Color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
-        le.Occurred = WatchHelpers.ToWatchTimestamp();
+        le.Occurred = DateTime.UtcNow;
 
         if ( obj is null )
             return le;
@@ -197,7 +197,7 @@ public class Logger : ILogger
         le.Level = (int)level;
         le.Color = Color.ToArgb();
         le.Title = title?.ToString() ?? string.Empty;
-        le.Occurred = WatchHelpers.ToWatchTimestamp();
+        le.Occurred = DateTime.UtcNow;
 
         le.Error = ex;
         le.ErrorContext = context;

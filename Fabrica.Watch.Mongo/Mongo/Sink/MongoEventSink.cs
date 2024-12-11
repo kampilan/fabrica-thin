@@ -28,6 +28,7 @@ SOFTWARE.
 
 using Fabrica.Watch.Sink;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
 
@@ -37,6 +38,7 @@ public class MongoEventSink: IEventSinkProvider
 {
 
     // ReSharper disable once ClassNeverInstantiated.Local
+    [BsonIgnoreExtraElements]
     private class DomainModel
     {
 
@@ -47,9 +49,6 @@ public class MongoEventSink: IEventSinkProvider
 
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
-
-        public long NonDebugTimeToLiveSeconds { get; set; }
-        public long DebugTimeToLiveSeconds { get; set; }
 
         public string ServerUri { get; set; } = "";
         public string Database { get; set; } = "";
@@ -103,8 +102,7 @@ public class MongoEventSink: IEventSinkProvider
         if( domain == null )
             throw new Exception( $"Could not find Domain using name: {DomainName}" );
 
-
-
+        
         // ***************************************************
         var client    = new MongoClient( domain.ServerUri );
         var database  = client.GetDatabase( domain.Database );
@@ -164,7 +162,7 @@ public class MongoEventSink: IEventSinkProvider
             foreach (var le in batch.Events)
             {
 
-                var ttl = le.Level <= (int)Level.Debug ? Convert.ToInt64( le.Occurred + DebugTimeToLive.TotalMicroseconds ) : Convert.ToInt64( le.Occurred + NonDebugTimeToLive.TotalMicroseconds );
+                var ttl = le.Level <= (int)Level.Debug ? le.Occurred + DebugTimeToLive : le.Occurred + NonDebugTimeToLive;
 
                 var doc = new BsonDocument
                 {

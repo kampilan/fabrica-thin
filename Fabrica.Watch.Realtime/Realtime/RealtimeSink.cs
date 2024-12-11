@@ -26,7 +26,6 @@ using Fabrica.Watch.Sink;
 using Gurock.SmartInspect;
 using Microsoft.IO;
 using System.Text;
-using Fabrica.Watch.Utilities;
 
 namespace Fabrica.Watch.Realtime;
 
@@ -179,7 +178,7 @@ public class RealtimeSink: IEventSinkProvider
             Title         = le.Title,
             LogEntryType  = entryType,
             ViewerId      = viewerId,
-            Timestamp     = WatchHelpers.FromWatchTimestamp( le.Occurred ),
+            Timestamp     = le.Occurred,
             Data          = data
         };
 

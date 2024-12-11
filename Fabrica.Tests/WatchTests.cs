@@ -111,7 +111,7 @@ public class WatchTests
                 Nesting = 0,
                 Type = 0,
                 Payload = "",
-                Occurred = WatchHelpers.ToWatchTimestamp()
+                Occurred = DateTime.UtcNow
             };
 
             batch.Events.Add(le);

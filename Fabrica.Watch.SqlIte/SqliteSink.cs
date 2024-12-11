@@ -218,7 +218,7 @@ public class SqliteSink: IEventSinkProvider
             foreach (var le in batch.Events)
             {
 
-                var ttl = le.Level <= (int)Level.Debug ? Convert.ToInt64(le.Occurred + DebugTimeToLive.TotalMicroseconds) : Convert.ToInt64(le.Occurred + NonDebugTimeToLive.TotalMicroseconds);
+                var ttl = le.Level <= (int)Level.Debug ? le.Occurred + DebugTimeToLive : le.Occurred + NonDebugTimeToLive;
 
                 Set(cmd, "Domain", Domain);
                 Set(cmd, nameof(LogEvent.CorrelationId), le.CorrelationId);
