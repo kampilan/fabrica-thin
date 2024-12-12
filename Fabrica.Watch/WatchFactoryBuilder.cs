@@ -68,24 +68,33 @@ public class WatchFactoryBuilder
     public void Build()
     {
 
-        var config = new WatchFactoryConfig
+        if (Quiet)
         {
-            Quiet = Quiet,
-            InitialPoolSize = InitialPoolSize,
-            MaxPoolSize = MaxPoolSize,
-            BatchSize = BatchSize,
-            PollingInterval = PollingInterval,
-            WaitForStopInterval = WaitForStopInterval,
+            var factory = new QuietLoggerFactory();
+            WatchFactoryLocator.SetFactory(factory);
+        }
+        else
+        {
 
-            Switches = Source,
-            Sinks = _sinks
+            var config = new WatchFactoryConfig
+            {
+                Quiet = Quiet,
+                InitialPoolSize = InitialPoolSize,
+                MaxPoolSize = MaxPoolSize,
+                BatchSize = BatchSize,
+                PollingInterval = PollingInterval,
+                WaitForStopInterval = WaitForStopInterval,
 
-        };
+                Switches = Source,
+                Sinks = _sinks
 
-        var factory = new WatchFactory(config);
+            };
 
+            var factory = new WatchFactory(config);
 
-        WatchFactoryLocator.SetFactory(factory);
+            WatchFactoryLocator.SetFactory(factory);            
+            
+        }        
 
     }
 
@@ -93,24 +102,35 @@ public class WatchFactoryBuilder
     public IWatchFactory BuildNoSet()
     {
 
-        var config = new WatchFactoryConfig
+        if (Quiet)
         {
-            Quiet = Quiet,
-            InitialPoolSize = InitialPoolSize,
-            MaxPoolSize = MaxPoolSize,
-            BatchSize = BatchSize,
-            PollingInterval = PollingInterval,
-            WaitForStopInterval = WaitForStopInterval,
+            var factory = new QuietLoggerFactory();
+            return factory;
+        }
+        else
+        {
 
-            Switches = Source,
-            Sinks = _sinks
+            var config = new WatchFactoryConfig
+            {
+                Quiet = Quiet,
+                InitialPoolSize = InitialPoolSize,
+                MaxPoolSize = MaxPoolSize,
+                BatchSize = BatchSize,
+                PollingInterval = PollingInterval,
+                WaitForStopInterval = WaitForStopInterval,
 
-        };
+                Switches = Source,
+                Sinks = _sinks
 
-        var factory = new WatchFactory(config);
+            };
 
-        return factory;
+            var factory = new WatchFactory(config);
 
+            return factory;            
+            
+        }
+
+        
     }
 
 

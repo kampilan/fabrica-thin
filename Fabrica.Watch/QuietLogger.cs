@@ -1,6 +1,55 @@
 ﻿using Fabrica.Watch.Sink;
+using Fabrica.Watch.Switching;
 
 namespace Fabrica.Watch;
+
+
+public class QuietLoggerFactory: IWatchFactory
+{
+
+    public ISwitchSource Switches { get; } = new SwitchSource();
+
+    public Task Start()
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task Stop()
+    {
+        return Task.CompletedTask;
+    }
+
+    public void Accept(LogEvent logEvent)
+    {
+    }
+
+    public ILogger GetLogger(string category, bool retroOn = true)
+    {
+        return QuietLogger.Single;
+    }
+
+    public ILogger GetLogger<T>(bool retroOn = true)
+    {
+        return QuietLogger.Single;
+    }
+
+    public ILogger GetLogger(Type type, bool retroOn = true)
+    {
+        return QuietLogger.Single;
+    }
+
+    public ILogger GetLogger(ref LoggerRequest request, bool retroOn = true)
+    {
+        return QuietLogger.Single;
+    }
+
+    public LogEvent AcquireLogEvent()
+    {
+        return LogEvent.Single;
+    }
+    
+}
+
 
 public class QuietLogger: ILogger
 {

@@ -36,9 +36,8 @@ public class DiagnosticsEnrichmentMiddleware( ICorrelation correlation, Diagnost
             options.Enrich(impl);
 
         }
-       
 
-
+        
         // ****************************************************************************************
         await next(context);
 

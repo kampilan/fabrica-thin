@@ -80,14 +80,6 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
 
     public ISwitchSource Switches { get; private set; } = config.Switches;
 
-    public IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider
-    {
-
-        var snk = Sinks.FirstOrDefault(s => s is T);
-        return snk;
-
-    }
-
     private void _return(Logger lg)
     {
          LoggerPool.Return(lg);

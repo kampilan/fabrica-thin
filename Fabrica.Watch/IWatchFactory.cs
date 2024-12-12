@@ -33,8 +33,6 @@ public interface IWatchFactory
 
     ISwitchSource Switches { get; }
 
-    IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider;
-
     Task Start();
     Task Stop();
 
