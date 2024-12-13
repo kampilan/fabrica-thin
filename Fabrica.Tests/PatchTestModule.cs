@@ -21,6 +21,8 @@ public class PatchTestModule : ServiceModule
     {
 
         var maker = new WatchFactoryBuilder();
+        maker.UseForegroundFactory();
+
         maker.UseRealtime();
 
         maker.UseLocalSwitchSource()

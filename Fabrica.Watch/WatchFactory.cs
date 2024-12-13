@@ -27,6 +27,8 @@ using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
 using Fabrica.Watch.Utilities;
 using System.Collections.Concurrent;
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable MemberCanBeProtected.Global
 
 namespace Fabrica.Watch;
 
@@ -49,7 +51,7 @@ public class WatchFactoryConfig
 
 }
 
-public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
+public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatchFactory
 {
 
     private static readonly ILogger Silencer = new QuietLogger();
@@ -63,18 +65,7 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
     private Pool<Logger> LoggerPool { get; set; } = null!;
     private Pool<LogEvent> EventPool { get; set; } = null!;
 
-
-    private ConcurrentQueue<LogEvent> Queue { get; } = new();
-    private CancellationTokenSource MustStop { get; } = new ();
-
-    private List<IEventSinkProvider> Sinks { get; } = [..config.Sinks];
-
-
-    private int BatchSize { get;  } = config.BatchSize;
-    private TimeSpan PollingInterval { get;  } = config.PollingInterval;
-    private TimeSpan WaitForStopInterval { get;  } = config.WaitForStopInterval;
-
-
+    protected List<IEventSinkProvider> Sinks { get; } = [..config.Sinks];
 
     private bool Quiet { get; } = config.Quiet;
 
@@ -90,11 +81,11 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
         EventPool.Return(le);
     }
 
-    private bool _started;
+    protected bool Started { get; set; }
     public virtual async Task Start()
     {
 
-        if (_started)
+        if (Started)
             return;
 
 
@@ -123,29 +114,13 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
         foreach (var sink in Sinks)
             await sink.Start();
 
-
-#pragma warning disable CS4014
-        Task.Run(_process);
-#pragma warning restore CS4014
-
-
-        _started = true;
-
-
-
+        Started = true;
 
     }
 
 
     public virtual async Task Stop()
     {
-
-        if (!_started)
-            return;
-
-        _started = false;
-
-        await MustStop.CancelAsync();
 
         try
         {
@@ -186,71 +161,15 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
             // ignored
         }
 
+        
+        Started = false;
 
     }
 
 
-    public void Accept( LogEvent logEvent )
-    {
+    public abstract void Accept(LogEvent logEvent);
 
-        Enrich(logEvent);
-        Encode(logEvent);
-
-        Queue.Enqueue(logEvent);
-
-    }
-
-
-    private async Task _process()
-    {
-
-        while (!MustStop.IsCancellationRequested)
-            await Drain(false);
-
-        await Drain(true);
-
-    }
-
-    private readonly LogEventBatch _batch = new();
-
-    protected virtual async Task Drain(bool all)
-    {
-
-        if (Queue.IsEmpty)
-            return;
-
-        _batch.Events.Clear();
-
-        while (!Queue.IsEmpty)
-        {
-
-            if (!all && _batch.Events.Count >= BatchSize)
-                break;
-
-            if (!Queue.TryDequeue(out var le))
-                break;
-
-            _batch.Events.Add(le);
-
-        }
-
-        if (_batch.Events.Count > 0)
-        {
-
-            using var cts = new CancellationTokenSource();
-            var ct = cts.Token;
-
-            foreach (var sink in Sinks)
-                await sink.Accept(_batch);
-
-            _batch.Events.ForEach(e => e.Dispose());
-
-        }
-
-
-    }
-
-
+    
     public virtual ILogger GetLogger( string category, bool retroOn=true )
     {
 
@@ -388,4 +307,129 @@ public class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
 
 
 
+}
+
+
+public class BackgroundWatchFactory(WatchFactoryConfig config): AbstractWatchFactory(config)
+{
+    
+    private int BatchSize { get;  } = config.BatchSize;
+    private TimeSpan PollingInterval { get;  } = config.PollingInterval;
+    private TimeSpan WaitForStopInterval { get;  } = config.WaitForStopInterval;
+    
+    private ConcurrentQueue<LogEvent> Queue { get; } = new();
+    private CancellationTokenSource MustStop { get; } = new ();
+    
+    public override void Accept( LogEvent logEvent )
+    {
+
+        Enrich(logEvent);
+        Encode(logEvent);
+
+        Queue.Enqueue(logEvent);
+
+    }
+
+    public override async Task Start()
+    {
+        
+        await base.Start();
+        
+#pragma warning disable CS4014
+        Task.Run(_process);
+#pragma warning restore CS4014
+       
+        
+    }
+
+    
+    public override async Task Stop()
+    {
+
+        if (!Started)
+            return;
+
+        Started = false;
+
+        await MustStop.CancelAsync();        
+        
+        await base.Stop();
+        
+    }
+
+
+    private async Task _process()
+    {
+
+        while( !MustStop.IsCancellationRequested )
+            await Drain(false);
+
+        await Drain(true);
+
+    }
+
+    private readonly LogEventBatch _batch = new();
+
+    protected virtual async Task Drain(bool all)
+    {
+
+        if (Queue.IsEmpty)
+            return;
+
+        _batch.Events.Clear();
+
+        while (!Queue.IsEmpty)
+        {
+
+            if (!all && _batch.Events.Count >= BatchSize)
+                break;
+
+            if (!Queue.TryDequeue(out var le))
+                break;
+
+            _batch.Events.Add(le);
+
+        }
+
+        if (_batch.Events.Count > 0)
+        {
+
+            using var cts = new CancellationTokenSource();
+            var ct = cts.Token;
+
+            foreach (var sink in Sinks)
+                await sink.Accept(_batch);
+
+            _batch.Events.ForEach(e => e.Dispose());
+
+        }
+
+
+    }    
+    
+    
+}
+
+
+public class ForegroundWatchFactory(WatchFactoryConfig config) : AbstractWatchFactory(config)
+{
+    
+    public override void Accept( LogEvent logEvent )
+    {
+
+        var batch = LogEventBatch.Single( "",  logEvent );
+
+        foreach (var sink in Sinks)
+        {
+            sink.Accept(batch).SafeFireAndForget(_handleException);
+        }
+        
+    }
+
+    private void _handleException(Exception cause)
+    {
+        
+    }    
+    
+    
 }

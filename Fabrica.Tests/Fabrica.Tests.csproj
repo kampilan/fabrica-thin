@@ -27,6 +27,7 @@
 	  <ProjectReference Include="..\Fabrica.Mediator\Fabrica.Mediator.csproj" />
 	  <ProjectReference Include="..\Fabrica.Patch\Fabrica.Patch.csproj" />
 	  <ProjectReference Include="..\Fabrica.Rql.Parser\Fabrica.Rql.Parser.csproj" />
+	  <ProjectReference Include="..\Fabrica.Watch.Http\Fabrica.Watch.Http.csproj" />
 	  <ProjectReference Include="..\Fabrica.Watch.Realtime\Fabrica.Watch.Realtime.csproj" />
 	  <ProjectReference Include="..\Fabrica.Watch.SqlIte\Fabrica.Watch.SqlIte.csproj" />
 	  <ProjectReference Include="..\Fabrica.Watch\Fabrica.Watch.csproj" />

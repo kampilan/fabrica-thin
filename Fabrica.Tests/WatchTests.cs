@@ -3,6 +3,7 @@ using Fabrica.Watch;
 using Fabrica.Watch.Realtime;
 using System.Drawing;
 using Fabrica.Utilities.Types;
+using Fabrica.Watch.Http;
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.SqlIte;
 using Fabrica.Watch.Utilities;
@@ -155,7 +156,33 @@ public class WatchTests
 
     }
 
+    
+    [Test]
+    public async Task Test_0620_0500_Should_Send_To_Relay()
+    {
 
+    
+        var maker = WatchFactoryBuilder.Create();
+        maker.UseForegroundFactory();
+        maker.UseRelaySink();
+        
+        maker.UseLocalSwitchSource()
+            .WhenMatched("Fabrica.Tests", "", Level.Debug, Color.LightGreen)
+            .WhenNotMatched(Level.Warning, Color.LightSalmon);
+
+        maker.Build();
+
+        using var logger = this.EnterMethod();
+
+        logger.Debug("Attempting to log just a test event]");
+
+
+    }
+    
+    
+    
+    
+    
 
 
 }

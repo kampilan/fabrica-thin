@@ -39,7 +39,7 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
 
             pb.AddRetry(new RetryStrategyOptions
             {
-                MaxRetryAttempts = 2, 
+                MaxRetryAttempts = 1, 
                 BackoffType = DelayBackoffType.Constant, 
                 UseJitter = true,
                 Delay = TimeSpan.FromMilliseconds(50)
@@ -53,6 +53,8 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
             if( !string.IsNullOrWhiteSpace(SinkEndpoint) )
                 c.BaseAddress = new Uri(SinkEndpoint);
 
+            c.Timeout = TimeSpan.FromSeconds(5);
+            
         });
 
 
@@ -76,7 +78,7 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
 
     }
 
-
+    
     public async Task Accept( LogEventBatch batch, CancellationToken ct=default )
     {
 
@@ -107,7 +109,7 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
             // *****************************************************************
             logger.Debug("Attempting to resolve HTTP Factory");
             var factory = scope.Resolve<IHttpClientFactory>();
-            using var client = factory.CreateClient();
+            using var client = factory.CreateClient(Key);
 
 
 

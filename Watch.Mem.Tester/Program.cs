@@ -8,7 +8,7 @@ using Fabrica.Watch;
 using Fabrica.Watch.Realtime;
 using Fabrica.Watch.Sink;
 
-var config = DefaultConfig.Instance.WithArtifactsPath("e:/benchmarks");
+var config = DefaultConfig.Instance.WithArtifactsPath("d:/benchmarks");
 var summary = BenchmarkRunner.Run<WatchBenchmark>(config);
 
 void Delay(TimeSpan dur)

@@ -9,7 +9,7 @@ public static class WatchFactoryBuilderExtensions
 
     public static JsonHttpEventSinkProvider UseRelaySink(this WatchFactoryBuilder builder, int port = 5246, string? domainUid = null )
     {
-
+        
         var sink = new JsonHttpEventSinkProvider
         {
             SinkEndpoint = $"http://localhost:{port}",

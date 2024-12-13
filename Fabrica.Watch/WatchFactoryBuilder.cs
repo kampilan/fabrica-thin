@@ -64,6 +64,14 @@ public class WatchFactoryBuilder
         return this;
     }
 
+    private bool Foreground { get; set; }
+
+    public WatchFactoryBuilder UseForegroundFactory()
+    {
+        Foreground = true;
+        return this;
+    }    
+    
 
     public void Build()
     {
@@ -73,6 +81,28 @@ public class WatchFactoryBuilder
             var factory = new QuietLoggerFactory();
             WatchFactoryLocator.SetFactory(factory);
         }
+        else if (Foreground)
+        {
+                        
+            var config = new WatchFactoryConfig
+            {
+                Quiet = Quiet,
+                InitialPoolSize = InitialPoolSize,
+                MaxPoolSize = MaxPoolSize,
+                BatchSize = BatchSize,
+                PollingInterval = PollingInterval,
+                WaitForStopInterval = WaitForStopInterval,
+
+                Switches = Source,
+                Sinks = _sinks
+
+            };
+
+            var factory = new ForegroundWatchFactory(config);
+
+            WatchFactoryLocator.SetFactory(factory);            
+            
+        }        
         else
         {
 
@@ -90,7 +120,7 @@ public class WatchFactoryBuilder
 
             };
 
-            var factory = new WatchFactory(config);
+            var factory = new BackgroundWatchFactory(config);
 
             WatchFactoryLocator.SetFactory(factory);            
             
@@ -124,7 +154,7 @@ public class WatchFactoryBuilder
 
             };
 
-            var factory = new WatchFactory(config);
+            var factory = new BackgroundWatchFactory(config);
 
             return factory;            
             
