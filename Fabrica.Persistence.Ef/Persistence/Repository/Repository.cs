@@ -283,18 +283,38 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
     public async Task<EntityOrError<TEntity>> One<TEntity>(string uid, CancellationToken ct = default) where TEntity : class, IEntity
     {
 
-
         using var logger = EnterMethod();
 
+        logger.Inspect("TEntity Name", typeof(TEntity).Name);
+        
         try
         {
 
-            var entity = await Context.TrackedOrDefaultAsync<TEntity>(uid, ct);
+            logger.Debug("Attempting to find entity in LocalView");
+            var entities = Context.Set<TEntity>().Local;
+
+            logger.Inspect(nameof(entities.Count), entities.Count);
+
+
+            // *************************************************
+            logger.Debug("Attempting to dig out entity from LocalView");
+            var entity = entities.SingleOrDefault(e=>e.Uid == uid);
+            if( entity is not null )
+                return entity;
+
+            
+            // *************************************************
+            logger.Debug("Attempting to fetch from database");
+            entity = await Context.Set<TEntity>().SingleOrDefaultAsync(e => e.Uid == uid, ct);
             if( entity is null )
                 return NotFoundError.Create($"Could not find {typeof(TEntity).GetConciseName()} using Uid=({uid})");
 
+
+            
+            // *************************************************            
             return entity;
 
+            
         }
         catch (Exception cause)
         {
