@@ -5,14 +5,14 @@ namespace Fabrica.Persistence.Ef.Contexts;
 public static class DbContextExtensions
 {
 
-    public static async Task<T?> LocalSingleOrDefault<T>(this DbContext context, string uid, CancellationToken cancellationToken = default) where T : class, IEntity
+    public static async Task<TEntity?> TrackedOrDefaultAsync<TEntity>(this DbContext context, string uid, CancellationToken cancellationToken = default) where TEntity : class, IEntity
     {
 
-        var entry = context.ChangeTracker.Entries<T>().SingleOrDefault(e => e.Entity.Uid == uid);
+        var entry = context.ChangeTracker.Entries<TEntity>().SingleOrDefault(e => e.Entity.Uid == uid);
         if (entry is not null)
             return entry.Entity;
 
-        var entity = await context.Set<T>().SingleOrDefaultAsync(e => e.Uid == uid, cancellationToken);
+        var entity = await context.Set<TEntity>().SingleOrDefaultAsync(e => e.Uid == uid, cancellationToken);
 
         return entity;
 

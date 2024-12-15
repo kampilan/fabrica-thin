@@ -3,6 +3,7 @@ using System.Reflection;
 using Autofac;
 using Fabrica.Exceptions;
 using Fabrica.Identity;
+using Fabrica.Persistence.Ef.Contexts;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
@@ -288,8 +289,8 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         try
         {
 
-            var entity = await Context.Set<TEntity>().SingleOrDefaultAsync(m => m.Uid == uid, ct);
-            if (entity is null)
+            var entity = await Context.TrackedOrDefaultAsync<TEntity>(uid, ct);
+            if( entity is null )
                 return NotFoundError.Create($"Could not find {typeof(TEntity).GetConciseName()} using Uid=({uid})");
 
             return entity;
@@ -306,8 +307,8 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         }
 
     }
-
-
+    
+    
     public async Task<EntityOrError<TEntity>> One<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default) where TEntity : class, IEntity
     {
 
