@@ -27,11 +27,17 @@ public class BaseDeltaRequest: BaseEntityRequest, IPatchRequest
     public void FromPatch( ModelPatch patch )
     {
 
-        if (patch == null) throw new ArgumentNullException(nameof(patch));
+        if( patch == null) throw new ArgumentNullException(nameof(patch));
+
+        if( patch.Verb == PatchVerb.Create )
+        {
+            Uid = patch.Uid;
+            Delta.Add("Uid", patch.Uid);            
+        }
 
         if( patch.Verb == PatchVerb.Update )
             Uid = patch.Uid;
-
+        
         Delta = new Dictionary<string, object>(patch.Properties);
 
     }

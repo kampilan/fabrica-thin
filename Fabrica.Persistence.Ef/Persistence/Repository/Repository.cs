@@ -294,17 +294,15 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
             var entities = Context.Set<TEntity>().Local;
 
             logger.Inspect(nameof(entities.Count), entities.Count);
-            if (entities.Count > 0)
-            {
-                var x = entities.First();
-                logger.LogObject(nameof(x), x);
-            }
 
+            
+            
             // *************************************************
             logger.Debug("Attempting to dig out entity from LocalView");
             var entity = entities.SingleOrDefault(e=>e.Uid == uid);
             if( entity is not null )
                 return entity;
+
 
             
             // *************************************************
