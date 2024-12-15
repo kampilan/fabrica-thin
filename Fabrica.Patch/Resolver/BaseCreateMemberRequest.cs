@@ -31,6 +31,9 @@ public class BaseCreateMemberRequest: BaseEntityRequest, IPatchRequest
 
         ParentUid = patch.Membership?.Uid??""; 
 
+        if( patch.Verb == PatchVerb.Create )
+            patch.Properties.Add("Uid", patch.Uid);            
+        
         Delta = new Dictionary<string, object>(patch.Properties);
 
     }
