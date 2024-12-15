@@ -176,7 +176,9 @@ public class WatchTests
 
         logger.Debug("Attempting to log just a test event]");
 
+        await Task.Delay(TimeSpan.FromSeconds(3));
 
+        
     }
     
     

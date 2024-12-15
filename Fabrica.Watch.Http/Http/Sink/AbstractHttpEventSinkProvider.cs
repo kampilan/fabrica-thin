@@ -77,7 +77,7 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
         return Task.CompletedTask;
 
     }
-
+  
     
     public async Task Accept( LogEventBatch batch, CancellationToken ct=default )
     {

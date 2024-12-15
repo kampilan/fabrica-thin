@@ -306,7 +306,6 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
     }
 
 
-
 }
 
 
@@ -370,7 +369,7 @@ public class BackgroundWatchFactory(WatchFactoryConfig config): AbstractWatchFac
 
     private readonly LogEventBatch _batch = new();
 
-    protected virtual async Task Drain(bool all)
+    private async Task Drain(bool all)
     {
 
         if (Queue.IsEmpty)
@@ -393,9 +392,6 @@ public class BackgroundWatchFactory(WatchFactoryConfig config): AbstractWatchFac
 
         if (_batch.Events.Count > 0)
         {
-
-            using var cts = new CancellationTokenSource();
-            var ct = cts.Token;
 
             foreach (var sink in Sinks)
                 await sink.Accept(_batch);
