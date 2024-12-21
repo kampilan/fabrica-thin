@@ -167,11 +167,16 @@ public class KeycloakIdentityProvider(ICorrelation correlation, IHttpClientFacto
 
             var (ok, results) = await factory.Many<User>(req, ct);
 
-            if( ok && results.Any() )
+            user = results.FirstOrDefault();
+            
+            if( ok && user is not null )
             {
+                response.IdentityUid = user.Id!;
                 response.Created = false;
                 response.Exists = true;
+
                 return response;
+                
             }
 
         }
