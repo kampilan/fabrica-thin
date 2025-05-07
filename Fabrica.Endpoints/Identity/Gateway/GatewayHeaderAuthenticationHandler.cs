@@ -3,7 +3,7 @@
 
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Fabrica.Identity.Token;
+using System.Text.Json;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 using Microsoft.AspNetCore.Authentication;
@@ -12,57 +12,48 @@ using Microsoft.Extensions.Options;
 
 namespace Fabrica.Identity.Gateway;
 
-public class GatewayTokenAuthenticationHandler : AuthenticationHandler<GatewayTokenAuthenticationSchemeOptions>
+
+public class GatewayHeaderAuthenticationHandler : AuthenticationHandler<GatewayTokenAuthenticationSchemeOptions>
 {
 
 
-    public GatewayTokenAuthenticationHandler( ICorrelation correlation, IGatewayTokenEncoder jwtEncoder, IOptionsMonitor<GatewayTokenAuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder )
+    public GatewayHeaderAuthenticationHandler( ICorrelation correlation,  IOptionsMonitor<GatewayTokenAuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder )
     {
-
         Correlation = correlation;
-        JwtEncoder  = jwtEncoder;
-
     }
 
     private ICorrelation Correlation { get; }
-    private IGatewayTokenEncoder JwtEncoder { get; }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
 
         using var logger = Correlation.EnterMethod<GatewayTokenAuthenticationHandler>();
 
-
-        var token = Context.Request.Headers[IdentityConstants.TokenHeaderName].FirstOrDefault();
-        if( string.IsNullOrWhiteSpace(token) )
+        
+        // *****************************************************************
+        logger.Debug("Attempting to dig out gateway header");
+        var json = Context.Request.Headers[IdentityConstants.IdentityHeaderName].FirstOrDefault();
+        if( string.IsNullOrWhiteSpace(json) )
         {
             logger.Debug("Header not present. Attempting to build skip result");
             var noresult = AuthenticateResult.NoResult();
             return Task.FromResult(noresult);
         }
+        
 
-
-
-        IClaimSet claims;
+        
         // *****************************************************************
-        logger.Debug("Attempting to decode gateway token");
-        try
+        logger.Debug("Attempting to decode gateway header");
+        var claims = JsonSerializer.Deserialize<ClaimSetModel>(json);
+        if (claims is null)
         {
-
-            claims = JwtEncoder.Decode( IdentityConstants.Scheme, token );
-
-            logger.LogObject(nameof(claims), claims);
-
-        }
-        catch (Exception cause)
-        {
-            logger.Debug( cause, "Decode failed. Attempting to build skip result" );
+            logger.Debug( "JSON parse failed. Attempting to build skip result" );
             var noresult = AuthenticateResult.NoResult();
             return Task.FromResult(noresult);
-        }
+        }            
 
-
-
+        
+        
         // *****************************************************************
         logger.Debug("Attempting to build ClaimsIdentity");
         var ci = new FabricaIdentity( claims );
@@ -91,18 +82,3 @@ public class GatewayTokenAuthenticationHandler : AuthenticationHandler<GatewayTo
 
 }
 
-public class GatewayAmbientTokenSource(ICorrelation correlation) : IAccessTokenSource
-{
-
-    private ICorrelation Correlation { get; } = correlation;
-
-    public string Name => "Fabrica.Gateway";
-    public bool HasExpired => false;
-
-    public Task<string> GetToken()
-    {
-        var token = Correlation.CallerGatewayToken;
-        return Task.FromResult(token);
-    }
-
-}

@@ -13,7 +13,6 @@ namespace Fabrica.Filters;
 public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOptions options): CorrelatedObject(correlation), IEndpointFilter
 {
 
-
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
 
@@ -22,7 +21,12 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
 
         using var logger = EnterMethod();
 
-
+        if( context.HttpContext.Response.StatusCode == 401 )
+        {
+            var obj = new { CustomErrorMessage = "401 Unauthorized" };
+            return  Results.Json(obj, options, "application/json", 401);           
+        }
+        
         if (result is IValueResponse {IsSuccessful: true} ok)
         {
 

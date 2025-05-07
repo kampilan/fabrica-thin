@@ -70,7 +70,7 @@ public static class StringValidatorEx
 
     public static IValidator<TFact, string> HasMaximumLength<TFact>( this IValidator<TFact, string> validator, int maximum ) where TFact : class
     {
-        return validator.Is( ( f, v ) => string.IsNullOrWhiteSpace(v) || v.Length >= maximum );
+        return validator.Is( ( f, v ) => string.IsNullOrWhiteSpace(v) || v.Length <= maximum );
     }
 
 
