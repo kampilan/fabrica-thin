@@ -79,6 +79,6 @@ public class CredentialSet
 
     public string SessionToken { get; set; } = string.Empty;
 
-    public DateTime Expiration { get; set; }
+    public DateTime? Expiration { get; set; }
 
 }
