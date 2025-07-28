@@ -171,8 +171,10 @@ public class FileSignalController: ISignalController, IRequiresStart, IDisposabl
                 break;
             }
 
-            if (EndWatchEvent.WaitOne(TimeSpan.FromSeconds(10)))
+            if (EndWatchEvent.WaitOne(0))
                 break;
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
             
         }
 
