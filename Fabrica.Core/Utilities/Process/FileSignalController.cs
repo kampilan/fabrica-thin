@@ -159,7 +159,7 @@ public class FileSignalController: ISignalController, IRequiresStart, IDisposabl
 
     }
 
-    private void WatchAppliance()
+    private async Task WatchAppliance()
     {
 
         while (true)
@@ -174,6 +174,8 @@ public class FileSignalController: ISignalController, IRequiresStart, IDisposabl
             if (EndWatchEvent.WaitOne(TimeSpan.FromMilliseconds(500)))
                 break;
 
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+            
         }
 
 
@@ -216,9 +218,17 @@ public class FileSignalController: ISignalController, IRequiresStart, IDisposabl
     public Task Start()
     {
         if (Owner == OwnerType.Host)
-            Task.Run(WatchAppliance);
+            Task.Run( async ()=>
+            {
+                await WatchAppliance();
+                
+            });
         else
-            Task.Run(WatchAppliance);
+            Task.Run( async ()=>
+            {
+                await WatchAppliance();
+                
+            });
 
         return Task.CompletedTask;
 
