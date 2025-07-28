@@ -29,13 +29,14 @@ using Fabrica.Watch.Utilities;
 using System.Collections.Concurrent;
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 // ReSharper disable MemberCanBeProtected.Global
+// ReSharper disable UnusedMember.Local
 
 namespace Fabrica.Watch;
 
 public class WatchFactoryConfig
 {
 
-    public bool Quiet { get; init; } = false;
+    public bool Quiet { get; init; }
 
     public int InitialPoolSize { get; set; } = 50;
     public int MaxPoolSize { get; set; } = 500;
@@ -360,8 +361,10 @@ public class BackgroundWatchFactory(WatchFactoryConfig config): AbstractWatchFac
     private async Task _process()
     {
 
-        while( !MustStop.IsCancellationRequested )
+        while (!MustStop.IsCancellationRequested)
+        {
             await Drain(false);
+        }
 
         await Drain(true);
 
@@ -372,8 +375,11 @@ public class BackgroundWatchFactory(WatchFactoryConfig config): AbstractWatchFac
     private async Task Drain(bool all)
     {
 
-        if (Queue.IsEmpty)
+        if( Queue.IsEmpty )
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(100));
             return;
+        }
 
         _batch.Events.Clear();
 
