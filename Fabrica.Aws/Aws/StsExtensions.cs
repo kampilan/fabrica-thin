@@ -25,7 +25,7 @@ public static class StsExtensions
         {
             RoleArn = arn,
             RoleSessionName = uid,
-            DurationSeconds = durSeconds
+            DurationSeconds = durSeconds,
         };
 
         if( !string.IsNullOrWhiteSpace(policy) )

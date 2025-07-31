@@ -24,11 +24,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="Autofac" Version="8.3.0" />
-		<PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.3" />
-		<PackageReference Include="AWSSDK.S3" Version="4.0.6" />
-		<PackageReference Include="AWSSDK.SecretsManager" Version="4.0.0.14" />
-		<PackageReference Include="AWSSDK.SecurityToken" Version="4.0.1.5" />
-		<PackageReference Include="AWSSDK.SQS" Version="4.0.0.15" />
+		<PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.409.8" />
+		<PackageReference Include="AWSSDK.S3" Version="3.7.421.8" />
+		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.183" />
+		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.402.18" />
+		<PackageReference Include="AWSSDK.SQS" Version="3.7.400.184" />
 	</ItemGroup>
 
 
