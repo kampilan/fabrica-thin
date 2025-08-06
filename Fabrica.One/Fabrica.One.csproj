@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>Fabrica.One</Title>
     <Authors>Pond Hawk Technologies Inc.</Authors>
     <Company>Pond Hawk Technologies Inc.</Company>
     <Description>Components needed to deploy Application using Fabrica.One</Description>
-    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -24,9 +24,9 @@
 
 	<ItemGroup>
 	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.8" />
 	  <PackageReference Include="YamlDotNet" Version="16.3.0" />
 	</ItemGroup>
 

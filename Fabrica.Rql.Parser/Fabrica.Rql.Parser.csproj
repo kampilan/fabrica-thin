@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Fabrica.Rql</RootNamespace>
@@ -10,7 +10,7 @@
     <Authors>Pond Hawk Technologies Inc.</Authors>
     <Company>Pond Hawk Technologies Inc.</Company>
     <Description>RQL Parser with AST</Description>
-    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

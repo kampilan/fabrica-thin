@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>Fabrica Watch</Title>
 	<Description>Fabrica Watch logging facsade</Description>
 	<Authors>Pond Hawk Technologies Inc.</Authors>
 	<Company>Pond Hawk Technologies Inc.</Company>
-	<Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
+	<Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -24,7 +24,7 @@
 
 	<ItemGroup>
     <PackageReference Include="MemoryPack" Version="1.21.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
   </ItemGroup>
 

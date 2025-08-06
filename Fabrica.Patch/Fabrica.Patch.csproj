@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>Fabrica.Patch</Title>
     <Authors>Pond Hawk Technologies Inc.</Authors>
     <Description>Implmentation od Patch using Mediator
 </Description>
-    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
   </PropertyGroup>
 
 

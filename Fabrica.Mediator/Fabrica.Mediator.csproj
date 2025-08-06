@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Fabrica</RootNamespace>
@@ -10,7 +10,7 @@
     <Company>Pond Hawk Technologies Inc.</Company>
     <Product>Fabrica.Mediator</Product>
     <Description>Helpers for implementing MediaTR based apps</Description>
-    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
   </PropertyGroup>
 
 	<PropertyGroup>

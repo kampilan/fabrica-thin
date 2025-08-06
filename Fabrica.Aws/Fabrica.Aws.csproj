@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Fabrica</RootNamespace>
@@ -9,7 +9,7 @@
     <Description>Fabrica helpers for using AWS Services</Description>
     <Authors>Pond Hawk Technologies Inc.</Authors>
     <Company>Pond Hawk Technologies Inc.</Company>
-    <Copyright>Pond Hawk Technologies Inc. (c) 2024</Copyright>
+    <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -23,12 +23,12 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Autofac" Version="8.3.0" />
-		<PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.409.8" />
-		<PackageReference Include="AWSSDK.S3" Version="3.7.421.8" />
-		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.183" />
-		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.402.18" />
-		<PackageReference Include="AWSSDK.SQS" Version="3.7.400.184" />
+		<PackageReference Include="Autofac" Version="8.4.0" />
+		<PackageReference Include="AWSSDK.DynamoDBv2" Version="[3.7.409.8]" />
+		<PackageReference Include="AWSSDK.S3" Version="[3.7.421.8]" />
+		<PackageReference Include="AWSSDK.SecretsManager" Version="[3.7.400.183]" />
+		<PackageReference Include="AWSSDK.SecurityToken" Version="[3.7.402.18]" />
+		<PackageReference Include="AWSSDK.SQS" Version="[3.7.400.184]" />
 	</ItemGroup>
 
 
