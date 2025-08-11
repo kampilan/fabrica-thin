@@ -25,7 +25,7 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="jose-jwt" Version="5.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
-		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.13.0" />
+		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.13.1" />
 	</ItemGroup>
 
 	<ItemGroup>
