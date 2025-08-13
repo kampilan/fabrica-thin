@@ -154,6 +154,10 @@ public abstract class AbstractRequestMediator: IRequestMediator
                 error = Response<TResponse>.FailedValidation( ve.Explanation, ve.Violations );
                 break;
 
+            case FailedValidationException fv:
+                error = Response<TResponse>.FailedValidation( fv.Explanation, fv.Details );
+                break;
+
             case ExternalException ee:
                 error = Response<TResponse>.Failed(ee.Kind, ee.ErrorCode, ee.Explanation, ee.Details);
                 break;
