@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
+using Fabrica.Exceptions;
+using Fabrica.Persistence.Repository;
+using Fabrica.Watch;
 using ILogger = Fabrica.Watch.ILogger;
 
 
@@ -18,7 +21,7 @@ public abstract class AbstractDbContext: DbContext
         Correlation = builder.Correlation;
         Factory     = builder.LoggerFactory;
 
-        IsReadonly       = false;
+        IsReadonly = false;
 
     }
 
@@ -29,7 +32,7 @@ public abstract class AbstractDbContext: DbContext
         Correlation = builder.Correlation;
         Factory     = builder.LoggerFactory;
 
-        IsReadonly       = true;
+        IsReadonly = true;
 
     }
 
@@ -228,6 +231,12 @@ public abstract class AbstractDbContext: DbContext
 
     }
 
+ 
+    
+    
+    
+    
+    
 
 
 }
