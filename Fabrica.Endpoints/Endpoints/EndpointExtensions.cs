@@ -20,7 +20,7 @@ public static class EndpointExtensions
 
         var assemblies = new ReadOnlyCollection<Assembly>(sources);
 
-        var modules = assemblies.SelectMany(x => x.GetTypes().Where(t => !t.IsAbstract && typeof(IEndpointModule).IsAssignableFrom(t) && t != typeof(IEndpointModule) && t.IsPublic));
+        var modules = assemblies.SelectMany(x => x.GetTypes().Where(t => !t.IsAbstract && typeof(IEndpointModule).IsAssignableFrom(t) && t != typeof(IEndpointModule) && (t.IsPublic || t.IsNested) ));
 
         foreach (var newModule in modules)
         {
