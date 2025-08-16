@@ -25,12 +25,14 @@ public class ExceptionHandler( ICorrelation correlation, JsonSerializerOptions o
 
 
         if( status == 500 )
-            logger.ErrorWithContext( exception, error,  "An unhandled Exception  was caught." );
+            logger.ErrorWithContext( exception, error,  "An unhandled Exception was caught." );
         else
             logger.Debug( exception, "An unhandled Exception was caught.");
 
 
         httpContext.Response.StatusCode = status;
+        httpContext.Response.ContentType = "application/problem+json";
+
         await httpContext.Response.WriteAsJsonAsync(error, options, cancellationToken);
 
         return true;
