@@ -11,6 +11,7 @@
     <Product>Fabrica.Mediator</Product>
     <Description>Helpers for implementing MediaTR based apps</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -24,7 +25,7 @@
 
 
 	<ItemGroup>
-    <PackageReference Include="MediatR" Version="[12.5.0]" />
+    <PackageReference Include="MediatR" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,22 +4,23 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="JsonPatch.Net" Version="3.3.0" />
-		<PackageReference Include="JsonPointer.Net" Version="5.3.1" />
-		<PackageReference Include="MemoryPack" Version="1.21.4" />
-		<PackageReference Include="MessagePack" Version="3.1.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
+		<PackageReference Include="JsonPatch.Net" />
+		<PackageReference Include="JsonPointer.Net" />
+		<PackageReference Include="MemoryPack"  />
+		<PackageReference Include="MessagePack"  />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" >
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.8" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-		<PackageReference Include="NUnit" Version="4.4.0" />
-		<PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
-		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk"  />
+		<PackageReference Include="NUnit"  />
+		<PackageReference Include="NUnit3TestAdapter" />
+		<PackageReference Include="PropertyChanged.Fody" />
 	</ItemGroup>
 
 	<ItemGroup>

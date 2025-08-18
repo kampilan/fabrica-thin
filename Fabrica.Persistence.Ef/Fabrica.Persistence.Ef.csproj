@@ -10,6 +10,7 @@
     <Authors>Pond Hawk Technologies Inc.</Authors>
     <Company>Pond Hawk Technologies Inc.</Company>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -23,12 +24,12 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
-		<PackageReference Include="OneOf" Version="3.0.271" />
-		<PackageReference Include="OneOf.SourceGenerator" Version="3.0.271" />
-		<PackageReference Include="SmartFormat" Version="3.6.0" />
+		<PackageReference Include="JetBrains.Annotations"  />
+		<PackageReference Include="Microsoft.EntityFrameworkCore"  />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational"  />
+		<PackageReference Include="OneOf"  />
+		<PackageReference Include="OneOf.SourceGenerator"  />
+		<PackageReference Include="SmartFormat"  />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -11,6 +11,7 @@
     <Company>Pond Hawk Technologies Inc.</Company>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -23,7 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="SmartInspect" Version="3.5.0.58" />
+		<PackageReference Include="SmartInspect" />
 	</ItemGroup>
 
 	<ItemGroup>

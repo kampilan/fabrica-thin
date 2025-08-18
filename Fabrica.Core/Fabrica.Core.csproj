@@ -12,6 +12,7 @@
     <Description>Utilites for building Fabrica Applications</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -26,9 +27,9 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="8.4.0" />
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
+    <PackageReference Include="Autofac" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
   </ItemGroup>
 
 

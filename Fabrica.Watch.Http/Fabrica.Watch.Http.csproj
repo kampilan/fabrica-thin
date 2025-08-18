@@ -11,6 +11,7 @@
     <Description>Fabrica.Watch Http sink.</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 
@@ -25,11 +26,11 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Autofac" Version="8.4.0" />
-		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
-		<PackageReference Include="Polly" Version="8.6.2" />
-		<PackageReference Include="Polly.Extensions" Version="8.6.2" />
+		<PackageReference Include="Autofac"  />
+		<PackageReference Include="Autofac.Extensions.DependencyInjection"  />
+		<PackageReference Include="Microsoft.Extensions.Http"  />
+		<PackageReference Include="Polly"  />
+		<PackageReference Include="Polly.Extensions"  />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -9,6 +9,7 @@
     <Company>Pond Hawk Technologies Inc.</Company>
     <Description>Components needed to deploy Application using Fabrica.One</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -24,10 +25,10 @@
 
 	<ItemGroup>
 	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.8" />
-	  <PackageReference Include="YamlDotNet" Version="16.3.0" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" />
+	  <PackageReference Include="YamlDotNet" />
 	</ItemGroup>
 
 

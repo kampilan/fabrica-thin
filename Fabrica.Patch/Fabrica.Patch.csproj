@@ -6,9 +6,9 @@
     <Nullable>enable</Nullable>
     <Title>Fabrica.Patch</Title>
     <Authors>Pond Hawk Technologies Inc.</Authors>
-    <Description>Implmentation od Patch using Mediator
-</Description>
+    <Description>Implmentation od Patch using Mediator</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 

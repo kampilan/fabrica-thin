@@ -10,6 +10,7 @@
     <Company>Pond Hawk Technologies Inc.</Company>
     <Description>Helper for implementing Fabrica APIs</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -23,9 +24,9 @@
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-		<PackageReference Include="jose-jwt" Version="5.2.0" />
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
-		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.13.1" />
+		<PackageReference Include="jose-jwt"  />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi"  />
+		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
 	</ItemGroup>
 
 	<ItemGroup>

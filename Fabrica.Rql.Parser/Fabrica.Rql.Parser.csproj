@@ -11,10 +11,11 @@
     <Company>Pond Hawk Technologies Inc.</Company>
     <Description>RQL Parser with AST</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sprache" Version="2.3.1" />
+    <PackageReference Include="Sprache" />
   </ItemGroup>
 
   <ItemGroup>

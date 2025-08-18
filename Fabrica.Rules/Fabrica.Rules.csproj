@@ -10,6 +10,7 @@
     <Description>Rules engine with support for validation and general reasoning.</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -22,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-    <PackageReference Include="Autofac" Version="8.4.0" />
+    <PackageReference Include="Autofac" />
   </ItemGroup>
 
   <ItemGroup>

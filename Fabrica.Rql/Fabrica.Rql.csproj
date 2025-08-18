@@ -10,6 +10,7 @@
     <Description>Implementation of RQL with AST and various serializers</Description>
     <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>	
   </PropertyGroup>
 
 
