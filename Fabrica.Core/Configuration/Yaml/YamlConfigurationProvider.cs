@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using YamlDotNet.Core;
 
-namespace Fabrica.One.Configuration.Yaml
+namespace Fabrica.Configuration.Yaml
 {
     /// <summary>
     /// A YAML file based <see cref="FileConfigurationProvider"/>.

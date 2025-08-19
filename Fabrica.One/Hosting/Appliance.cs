@@ -2,8 +2,8 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ConvertToUsingDeclaration
 
+using Fabrica.Configuration.Yaml;
 using Fabrica.One.Bootstraps;
-using Fabrica.One.Configuration.Yaml;
 using Fabrica.Watch;
 using Microsoft.Extensions.Configuration;
 

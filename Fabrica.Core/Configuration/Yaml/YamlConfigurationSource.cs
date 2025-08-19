@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace Fabrica.One.Configuration.Yaml
+namespace Fabrica.Configuration.Yaml
 {
     /// <summary>
     /// A YAML file based <see cref="FileConfigurationSource"/>.

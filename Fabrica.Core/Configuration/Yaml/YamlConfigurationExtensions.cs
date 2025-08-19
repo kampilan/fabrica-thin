@@ -4,7 +4,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 
-namespace Fabrica.One.Configuration.Yaml
+namespace Fabrica.Configuration.Yaml
 {
     /// <summary>
     /// Extension methods for adding <see cref="YamlConfigurationExtensions"/>.

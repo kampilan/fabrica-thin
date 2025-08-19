@@ -5,13 +5,12 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-
     <PackageVersion Include="AWSSDK.DynamoDBv2" Version="[3.7.500,4)" />
     <PackageVersion Include="AWSSDK.S3" Version="[3.7.500,4)" />
     <PackageVersion Include="AWSSDK.SecretsManager" Version="[3.7.500,4)" />
     <PackageVersion Include="AWSSDK.SecurityToken" Version="[3.7.500,4)" />
     <PackageVersion Include="AWSSDK.SQS" Version="[3.7.500,4)" />
-
+    <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.13.1" />

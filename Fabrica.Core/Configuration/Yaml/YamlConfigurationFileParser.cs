@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using YamlDotNet.RepresentationModel;
 
-namespace Fabrica.One.Configuration.Yaml
+namespace Fabrica.Configuration.Yaml
 {
     internal class YamlConfigurationFileParser
     {
