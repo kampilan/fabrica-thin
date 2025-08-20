@@ -50,7 +50,8 @@ public static class StringValidatorEx
     {
 
         var v = validator.Is((f, v) => !(string.IsNullOrWhiteSpace(v)));
-        v.Otherwise("Testing");
+        
+        v.Otherwise($"{validator.PropertyName} is required");
 
         return v;
         

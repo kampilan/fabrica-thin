@@ -29,6 +29,10 @@ namespace Fabrica.Rules.Validators;
 public interface IValidator<out TFact, out TType>
 {
 
+    string GroupName { get; }
+    string PropertyName { get; }
+    
+    
     IValidator<TFact, TType> Is( Func<TFact, TType, bool> condition );
 
     IValidator<TFact, TType> IsNot( Func<TFact, TType, bool> condition );
@@ -46,11 +50,16 @@ public interface IValidator<out TFact, out TType>
 public class Validator<TFact, TType> : BaseValidator<TFact>, IValidator<TFact,TType>
 {
 
-    public Validator( ValidationRule<TFact> rule, string group, Func<TFact, TType> extractor ) : base( rule, group )
+    public Validator( ValidationRule<TFact> rule, string group, string propertyName, Func<TFact, TType> extractor ) : base( rule, group )
     {
+
+        GroupName = group;
+        PropertyName = propertyName;
         Extractor = extractor;
     }
 
+    public string GroupName { get; private set; }
+    public string PropertyName { get; private set; }
 
     protected Func<TFact, TType> Extractor { get;  }
 
