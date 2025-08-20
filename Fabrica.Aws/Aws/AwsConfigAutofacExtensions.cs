@@ -26,8 +26,7 @@ public static class AwsConfigAutofacExtensions
             return builder;
 
         var sharedFile = new SharedCredentialsFile();
-        if (!(sharedFile.TryGetProfile(profileName, out var profile) &&
-              AWSCredentialsFactory.TryGetAWSCredentials(profile, sharedFile, out var credentials)))
+        if (!(sharedFile.TryGetProfile(profileName, out var profile) && AWSCredentialsFactory.TryGetAWSCredentials(profile, sharedFile, out var credentials)))
             throw new Exception($"Local profile {profile} could not be loaded");
 
 

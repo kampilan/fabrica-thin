@@ -48,7 +48,12 @@ public static class StringValidatorEx
 
     public static IValidator<TFact, string> Required<TFact>( this IValidator<TFact, string> validator) where TFact : class
     {
-        return validator.Is((f, v) => !(string.IsNullOrWhiteSpace(v)));
+
+        var v = validator.Is((f, v) => !(string.IsNullOrWhiteSpace(v)));
+        v.Otherwise("Testing");
+
+        return v;
+        
     }
 
 
