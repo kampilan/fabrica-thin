@@ -5,15 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Fabrica.Watch.Bridges.MicrosoftImpl;
 
-public class LoggerFactory: ILoggerFactory
+public class LoggerFactory(ILoggingCorrelation correlation): ILoggerFactory
 {
-
-    private LoggerProvider Provider { get; } = new LoggerProvider();
-
+    private LoggerProvider Provider { get; } = new();
 
     public Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName)
     {
-        var logger = Provider.CreateLogger(categoryName);
+        var logger = Provider.CreateLogger(correlation, categoryName);
         return logger;
     }
 
