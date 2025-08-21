@@ -17,6 +17,7 @@ public static class CorrelationExtensions
 
         builder.Register(_ => new Correlation())
             .As<ICorrelation>()
+            .As<ILoggingCorrelation>()
             .AsSelf()
             .InstancePerLifetimeScope();
 
@@ -29,6 +30,7 @@ public static class CorrelationExtensions
 
         builder.Register( _=> source.Clone() )
             .As<ICorrelation>()
+            .As<ILoggingCorrelation>()
             .AsSelf()
             .InstancePerLifetimeScope();
 

@@ -3,7 +3,7 @@
 public interface ILoggingCorrelation
 {
 
-    string CorrelationId { get; }
+    string Uid { get; }
     string Tenant { get; }
     string Subject { get; }
     

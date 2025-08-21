@@ -42,8 +42,11 @@ public class Correlation: ICorrelation
 
     public string CallerGatewayToken { get; set; } = string.Empty;
 
+    public string CorrelationId { get; }
     public string Tenant { get; set; } = string.Empty;
 
+    public string Subject { get; set; } = string.Empty;    
+    
     public IPrincipal Caller { get; set; } = TheNullUser;
 
     public bool Debug { get; set; }
@@ -55,8 +58,12 @@ public class Correlation: ICorrelation
     {
 
         var ci = new FabricaIdentity(claimSet);
+        var principal = new ClaimsPrincipal(ci);
 
-        Caller = new ClaimsPrincipal(ci);
+        Subject = principal.GetName();
+        
+        Caller = principal;
+        
     }
 
     public Correlation Clone()

@@ -20,7 +20,7 @@ public class LoggerProvider: ILoggerProvider
 
         var request = new LoggerRequest
         {
-            CorrelationId = correlation.CorrelationId,
+            CorrelationId = correlation.Uid,
             Tenant = correlation.Tenant,
             Subject = correlation.Subject,
             Category = categoryName

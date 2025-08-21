@@ -23,19 +23,17 @@ SOFTWARE.
 */
 
 using System.Security.Principal;
+using Fabrica.Watch;
 
 namespace Fabrica.Utilities.Container;
 
-public interface ICorrelation
+public interface ICorrelation: ILoggingCorrelation
 {
-
 
     string Uid { get; }
 
     string CallerGatewayToken { get; }
-
-    string Tenant { get; }
-
+    
     IPrincipal? Caller { get; }
 
     Correlation Clone();
