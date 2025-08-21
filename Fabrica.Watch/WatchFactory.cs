@@ -217,7 +217,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
     public virtual ILogger GetLogger( Type type, bool retroOn = true)
     {
 
-        var logger = GetLogger(type.FullName ?? string.Empty, retroOn );
+        var logger = GetLogger(type.GetConciseFullName() ?? string.Empty, retroOn );
 
         return logger;
 

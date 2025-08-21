@@ -120,8 +120,7 @@ public static class CorrelationExtensions
 
         var category = typeof(T).GetConciseFullName() ?? "Unknown";
 
-        return GetLogger(correlation, category);
-
+        return GetLogger( correlation, category );
 
     }
 
