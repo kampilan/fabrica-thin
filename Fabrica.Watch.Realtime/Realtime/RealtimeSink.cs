@@ -175,6 +175,7 @@ public class RealtimeSink: IEventSinkProvider
             AppName       = "Fabrica",
             Level         = _mapToSILevel(le.Level),
             SessionName   = le.Category,
+            HostName      = le.CorrelationId,
             Title         = le.Title,
             LogEntryType  = entryType,
             ViewerId      = viewerId,
