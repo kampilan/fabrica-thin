@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using Humanizer;
 
 namespace Fabrica.Rules.Validators;
 
@@ -35,11 +36,29 @@ public static class BoolValidatorEx
         
     public static IValidator<TFact, bool> IsTrue<TFact>(  this IValidator<TFact, bool> validator ) where TFact : class
     {
-        return validator.Is( ( f, v ) => v );
+
+        var v = validator.Is( ( f, v ) => v );
+        
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        
+        v.Otherwise($"{propName} is not true");
+
+        return v;        
+        
     }
 
     public static IValidator<TFact, bool> IsFalse<TFact>(  this IValidator<TFact, bool> validator ) where TFact : class
     {
-        return validator.IsNot( ( f, v ) => v );
+        
+        var v = validator.IsNot( ( f, v ) => v );
+        
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        
+        v.Otherwise($"{propName} is not false");
+
+        return v;        
+        
     }
+    
+    
 }

@@ -23,119 +23,116 @@ SOFTWARE.
 */
 
 
-namespace Fabrica.Rules.Validators
+namespace Fabrica.Rules.Validators;
+
+public static class DateTimeValidatorEx
 {
 
-    public static class DateTimeValidatorEx
+    public static IValidator<TFact, DateTime> Required<TFact>( this IValidator<TFact, DateTime> validator) where TFact : class
     {
+        return validator.Is((f, v) => (v != DateTime.MinValue) && (v != DateTime.MaxValue) );
+    }
 
-        public static IValidator<TFact, DateTime> Required<TFact>( this IValidator<TFact, DateTime> validator) where TFact : class
-        {
-            return validator.Is((f, v) => (v != DateTime.MinValue) && (v != DateTime.MaxValue) );
-        }
+    public static IValidator<TFact, DateTime> IsEqualTo<TFact>(  this IValidator<TFact, DateTime> validator, DateTime test ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => test.CompareTo( v ) == 0 );
+    }
 
-        public static IValidator<TFact, DateTime> IsEqualTo<TFact>(  this IValidator<TFact, DateTime> validator, DateTime test ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => test.CompareTo( v ) == 0 );
-        }
-
-        public static IValidator<TFact, DateTime> IsEqualTo<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact,DateTime> extractor) where TFact : class
-        {
-            return validator.Is((f, v) => extractor(f).CompareTo(v) == 0);
-        }
+    public static IValidator<TFact, DateTime> IsEqualTo<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact,DateTime> extractor) where TFact : class
+    {
+        return validator.Is((f, v) => extractor(f).CompareTo(v) == 0);
+    }
 
 
-        public static IValidator<TFact, DateTime> IsNotEqualTo<TFact>(  this IValidator<TFact, DateTime> validator, DateTime test ) where TFact : class
-        {
-            return validator.IsNot( ( f, v ) => test.CompareTo( v ) == 0 );
-        }
+    public static IValidator<TFact, DateTime> IsNotEqualTo<TFact>(  this IValidator<TFact, DateTime> validator, DateTime test ) where TFact : class
+    {
+        return validator.IsNot( ( f, v ) => test.CompareTo( v ) == 0 );
+    }
 
-        public static IValidator<TFact, DateTime> IsNotEqualTo<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact,DateTime> extractor ) where TFact : class
-        {
-            return validator.IsNot((f, v) => extractor(f).CompareTo(v) == 0);
-        }
-
-
-        public static IValidator<TFact, DateTime> IsGreaterThen<TFact>(  this IValidator<TFact, DateTime> validator, DateTime test ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => test.CompareTo( v ) == -1 );
-        }
-
-        public static IValidator<TFact, DateTime> IsGreaterThen<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact, DateTime> extractor ) where TFact : class
-        {
-            return validator.Is((f, v) => extractor(f).CompareTo(v) == -1);
-        }
+    public static IValidator<TFact, DateTime> IsNotEqualTo<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact,DateTime> extractor ) where TFact : class
+    {
+        return validator.IsNot((f, v) => extractor(f).CompareTo(v) == 0);
+    }
 
 
-        public static IValidator<TFact, DateTime> IsLessThen<TFact>(  this IValidator<TFact, DateTime> validator, DateTime test ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => test.CompareTo( v ) == 1 );
-        }
+    public static IValidator<TFact, DateTime> IsGreaterThen<TFact>(  this IValidator<TFact, DateTime> validator, DateTime test ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => test.CompareTo( v ) == -1 );
+    }
 
-        public static IValidator<TFact, DateTime> IsLessThen<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact, DateTime> extractor ) where TFact : class
-        {
-            return validator.Is((f, v) => extractor(f).CompareTo(v) == 1);
-        }
-
-
-        public static IValidator<TFact, DateTime> IsBetween<TFact>(  this IValidator<TFact, DateTime> validator, DateTime low, DateTime high ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => (v >= low) && (v <= high) );
-        }
-
-        public static IValidator<TFact, DateTime> IsBetween<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact, DateTime> lowExtractor, Func<TFact, DateTime> highExtractor ) where TFact : class
-        {
-            return validator.Is((f, v) => (v >= lowExtractor(f)) && (v <= highExtractor(f) ));
-        }
+    public static IValidator<TFact, DateTime> IsGreaterThen<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact, DateTime> extractor ) where TFact : class
+    {
+        return validator.Is((f, v) => extractor(f).CompareTo(v) == -1);
+    }
 
 
-        public static IValidator<TFact, DateTime> IsNotBetween<TFact>(  this IValidator<TFact, DateTime> validator, DateTime low, DateTime high ) where TFact : class
-        {
-            return validator.IsNot( ( f, v ) => (v >= low) && (v <= high) );
-        }
+    public static IValidator<TFact, DateTime> IsLessThen<TFact>(  this IValidator<TFact, DateTime> validator, DateTime test ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => test.CompareTo( v ) == 1 );
+    }
 
-        public static IValidator<TFact, DateTime> IsNotBetween<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact, DateTime> lowExtractor, Func<TFact, DateTime> highExtractor) where TFact : class
-        {
-            return validator.IsNot((f, v) => (v >= lowExtractor(f)) && (v <= highExtractor(f) ));
-        }
+    public static IValidator<TFact, DateTime> IsLessThen<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact, DateTime> extractor ) where TFact : class
+    {
+        return validator.Is((f, v) => extractor(f).CompareTo(v) == 1);
+    }
+
+
+    public static IValidator<TFact, DateTime> IsBetween<TFact>(  this IValidator<TFact, DateTime> validator, DateTime low, DateTime high ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => (v >= low) && (v <= high) );
+    }
+
+    public static IValidator<TFact, DateTime> IsBetween<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact, DateTime> lowExtractor, Func<TFact, DateTime> highExtractor ) where TFact : class
+    {
+        return validator.Is((f, v) => (v >= lowExtractor(f)) && (v <= highExtractor(f) ));
+    }
+
+
+    public static IValidator<TFact, DateTime> IsNotBetween<TFact>(  this IValidator<TFact, DateTime> validator, DateTime low, DateTime high ) where TFact : class
+    {
+        return validator.IsNot( ( f, v ) => (v >= low) && (v <= high) );
+    }
+
+    public static IValidator<TFact, DateTime> IsNotBetween<TFact>( this IValidator<TFact, DateTime> validator, Func<TFact, DateTime> lowExtractor, Func<TFact, DateTime> highExtractor) where TFact : class
+    {
+        return validator.IsNot((f, v) => (v >= lowExtractor(f)) && (v <= highExtractor(f) ));
+    }
 
 
 
-        public static IValidator<TFact, DateTime> IsDayOfWeek<TFact>(  this IValidator<TFact, DateTime> validator, DayOfWeek test ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => v.DayOfWeek == test );
-        }
+    public static IValidator<TFact, DateTime> IsDayOfWeek<TFact>(  this IValidator<TFact, DateTime> validator, DayOfWeek test ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => v.DayOfWeek == test );
+    }
 
-        public static IValidator<TFact, DateTime> IsWeekend<TFact>(  this IValidator<TFact, DateTime> validator ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => (v.DayOfWeek == DayOfWeek.Saturday) || (v.DayOfWeek == DayOfWeek.Sunday) );
-        }
+    public static IValidator<TFact, DateTime> IsWeekend<TFact>(  this IValidator<TFact, DateTime> validator ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => (v.DayOfWeek == DayOfWeek.Saturday) || (v.DayOfWeek == DayOfWeek.Sunday) );
+    }
 
-        public static IValidator<TFact, DateTime> IsWeekday<TFact>(  this IValidator<TFact, DateTime> validator ) where TFact : class
-        {
-            return validator.IsNot( ( f, v ) => (v.DayOfWeek == DayOfWeek.Saturday) || (v.DayOfWeek == DayOfWeek.Sunday) );
-        }
+    public static IValidator<TFact, DateTime> IsWeekday<TFact>(  this IValidator<TFact, DateTime> validator ) where TFact : class
+    {
+        return validator.IsNot( ( f, v ) => (v.DayOfWeek == DayOfWeek.Saturday) || (v.DayOfWeek == DayOfWeek.Sunday) );
+    }
 
-        public static IValidator<TFact, DateTime> IsInFuture<TFact>(  this IValidator<TFact, DateTime> validator ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => v > DateTime.Now );
-        }
+    public static IValidator<TFact, DateTime> IsInFuture<TFact>(  this IValidator<TFact, DateTime> validator ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => v > DateTime.Now );
+    }
 
-        public static IValidator<TFact, DateTime> IsInPast<TFact>(  this IValidator<TFact, DateTime> validator ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => v <= DateTime.Now );
-        }
+    public static IValidator<TFact, DateTime> IsInPast<TFact>(  this IValidator<TFact, DateTime> validator ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => v <= DateTime.Now );
+    }
 
-        public static IValidator<TFact, DateTime> IsDaysInFuture<TFact>(  this IValidator<TFact, DateTime> validator, int days ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => (v - DateTime.Now).TotalDays >= days );
-        }
+    public static IValidator<TFact, DateTime> IsDaysInFuture<TFact>(  this IValidator<TFact, DateTime> validator, int days ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => (v - DateTime.Now).TotalDays >= days );
+    }
 
-        public static IValidator<TFact, DateTime> IsDaysInPast<TFact>(  this IValidator<TFact, DateTime> validator, int days ) where TFact : class
-        {
-            return validator.Is( ( f, v ) => (DateTime.Now - v).TotalDays >= days );
-        }
-
+    public static IValidator<TFact, DateTime> IsDaysInPast<TFact>(  this IValidator<TFact, DateTime> validator, int days ) where TFact : class
+    {
+        return validator.Is( ( f, v ) => (DateTime.Now - v).TotalDays >= days );
     }
 
 }
