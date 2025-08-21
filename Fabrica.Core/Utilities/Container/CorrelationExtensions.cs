@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Autofac;
 using Fabrica.Identity;
+using Fabrica.Utilities.Types;
 using Fabrica.Watch;
 
 namespace Fabrica.Utilities.Container;
@@ -117,7 +118,7 @@ public static class CorrelationExtensions
     public static ILogger GetLogger<T>(this ICorrelation correlation)
     {
 
-        var category = typeof(T).FullName ?? "Unknown";
+        var category = typeof(T).GetConciseFullName() ?? "Unknown";
 
         return GetLogger(correlation, category);
 
@@ -129,7 +130,7 @@ public static class CorrelationExtensions
 
         if (type == null) throw new ArgumentNullException(nameof(type));
 
-        var category = type.FullName ?? "Unknown";
+        var category = type.GetConciseFullName() ?? "Unknown";
 
         return GetLogger(correlation, category);
 
@@ -141,7 +142,7 @@ public static class CorrelationExtensions
 
         if (target == null) throw new ArgumentNullException(nameof(target));
 
-        var category = target.GetType().FullName ?? "Unknown";
+        var category = target.GetType().GetConciseFullName() ?? "Unknown";
 
         return GetLogger(correlation, category);
 

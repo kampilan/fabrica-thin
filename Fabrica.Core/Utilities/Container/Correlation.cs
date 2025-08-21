@@ -42,7 +42,6 @@ public class Correlation: ICorrelation
 
     public string CallerGatewayToken { get; set; } = string.Empty;
 
-    public string CorrelationId { get; }
     public string Tenant { get; set; } = string.Empty;
 
     public string Subject { get; set; } = string.Empty;    
