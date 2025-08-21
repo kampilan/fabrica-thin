@@ -148,11 +148,19 @@ public class ValidationRule<TFact> : AbstractRule, IValidationRule<TFact>
 
         var factName = typeof(TFact).Name;
 
-        var group = (extractorEx.Body is MemberExpression body ? $"{typeof(TFact).Name}.{body.Member.Name}" : factName);
+        var propName = "";
+        var groupName = factName;
+        if( extractorEx.Body is MemberExpression body )
+        {
+            propName = body.Member.Name;
+            groupName = $"{factName}.{body.Member.Name}";
+            
+        }
+
 
         var extractor = extractorEx.Compile();
 
-        var validator = new EnumerableValidator<TFact, TType>( this, group, extractor );
+        var validator = new EnumerableValidator<TFact, TType>( this, groupName, propName, extractor );
         TypeValidator = validator;
 
         return validator;

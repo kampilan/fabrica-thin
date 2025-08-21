@@ -29,6 +29,11 @@ namespace Fabrica.Rules.Validators;
 public interface IEnumerableValidator<out TFact, out TType>
 {
 
+    
+    string GroupName { get; }
+    string PropertyName { get; }
+   
+    
     IEnumerableValidator<TFact, TType> Is( Func<TFact, IEnumerable<TType>, bool> condition );
 
     IEnumerableValidator<TFact, TType> IsNot( Func<TFact, IEnumerable<TType>, bool> condition );
@@ -45,11 +50,17 @@ public interface IEnumerableValidator<out TFact, out TType>
 
 public class EnumerableValidator<TFact, TType> : BaseValidator<TFact>, IEnumerableValidator<TFact, TType>
 {
-    public EnumerableValidator( ValidationRule<TFact> rule, string group, Func<TFact, IEnumerable<TType>> extractor ) : base( rule, group )
+    public EnumerableValidator( ValidationRule<TFact> rule, string group, string propertyName, Func<TFact, IEnumerable<TType>> extractor ) : base( rule, group )
     {
+
+        GroupName = group;
+        PropertyName = propertyName;
+        
         Extractor = extractor;
     }
 
+    public string GroupName { get; }
+    public string PropertyName { get; }
 
     protected Func<TFact, IEnumerable<TType>> Extractor { get;  }
 

@@ -23,87 +23,95 @@ SOFTWARE.
 */
 
 
+using Humanizer;
+using JetBrains.Annotations;
+
+// ReSharper disable UnusedMember.Global
+
 namespace Fabrica.Rules.Validators;
 
+[UsedImplicitly]
 public static class EnumerableValidatorEx
 {
 
-    public static IEnumerableValidator<TFact, TType> Required<TFact, TType>( this IEnumerableValidator<TFact, TType> validator) where TFact : class where TType : class
+    public static IEnumerableValidator<TFact, TType> Required<TFact, TType>(this IEnumerableValidator<TFact, TType> validator) where TFact : class where TType : class
     {
-        return validator.Is((f, v) => v.Any());
+        var v = validator.Is((_, value) => value.Any());
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} is required");
+        return v;
     }
 
-    public static IEnumerableValidator<TFact, TType> IsEmpty<TFact, TType>(  this IEnumerableValidator<TFact, TType> validator ) where TFact : class where TType : class
+    public static IEnumerableValidator<TFact, TType> IsEmpty<TFact, TType>(this IEnumerableValidator<TFact, TType> validator) where TFact : class where TType : class
     {
-        return validator.IsNot( ( f, v ) => v.Any() );
+        var v = validator.Is((_, value) => !value.Any());
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must be empty");
+        return v;
     }
 
-    public static IEnumerableValidator<TFact, TType> IsNotEmpty<TFact, TType>(  this IEnumerableValidator<TFact, TType> validator ) where TFact : class where TType : class
+    public static IEnumerableValidator<TFact, TType> IsNotEmpty<TFact, TType>(this IEnumerableValidator<TFact, TType> validator) where TFact : class where TType : class
     {
-        return validator.Is( ( f, v ) => v.Any() );
+        var v = validator.Is((_, value) => value.Any());
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must not be empty");
+        return v;
     }
 
-
-        
-    public static IEnumerableValidator<TFact, TType> Has<TFact, TType>( this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate ) where TFact : class
-        where TType : class
+    public static IEnumerableValidator<TFact, TType> Has<TFact, TType>(this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate) where TFact : class where TType : class
     {
-        validator.Is( ( f, v ) => v.Any( predicate ) );
-        return validator;
+        var v = validator.Is((_, value) => value.Any(predicate));
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must contain at least one matching item");
+        return v;
     }
 
-
-        
-    public static IEnumerableValidator<TFact, TType> HasNone<TFact, TType>( this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate ) where TFact : class
-        where TType : class
+    public static IEnumerableValidator<TFact, TType> HasNone<TFact, TType>(this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate) where TFact : class where TType : class
     {
-        validator.IsNot( ( f, v ) => v.Any( predicate ) );
-        return validator;
+        var v = validator.Is((_, value) => !value.Any(predicate));
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must not contain any matching items");
+        return v;
     }
 
-
-        
-    public static IEnumerableValidator<TFact, TType> HasExactly<TFact, TType>( this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate, int count )
-        where TFact : class where TType : class
+    public static IEnumerableValidator<TFact, TType> HasExactly<TFact, TType>(this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate, int count) where TFact : class where TType : class
     {
-        validator.Is( ( f, v ) => v.Where( predicate ).Count() == count );
-        return validator;
+        var v = validator.Is((_, value) => value.Where(predicate).Count() == count);
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must contain exactly {count} matching item{(count != 1 ? "s" : "")}");
+        return v;
     }
 
-
-        
-    public static IEnumerableValidator<TFact, TType> HasOnlyOne<TFact, TType>( this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate )
-        where TFact : class where TType : class
+    public static IEnumerableValidator<TFact, TType> HasOnlyOne<TFact, TType>(this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate) where TFact : class where TType : class
     {
-        validator.Is( ( f, v ) => v.Where( predicate ).Count() == 1 );
-        return validator;
+        var v = validator.Is((_, value) => value.Where(predicate).Count() == 1);
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must contain exactly one matching item");
+        return v;
     }
 
-
-        
-    public static IEnumerableValidator<TFact, TType> HasAtMostOne<TFact, TType>( this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate )
-        where TFact : class where TType : class
+    public static IEnumerableValidator<TFact, TType> HasAtMostOne<TFact, TType>(this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate) where TFact : class where TType : class
     {
-        validator.Is( ( f, v ) => v.Where( predicate ).Count() <= 1 );
-        return validator;
+        var v = validator.Is((_, value) => value.Where(predicate).Count() <= 1);
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must contain at most one matching item");
+        return v;
     }
 
-
-        
-    public static IEnumerableValidator<TFact, TType> HasAtLeast<TFact, TType>( this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate, int count )
-        where TFact : class where TType : class
+    public static IEnumerableValidator<TFact, TType> HasAtLeast<TFact, TType>(this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate, int count) where TFact : class where TType : class
     {
-        validator.Is( ( f, v ) => v.Where( predicate ).Count() >= count );
-        return validator;
+        var v = validator.Is((_, value) => value.Where(predicate).Count() >= count);
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must contain at least {count} matching item{(count != 1 ? "s" : "")}");
+        return v;
     }
 
-
-        
-    public static IEnumerableValidator<TFact, TType> HasAtMost<TFact, TType>( this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate, int count )
-        where TFact : class where TType : class
+    public static IEnumerableValidator<TFact, TType> HasAtMost<TFact, TType>(this IEnumerableValidator<TFact, TType> validator, Func<TType, bool> predicate, int count) where TFact : class where TType : class
     {
-        validator.Is( ( f, v ) => v.Where( predicate ).Count() <= count );
-        return validator;
+        var v = validator.Is((_, value) => value.Where(predicate).Count() <= count);
+        var propName = validator.PropertyName.Humanize(LetterCasing.Title);
+        v.Otherwise($"{propName} must contain at most {count} matching item{(count != 1 ? "s" : "")}");
+        return v;
     }
 
 }
