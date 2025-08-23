@@ -169,8 +169,53 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
 
 
     public abstract void Accept(LogEvent logEvent);
-
     
+    
+    public bool IsTraceEnabled(string category)
+    {
+
+        if( Quiet )
+            return false;
+
+        var sw = Switches.Lookup( category );
+
+        return sw.Level is Level.Trace;
+
+    }
+
+    public bool IsDebugEnabled(string category)
+    {
+
+        if( Quiet )
+            return false;
+
+        var sw = Switches.Lookup( category );
+
+        return sw.Level is Level.Debug;
+        
+    }
+
+    public bool IsTraceEnabled(Type type)
+    {
+        return IsTraceEnabled(type.FullName ?? string.Empty);
+    }
+
+    public bool IsDebugEnabled(Type type)
+    {
+        return IsDebugEnabled(type.FullName ?? string.Empty);
+    }
+
+    public bool IsTraceEnabled<T>()
+    {
+        return IsTraceEnabled(typeof(T).FullName ?? string.Empty);
+    }
+
+    public bool IsDebugEnabled<T>()
+    {
+        return IsDebugEnabled(typeof(T).FullName ?? string.Empty);
+    }
+
+
     public virtual ILogger GetLogger( string category, bool retroOn=true )
     {
 

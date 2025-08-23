@@ -357,6 +357,39 @@ public class ConsoleLoggerFactory : IWatchFactory
         TheSink.Accept(logEvent);
     }
 
+    public bool IsTraceEnabled(string category)
+    {
+        var sw = Switches.Lookup( category );
+        return sw.Level is Level.Trace;
+    }
+
+    public bool IsDebugEnabled(string category)
+    {
+        var sw = Switches.Lookup( category );
+        return sw.Level is Level.Debug;
+
+    }
+
+    public bool IsTraceEnabled(Type type)
+    {
+        return IsTraceEnabled(type.FullName ?? string.Empty);
+    }
+
+    public bool IsDebugEnabled(Type type)
+    {
+        return IsDebugEnabled(type.FullName ?? string.Empty);
+    }
+
+    public bool IsTraceEnabled<T>()
+    {
+        return IsTraceEnabled(typeof(T).FullName ?? string.Empty);
+    }
+
+    public bool IsDebugEnabled<T>()
+    {
+        return IsDebugEnabled(typeof(T).FullName ?? string.Empty);
+    }
+
     public ILogger GetLogger(string category, bool retroOn = true)
     {
         return TheSink.GetLogger(category, retroOn);

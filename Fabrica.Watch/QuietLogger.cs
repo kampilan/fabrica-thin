@@ -23,6 +23,36 @@ public class QuietLoggerFactory: IWatchFactory
     {
     }
 
+    public bool IsTraceEnabled(string category)
+    {
+        return false;
+    }
+
+    public bool IsDebugEnabled(string category)
+    {
+        return false;
+    }
+
+    public bool IsTraceEnabled(Type type)
+    {
+        return false;
+    }
+
+    public bool IsDebugEnabled(Type type)
+    {
+        return false;
+    }
+
+    public bool IsTraceEnabled<T>()
+    {
+        return false;
+    }
+
+    public bool IsDebugEnabled<T>()
+    {
+        return false;
+    }
+
     public ILogger GetLogger(string category, bool retroOn = true)
     {
         return QuietLogger.Single;

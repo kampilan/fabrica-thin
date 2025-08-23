@@ -3,14 +3,16 @@ using System.Reflection;
 using Autofac;
 using Fabrica.Exceptions;
 using Fabrica.Identity;
-using Fabrica.Persistence.Ef.Contexts;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 using Fabrica.Watch.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Query;
 using TypeExtensions = Fabrica.Utilities.Types.TypeExtensions;
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 // ReSharper disable UnusedMember.Global
 
@@ -57,8 +59,10 @@ public static class AutofacExtensions
             var factory = c.Resolve<IOriginDbContextFactory>();
             var rules   = c.Resolve<IRuleSet>();
 
-            var comp = new CommandRepository( corr, factory, rules );
-            comp.PerformEvaluations = performEvaluation;
+            var comp = new CommandRepository( corr, factory, rules )
+            {
+                PerformEvaluations = performEvaluation
+            };
 
             return comp;
 
@@ -121,6 +125,9 @@ public interface ICommandRepository
     Task<OkOrError> Delete<TEntity>(string uid, CancellationToken ct = default) where TEntity : class, IEntity;
     OkOrError DeleteRange( IEnumerable<IEntity> range );
 
+    Task<CountOrError> ExecuteUpdate<TEntity>(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> settersExpr, Expression<Func<TEntity,bool>> whereExpr, CancellationToken ct = default  ) where TEntity : class, IEntity;
+    Task<CountOrError> ExecuteDelete<TEntity>(Expression<Func<TEntity,bool>> whereExpr, CancellationToken ct = default  ) where TEntity : class, IEntity;    
+    
     Task<OkOrError> Save(CancellationToken ct = default);
 
 }
@@ -259,8 +266,8 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
         try
         {
-
-            var entity = await Context.Set<TEntity>().FindAsync(id, ct);
+            var ids = new object[] { id };
+            var entity = await Context.Set<TEntity>().FindAsync(ids, ct);
             if (entity is null)
                 return NotFoundError.Create($"Could not find {typeof(TEntity).GetConciseName()} using Id={id}");
 
@@ -569,7 +576,8 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
         try
         {
 
-            var entity = await Context.Set<TEntity>().FindAsync(id, ct);
+            var ids = new object[] { id };
+            var entity = await Context.Set<TEntity>().FindAsync(ids, ct);
             if (entity is null)
                 return NotFoundError.Create($"Could not find {typeof(TEntity).GetConciseName()} using Id={id}");
 
@@ -647,6 +655,49 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
     }
 
+    public async Task<CountOrError> ExecuteUpdate<TEntity>(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> settersExpr, Expression<Func<TEntity,bool>> whereExpr, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var count = await Context.Set<TEntity>().Where(whereExpr).ExecuteUpdateAsync( settersExpr, ct );
+
+            return count;
+
+        }
+        catch (Exception cause)
+        {
+            logger.Error( cause, "ExecuteUpdate failed" );
+            return UnhandledError.Create(cause);
+        }
+        
+        
+    }
+
+    public async Task<CountOrError> ExecuteDelete<TEntity>(Expression<Func<TEntity,bool>> whereExpr, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+        
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            var count = await Context.Set<TEntity>().Where(whereExpr).ExecuteDeleteAsync( ct );
+
+            return count;
+
+        }
+        catch (Exception cause)
+        {
+            logger.Error( cause, "ExecuteDelete failed" );
+            return UnhandledError.Create(cause);
+        }
+        
+        
+    }
 
 
     public async Task<OkOrError> Save( CancellationToken ct = default )
@@ -704,9 +755,9 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
     }
 
 
-    public bool PerformEvaluations { get; set; } = true;
+    public bool PerformEvaluations { get; init; } = true;
 
-    protected OkOrError PerformEvaluation()
+    private OkOrError PerformEvaluation()
     {
 
         using var logger = EnterMethod();
@@ -743,7 +794,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
     public bool PerformLifecycleCallbacks { get; set; } = true;
 
-    protected void PerformCallbacks()
+    private void PerformCallbacks()
     {
 
         using var logger = EnterMethod();
@@ -775,7 +826,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
     public bool PerformJournaling { get; set; } = true;
     public IRootEntity? Root { get; set; }
 
-    protected IList<AuditJournal> PerformEntityJournaling()
+    private IList<AuditJournal> PerformEntityJournaling()
     {
 
         using var logger = EnterMethod();
@@ -925,7 +976,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
 
     }
 
-    protected void PerformDetailJournaling(EntityEntry entry, IList<AuditJournal> journals, DateTime journalTime)
+    private void PerformDetailJournaling(EntityEntry entry, IList<AuditJournal> journals, DateTime journalTime)
     {
 
         using var logger = EnterMethod();
@@ -953,8 +1004,7 @@ public class CommandRepository( ICorrelation correlation, IOriginDbContextFactor
     }
 
 
-
-    protected AuditJournal CreateAuditJournal(DateTime journalTime, AuditJournalType type, IEntity entity, PropertyEntry? prop = null)
+    private AuditJournal CreateAuditJournal(DateTime journalTime, AuditJournalType type, IEntity entity, PropertyEntry? prop = null)
     {
 
         var ident = Correlation.ToIdentity();
@@ -1152,8 +1202,8 @@ public class QueryRepository( ICorrelation correlation, IReplicaDbContextFactory
 
         try
         {
-
-            var entity = await Context.Set<TEntity>().FindAsync(id, ct);
+            var ids = new object[] { id };
+            var entity = await Context.Set<TEntity>().FindAsync(ids, ct);
             if (entity is null)
                 return NotFoundError.Create($"Could not find {typeof(TEntity).GetConciseName()} using Id={id}");
 

@@ -24,6 +24,7 @@ SOFTWARE.
 
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
+using Microsoft.Extensions.Logging;
 
 namespace Fabrica.Watch;
 
@@ -38,6 +39,16 @@ public interface IWatchFactory
 
     void Accept( LogEvent logEvent );
 
+    bool IsTraceEnabled( string category );
+    bool IsDebugEnabled( string category );
+    
+    bool IsTraceEnabled( Type type );
+    bool IsDebugEnabled( Type type );
+
+    bool IsTraceEnabled<T>();
+    bool IsDebugEnabled<T>();
+    
+    
     ILogger GetLogger( string category, bool retroOn = true );
     ILogger GetLogger<T>( bool retroOn = true );
     ILogger GetLogger( Type type, bool retroOn = true );
