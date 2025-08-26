@@ -5,6 +5,7 @@ using Fabrica.Models;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 // ReSharper disable UnusedMember.Global
 
@@ -18,14 +19,24 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
 
         var result = await next(context);
 
-
-        using var logger = EnterMethod();
-
-        if( context.HttpContext.Response.StatusCode == 401 )
+        
+        // shortcut the response process for 401 APIKey Auth failed most likely
+        if( result is UnauthorizedHttpResult || context.HttpContext.Response.StatusCode == 401 )
         {
             var obj = new { CustomErrorMessage = "401 Unauthorized" };
             return  Results.Json(obj, options, "application/json", 401);           
         }
+
+        // shortcut the response process for 403        
+        if( result is ForbidHttpResult || context.HttpContext.Response.StatusCode == 403 )
+        {
+            var obj = new { CustomErrorMessage = "403 Forbidden" };
+            return  Results.Json(obj, options, "application/json", 403);           
+        }        
+        
+        
+        using var logger = EnterMethod();
+
         
         if (result is IValueResponse {IsSuccessful: true} ok)
         {
