@@ -18,27 +18,14 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
     {
 
         var result = await next(context);
-
-        
-        // shortcut the response process for 401 APIKey Auth failed most likely
-        if( result is UnauthorizedHttpResult || context.HttpContext.Response.StatusCode == 401 )
-        {
-            var obj = new { CustomErrorMessage = "401 Unauthorized" };
-            return  Results.Json(obj, options, "application/json", 401);           
-        }
-
-        // shortcut the response process for 403        
-        if( result is ForbidHttpResult || context.HttpContext.Response.StatusCode == 403 )
-        {
-            var obj = new { CustomErrorMessage = "403 Forbidden" };
-            return  Results.Json(obj, options, "application/json", 403);           
-        }        
-        
+       
         
         using var logger = EnterMethod();
 
+        logger.Inspect( nameof(result), result?.GetType().Name??"null" );
+
         
-        if (result is IValueResponse {IsSuccessful: true} ok)
+        if( result is IValueResponse {IsSuccessful: true} ok )
         {
 
             if( ok.Value is Stream st )
@@ -48,11 +35,11 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
 
         }
 
-        if (result is IResponse { IsSuccessful: true })
+        if( result is IResponse { IsSuccessful: true } )
             return Results.Ok();
 
 
-        if (result is IValueResponse { IsSuccessful: false } er)
+        if( result is IValueResponse { IsSuccessful: false } er )
         {
 
             var status = MapToStatus(er.Kind);
@@ -95,11 +82,10 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
 
             return Results.Json(problemDetail, options, "application/problem+json", status);
 
-
         }
 
 
-        return Results.Json(result, options);
+        return result;
 
 
     }
