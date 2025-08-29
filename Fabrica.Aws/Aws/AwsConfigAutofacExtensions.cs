@@ -6,10 +6,8 @@ using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.SecurityToken;
 using Amazon.SQS;
-using Amazon.SQS.Model.Internal.MarshallTransformations;
 using Autofac;
 using Fabrica.Utilities.Queue;
-using Microsoft.Extensions.Configuration;
 
 // ReSharper disable UnusedMember.Global
 
@@ -303,10 +301,14 @@ public static class AwsConfigAutofacExtensions
             {
 
                 var db = c.Resolve<IAmazonDynamoDB>();
-
-
-                var cfg = new DynamoDBContextConfig { TableNamePrefix = tablePrefix, IsEmptyStringValueEnabled = true };
-                var dbc = new DynamoDBContext(db, cfg);
+                var dbc = new DynamoDBContextBuilder()
+                    .WithDynamoDBClient(() => db )
+                    .ConfigureContext(cfg =>
+                    {
+                        cfg.TableNamePrefix = tablePrefix;
+                        cfg.IsEmptyStringValueEnabled = true;
+                    })
+                    .Build();
 
                 return dbc;
 

@@ -46,6 +46,14 @@ public abstract class AbstractConcurrentResource<T> : IDisposable
         MustRenewFlag = true;
     }
 
+    public async Task CheckForRenewal(bool force = false)
+    {
+
+        if( force || RenewsAt < DateTime.Now )
+            _current = await Renew();
+        
+    }
+    
     public async Task<T> GetResource(Func<Task>? onEnterRenew = null, Func<Task>? onExitRenew = null)
     {
 

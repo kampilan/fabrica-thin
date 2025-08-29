@@ -1,19 +1,12 @@
 ﻿// ReSharper disable UnusedMember.Global
 namespace Fabrica.Utilities.Cache;
 
-public class ConcurrentResource<T> : AbstractConcurrentResource<T>
+public class ConcurrentResource<T>( Func<Task<IRenewedResource<T>>> factory ) : AbstractConcurrentResource<T>
 {
-
-    public ConcurrentResource(Func<Task<IRenewedResource<T>>> factory)
-    {
-        Factory = factory;
-    }
-
-    private Func<Task<IRenewedResource<T>>> Factory { get; }
 
     protected override async Task<IRenewedResource<T>> Renew()
     {
-        var r = await Factory();
+        var r = await factory();
         return r;
     }
 

@@ -5,11 +5,11 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="AWSSDK.DynamoDBv2" Version="4.0.5.1" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.6.8" />
-    <PackageVersion Include="AWSSDK.SecretsManager" Version="4.0.0.20" />
+    <PackageVersion Include="AWSSDK.DynamoDBv2" Version="4.0.6" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.6.10" />
+    <PackageVersion Include="AWSSDK.SecretsManager" Version="4.0.1" />
     <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.2" />
-    <PackageVersion Include="AWSSDK.SQS" Version="4.0.1" />
+    <PackageVersion Include="AWSSDK.SQS" Version="4.0.1.1" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
@@ -36,7 +36,7 @@
     <PackageVersion Include="Polly.Extensions" Version="8.6.3" />
     <PackageVersion Include="MediatR" Version="[12.5.0]" />
     <PackageVersion Include="YamlDotNet" Version="16.3.0" />
-    <PackageVersion Include="JetBrains.Annotations" Version="2025.2.0" />
+    <PackageVersion Include="JetBrains.Annotations" Version="2025.2.1" />
     <PackageVersion Include="OneOf" Version="3.0.271" />
     <PackageVersion Include="OneOf.SourceGenerator" Version="3.0.271" />
     <PackageVersion Include="SmartFormat" Version="3.6.0" />
