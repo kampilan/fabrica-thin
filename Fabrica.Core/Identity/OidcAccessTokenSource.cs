@@ -55,6 +55,11 @@ public class OidcAccessTokenSource : CorrelatedObject, IAccessTokenSource, IRequ
 
     }
 
+    public async Task CheckForRenewal(bool force = false)
+    {
+        await _cache.CheckForRenewal(force);
+    }
+
 
     private async Task<MetaModel> _fetchMeta()
     {

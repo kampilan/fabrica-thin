@@ -105,4 +105,9 @@ public class GatewayAmbientTokenSource(ICorrelation correlation) : IAccessTokenS
         return Task.FromResult(token);
     }
 
+    public Task CheckForRenewal(bool force = false)
+    {
+        return Task.CompletedTask;
+    }
+    
 }

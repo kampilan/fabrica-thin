@@ -49,4 +49,9 @@ public class GatewayAccessTokenSource(IGatewayTokenEncoder encoder, IClaimSet cl
 
     }
 
+    public Task CheckForRenewal(bool force = false)
+    {
+        return Task.CompletedTask;
+    }
+    
 }

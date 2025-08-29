@@ -7,4 +7,6 @@ public interface IAccessTokenSource
     bool HasExpired { get; }
     Task<string> GetToken();
 
+    Task CheckForRenewal(bool force=false);
+    
 }
