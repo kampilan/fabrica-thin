@@ -76,7 +76,7 @@ public class WatchFactoryBuilder
     public void Build()
     {
 
-        if (Quiet)
+        if( Quiet )
         {
             var factory = new QuietLoggerFactory();
             WatchFactoryLocator.SetFactory(factory);

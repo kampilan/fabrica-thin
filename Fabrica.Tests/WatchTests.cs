@@ -180,11 +180,46 @@ public class WatchTests
 
         
     }
-    
-    
-    
-    
+
+    [Test]
+    public async Task Test_0620_0600_Should_Not_Log_Sensitive_Property()
+    {
+
+        var maker = WatchFactoryBuilder.Create();
+
+        maker.UseLocalSwitchSource()
+            .WhenNotMatched(Level.Trace, Color.LightSalmon);
+
+        maker.UseRealtime();
+
+        maker.Build();
+        await Task.Delay(3000);
+
+        
+        var logger = WatchFactoryLocator.Factory.GetLogger("Test");
+        logger.Debug("Testing");
+
+        var secret = new Secret {Name = "Test", Value = "1234567890098765432"};
+        logger.LogObject(nameof(secret), secret);
+        
+        logger.Dispose();
+
+        await Task.Delay(1000);
+        await WatchFactoryLocator.Factory.Stop();
+
+    }
     
 
 
+}
+
+public class Secret
+{
+
+    public string Name { get; set; } = string.Empty;
+
+    [Sensitive]
+    public string Value { get; set; } = string.Empty;
+    
+    
 }

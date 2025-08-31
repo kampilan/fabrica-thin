@@ -56,7 +56,13 @@ internal class WatchJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
         foreach (var prop in typeInfo.Properties)
         {
             
-            var sensitive = prop.PropertyType.GetCustomAttribute<SensitiveAttribute>();
+            var sensitive = prop.AttributeProvider switch
+            {
+                MemberInfo mi => mi.GetCustomAttribute<SensitiveAttribute>(inherit: true),
+                ParameterInfo pi => pi.GetCustomAttribute<SensitiveAttribute>(inherit: true),
+                _ => null
+            };
+
             if (sensitive is not null)
             {
                 var og = prop.Get;

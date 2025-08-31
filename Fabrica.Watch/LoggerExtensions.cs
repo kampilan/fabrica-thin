@@ -506,7 +506,7 @@ public static class LoggerExtensions
 
         if( logger.IsTraceEnabled )
         {
-            var le = logger.CreateEvent(Level.Debug, title, source ?? new { });
+            var le = logger.CreateEvent(Level.Trace, title, source ?? new { });
             logger.LogEvent(le);
         }
         else if( logger.IsDebugEnabled && source is not null )
