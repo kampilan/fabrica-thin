@@ -1,10 +1,11 @@
 ﻿// ReSharper disable UnusedMember.Global
 
+using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 
 namespace Fabrica.Utilities.Cache;
 
-public abstract class AbstractConcurrentResource<T> : IDisposable
+public abstract class AbstractConcurrentResource<T>() : CorrelatedObject(new Correlation()), IDisposable
 {
 
     protected abstract Task<IRenewedResource<T>> Renew();
@@ -23,12 +24,12 @@ public abstract class AbstractConcurrentResource<T> : IDisposable
     public int RenewCount { get; private set; }
 
     
-    private IRenewedResource<T> _current;
+    private IRenewedResource<T> _current = null!;
 
     public async Task Initialize()
     {
         
-        using var logger = this.EnterMethod();
+        using var logger = EnterMethod();
 
         _current = await Renew();
 
@@ -57,7 +58,7 @@ public abstract class AbstractConcurrentResource<T> : IDisposable
     public async Task<T> GetResource(Func<Task>? onEnterRenew = null, Func<Task>? onExitRenew = null)
     {
 
-        using var logger = this.EnterMethod();
+        using var logger = EnterMethod();
 
 
         logger.Inspect(nameof(RenewsAt), RenewsAt);
@@ -69,7 +70,7 @@ public abstract class AbstractConcurrentResource<T> : IDisposable
 
 
 
-        if( (MustRenewFlag || RenewsAt < DateTime.Now) && RenewLock.Wait(0) )
+        if( (MustRenewFlag || RenewsAt < DateTime.Now) && await RenewLock.WaitAsync(0) )
         {
 
 
