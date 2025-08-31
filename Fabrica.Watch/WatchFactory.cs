@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2024 Pond Hawk Technologies Inc.
+Copyright (c) 2025 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
 using Fabrica.Watch.Utilities;
 using System.Collections.Concurrent;
+
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable UnusedMember.Local
@@ -139,6 +140,8 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
             foreach (var sink in Sinks)
                 await sink.Stop();
 
+            await Task.Delay(1000);
+            
             Sinks.Clear();
 
         }
@@ -197,22 +200,22 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
 
     public bool IsTraceEnabled(Type type)
     {
-        return IsTraceEnabled(type.FullName ?? string.Empty);
+        return IsTraceEnabled(type.GetConciseFullName());
     }
 
     public bool IsDebugEnabled(Type type)
     {
-        return IsDebugEnabled(type.FullName ?? string.Empty);
+        return IsDebugEnabled(type.GetConciseFullName());
     }
 
     public bool IsTraceEnabled<T>()
     {
-        return IsTraceEnabled(typeof(T).FullName ?? string.Empty);
+        return IsTraceEnabled(typeof(T).GetConciseFullName());
     }
 
     public bool IsDebugEnabled<T>()
     {
-        return IsDebugEnabled(typeof(T).FullName ?? string.Empty);
+        return IsDebugEnabled(typeof(T).GetConciseFullName());
     }
 
 
@@ -224,11 +227,11 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
             return Silencer;
 
 
-        // Get Switch for given Category
+        // Get Switch for a given Category
         var sw = Switches.Lookup( category );
 
 
-        // Return the silencer if switch level is quiet
+        // Return the silencer if the switch level is quiet
         if (sw.Level is Level.Quiet)
             return Silencer;
 
@@ -251,7 +254,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
     public virtual ILogger GetLogger<T>( bool retroOn = true )
     {
 
-        var logger = GetLogger( typeof(T).FullName ?? string.Empty, retroOn );
+        var logger = GetLogger( typeof(T).GetConciseFullName(), retroOn );
 
         return logger;
 
@@ -262,7 +265,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
     public virtual ILogger GetLogger( Type type, bool retroOn = true)
     {
 
-        var logger = GetLogger(type.GetConciseFullName() ?? string.Empty, retroOn );
+        var logger = GetLogger(type.GetConciseFullName(), retroOn );
 
         return logger;
 
@@ -291,7 +294,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
 
 
 
-        // Return the silencer if switch level is quiet
+        // Return the silencer if the switch level is quiet
         if ( sw.Level is Level.Quiet )
             return Silencer;
 
