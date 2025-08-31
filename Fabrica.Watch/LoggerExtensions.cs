@@ -504,15 +504,22 @@ public static class LoggerExtensions
     public static void LogObject( this ILogger logger, string title, object? source )
     {
 
-        if( logger.IsTraceEnabled )
+        if( logger.IsTraceEnabled && source is not null )
         {
-            var le = logger.CreateEvent(Level.Trace, title, source ?? new { });
+            var ft = $"{title} - {source.GetType().GetConciseFullName()}:"; 
+            var le = logger.CreateEvent(Level.Trace, ft, source);
+            logger.LogEvent(le);
+        }        
+        else if( logger.IsTraceEnabled )
+        {
+            var le = logger.CreateEvent(Level.Trace, title, new { } );
             logger.LogEvent(le);
         }
         else if( logger.IsDebugEnabled && source is not null )
         {
+            var ft = $"{title} - {source.GetType().GetConciseFullName()}:";
             var payload = $"{source.GetType().GetConciseFullName()}: ({source})";
-            var le = logger.CreateEvent(Level.Debug, title, PayloadType.Text, payload);
+            var le = logger.CreateEvent(Level.Debug, ft, PayloadType.Text, payload);
             logger.LogEvent(le);
         }
         else if( logger.IsDebugEnabled )
