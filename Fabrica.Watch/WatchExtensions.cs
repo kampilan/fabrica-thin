@@ -14,7 +14,7 @@ public static class WatchExtensions
 
     public static ILogger EnterMethod<T>(this T _, [CallerMemberName] string name = "")
     {
-        var logger = WatchFactoryLocator.Factory.GetLogger(typeof(T).FullName!);
+        var logger = WatchFactoryLocator.Factory.GetLogger(typeof(T));
         logger.EnterMethod(name);
         return logger;
     }
