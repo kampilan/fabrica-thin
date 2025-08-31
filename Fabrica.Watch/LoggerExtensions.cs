@@ -506,25 +506,27 @@ public static class LoggerExtensions
 
         if( logger.IsTraceEnabled && source is not null )
         {
-            var ft = $"{title} - {source.GetType().GetConciseFullName()}:"; 
+            var ft = $"{title} -  [{source.GetType().GetConciseFullName()}]"; 
             var le = logger.CreateEvent(Level.Trace, ft, source);
             logger.LogEvent(le);
         }        
         else if( logger.IsTraceEnabled )
         {
-            var le = logger.CreateEvent(Level.Trace, title, new { } );
+            var ft = $"{title} -  [Null]";
+            var le = logger.CreateEvent(Level.Trace, ft );
             logger.LogEvent(le);
         }
         else if( logger.IsDebugEnabled && source is not null )
         {
-            var ft = $"{title} - {source.GetType().GetConciseFullName()}:";
+            var ft = $"{title} -  [{source.GetType().GetConciseFullName()}]";
             var payload = $"{source.GetType().GetConciseFullName()}: ({source})";
             var le = logger.CreateEvent(Level.Debug, ft, PayloadType.Text, payload);
             logger.LogEvent(le);
         }
         else if( logger.IsDebugEnabled )
         {
-            var le = logger.CreateEvent(Level.Debug, title, PayloadType.Text, "null");
+            var ft = $"{title} -  [Null]";
+            var le = logger.CreateEvent(Level.Debug, ft );
             logger.LogEvent(le);
         }
 
