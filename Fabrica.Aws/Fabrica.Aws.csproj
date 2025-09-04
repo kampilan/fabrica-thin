@@ -25,10 +25,13 @@
 	<ItemGroup>
 		<PackageReference Include="Autofac" />
 		<PackageReference Include="AWSSDK.DynamoDBv2" />
+		<PackageReference Include="AWSSDK.ElasticLoadBalancingV2" />
 		<PackageReference Include="AWSSDK.S3" />
 		<PackageReference Include="AWSSDK.SecretsManager" />
 		<PackageReference Include="AWSSDK.SecurityToken" />
 		<PackageReference Include="AWSSDK.SQS" />
+		<PackageReference Include="CommunityToolkit.Diagnostics" />
+		<PackageReference Include="JetBrains.Annotations" />
 	</ItemGroup>
 
 
