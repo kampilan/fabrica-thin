@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Fabrica.Watch.Bridges.MicrosoftImpl;
 
-public class Logger: Microsoft.Extensions.Logging.ILogger
+public class Logger: Microsoft.Extensions.Logging.ILogger, IDisposable
 {
 
     public Logger( ILogger logger, string category )
@@ -103,5 +103,9 @@ public class Logger: Microsoft.Extensions.Logging.ILogger
 
     }
 
-
+    public void Dispose()
+    {
+        InternalLogger.Dispose();
+    }
+    
 }

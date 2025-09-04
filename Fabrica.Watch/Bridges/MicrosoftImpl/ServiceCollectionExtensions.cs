@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ILoggerFactory, LoggerFactory>(p =>
         {
 
-            var correlation = p.GetRequiredService<ILoggingCorrelation>();
+            var correlation = p.GetService<ILoggingCorrelation>();
             var comp = new LoggerFactory(correlation);
 
             return comp;
