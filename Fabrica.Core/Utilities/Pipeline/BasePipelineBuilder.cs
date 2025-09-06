@@ -1,4 +1,5 @@
-﻿using Fabrica.Utilities.Types;
+﻿using CommunityToolkit.Diagnostics;
+using Fabrica.Utilities.Types;
 using Fabrica.Watch;
 
 namespace Fabrica.Utilities.Pipeline;
@@ -10,12 +11,17 @@ public abstract class BasePipelineBuilder<TContext>: IPipelineBuilder<TContext> 
 
     public IPipelineBuilder<TContext> AddStep(IPipelineStep<TContext> step)
     {
+
+        Guard.IsNotNull(step, nameof(step));
+        
         _steps.Add(step);
         return this;
+        
     }
 
     public virtual Pipeline<TContext> Build()
     {
+
         Func<TContext, Task> next = (ctx) => Task.CompletedTask;
 
         foreach (var step in _steps.AsEnumerable().Reverse())

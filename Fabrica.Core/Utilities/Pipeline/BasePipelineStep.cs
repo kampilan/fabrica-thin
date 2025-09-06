@@ -1,4 +1,5 @@
-﻿using Fabrica.Watch;
+﻿using CommunityToolkit.Diagnostics;
+using Fabrica.Watch;
 
 namespace Fabrica.Utilities.Pipeline;
 
@@ -10,6 +11,9 @@ public abstract class BasePipelineStep<TContext> where TContext : class, IPipeli
     public async Task InvokeAsync(TContext context, Func<TContext, Task> next)
     {
 
+        Guard.IsNotNull(context, nameof(context));
+        Guard.IsNotNull(next, nameof(next));
+        
         if (!ContinueOnFailure && !context.Success)
             return;
 
@@ -27,12 +31,20 @@ public abstract class BasePipelineStep<TContext> where TContext : class, IPipeli
 
     protected virtual Task Before(TContext context)
     {
+
+        Guard.IsNotNull(context, nameof(context));
+        
         return Task.CompletedTask;        
+        
     }    
     
     protected virtual Task After(TContext context)
     {
-        return Task.CompletedTask;        
+
+        Guard.IsNotNull(context, nameof(context));
+        
+        return Task.CompletedTask;
+        
     }    
     
     

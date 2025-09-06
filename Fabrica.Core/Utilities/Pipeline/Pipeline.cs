@@ -16,6 +16,8 @@ public class Pipeline<TContext> where TContext : class, IPipelineContext
     public async Task ExecuteAsync( TContext context )
     {
         
+        Guard.IsNotNull(context, nameof(context));        
+        
         using var logger = this.EnterMethod();
         
         Guard.IsNotNull(context, nameof(context));
