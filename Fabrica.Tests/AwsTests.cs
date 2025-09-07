@@ -2,6 +2,7 @@
 using System.Drawing;
 using Autofac;
 using Fabrica.Aws;
+using Fabrica.Identity;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 using Fabrica.Watch.Realtime;
@@ -57,7 +58,14 @@ public class AwsTests
         
         var dur = TimeSpan.FromTicks(Stopwatch.GetTimestamp() - sw);
         
-        Assert.That(dur.TotalMilliseconds, Is.LessThan(31000));
+        Assert.That(dur.TotalMilliseconds, Is.LessThan(2100));
+        
+        await using var scope = TheRoot.BeginLifetimeScope();
+        var service = scope.Resolve<IInstanceMetadata>();
+        
+        Assert.That( service.InstanceId, Is.EqualTo("1234567890"));
+
+        await Task.Delay(35000);
 
     }
 
@@ -68,7 +76,11 @@ public class AwsTests
         protected override void Load(ContainerBuilder builder)
         {
 
-            builder. UseAws("kampilan", TimeSpan.FromSeconds(45));
+            builder. UseAws("kampilan", imd =>
+            {
+                imd.Timeout = TimeSpan.FromSeconds(2);
+                imd.InstanceId = "1234567890";
+            });
             
         }
         

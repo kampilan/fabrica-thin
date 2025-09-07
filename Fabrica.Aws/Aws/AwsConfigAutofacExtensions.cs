@@ -18,19 +18,34 @@ namespace Fabrica.Aws;
 public static class AwsConfigAutofacExtensions
 {
 
-    public static ContainerBuilder UseAws(this ContainerBuilder builder, string profileName="", TimeSpan metadataTimeout = default)
+    public class MetaDataDefaults
     {
 
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(1);
+        public string InstanceId { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
+        public string UserData { get; set; } = string.Empty;
         
-        if( metadataTimeout == TimeSpan.Zero )
-            metadataTimeout = TimeSpan.FromSeconds(1);
+    }
+    
+    
+    public static ContainerBuilder UseAws(this ContainerBuilder builder, string profileName="", Action<MetaDataDefaults>? defaults = null )
+    {
+
+        var md = new MetaDataDefaults();
+
+        defaults?.Invoke(md);
+
         
         builder.Register(_ =>
             {
 
                 var comp = new InstanceMetaService
                 {
-                    Timeout = metadataTimeout
+                    DefaultInstanceId = md.InstanceId,
+                    DefaultRegion     = md.Region,
+                    DefaultUserData   = md.UserData,
+                    Timeout           = md.Timeout
                 };
                 
                 return comp;
@@ -39,7 +54,6 @@ public static class AwsConfigAutofacExtensions
             .As<IInstanceMetadata>()
             .As<IRequiresStart>()
             .SingleInstance();
-
         
         
         if (string.IsNullOrWhiteSpace(profileName))
