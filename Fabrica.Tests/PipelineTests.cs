@@ -1,10 +1,10 @@
 ﻿using System.Drawing;
-using System.Text.Json.Serialization;
 using Autofac;
 using Fabrica.Utilities.Pipeline;
 using Fabrica.Utilities.Types;
 using Fabrica.Watch;
 using Fabrica.Watch.Realtime;
+using JetBrains.Annotations;
 using NUnit.Framework;
 
 namespace Fabrica.Tests;
@@ -44,86 +44,21 @@ public class PipelineTests
 
     private IContainer TheRoot { get; set; } = null!;
 
-    [Test]
-    public async Task Should_Build_And_Run_Pipeline()
-    {
 
-        var context = new TestContext(DoIt);
-
-        async Task DoIt()
-        {
-            using var logger = this.GetLogger();
-            logger.Debug("Do It");
-            await Task.Delay(1000);
-            logger.Debug("Done");
-        }
-        
-        var builder = new CustomBuilder()
-            .AddStep(new StepOne())
-            .AddStep(new StepTwo())
-            .AddStep(new StepThree())
-            .AddStep(new StepEnd());    
-
-        var pipeline = builder.Build();
-        
-        await pipeline.ExecuteAsync(context);
-        
-    }
-
-    [Test]
-    public async Task Should_Resolve_And_Run_Pipeline()
+    [Test] 
+    public async Task Should_Resolve_Pipeline_And_Run_Pipeline()
     {
 
         using var logger = this.EnterMethod();
         
         await using var scope = TheRoot.BeginLifetimeScope();
 
-        var builder = scope.Resolve<CustomBuilder>();
+        var builder = scope.Resolve<IPipelineBuilder<TestContext>>();
+        builder.SetAction( async (_)=> await DoIt() );
 
-        builder.AddStep(new StepEnd());
         var pipeline = builder.Build();
 
-        var context = new TestContext(DoIt);
-
-        async Task DoIt()
-        {
-            using var innerlogger = this.GetLogger();
-            innerlogger.Debug("Do It");
-            await Task.Delay(1000);
-            innerlogger.Debug("Done");
-        }
-        
-        
-        await pipeline.ExecuteAsync(context);
-
-        logger.LogObject(nameof(context), context);
-        
-        
-        Assert.That(context.Success, Is.True);
-
-        
-    }
-    
-    [Test]
-    public async Task Should_Resolve_Custom_And_Run_Pipeline()
-    {
-
-        using var logger = this.EnterMethod();
-        
-        await using var scope = TheRoot.BeginLifetimeScope();
-
-        var builder = scope.Resolve<CustomBuilder>();
-        var pipeline = builder.Build();
-
-        var context = new TestContext(DoIt);
-        
-        async Task DoIt()
-        {
-            using var innerlogger = this.GetLogger();
-            innerlogger.Debug("Do It");
-            await Task.Delay(1000);
-            innerlogger.Debug("Done");
-        }
+        var context = new TestContext();
         
         await pipeline.ExecuteAsync(context);
 
@@ -134,20 +69,7 @@ public class PipelineTests
         Assert.That(context.FailedStep, Is.EqualTo(""));
         Assert.That(context.Cause, Is.Null);
 
-    }    
-    
-    [Test]
-    public async Task Should_Resolve_CustomBadBefore_And_Run_Pipeline()
-    {
-
-        using var logger = this.EnterMethod();
-        
-        await using var scope = TheRoot.BeginLifetimeScope();
-
-        var builder = scope.Resolve<CustomBadBeforeBuilder>();
-        var pipeline = builder.Build();
-
-        var context = new TestContext(DoIt);
+        return;
 
         async Task DoIt()
         {
@@ -156,7 +78,23 @@ public class PipelineTests
             await Task.Delay(1000);
             innerlogger.Debug("Done");
         }
-            
+        
+    }    
+    
+    [Test]
+    public async Task Should_Resolve_BadBefore_And_Run_Pipeline()
+    {
+
+        using var logger = this.EnterMethod();
+        
+        await using var scope = TheRoot.BeginLifetimeScope();
+
+        var builder = scope.Resolve<IPipelineBuilder<BadBeforeContext>>();
+        builder.SetAction( async (_)=> await DoIt());
+        
+        var pipeline = builder.Build();
+
+        var context = new BadBeforeContext();
         
         await pipeline.ExecuteAsync(context);
 
@@ -166,21 +104,8 @@ public class PipelineTests
         Assert.That(context.Phase, Is.EqualTo(PipelinePhase.Before));
         Assert.That(context.FailedStep, Is.EqualTo(typeof(StepBadBefore).GetConciseFullName()));
         Assert.That(context.Cause, Is.Not.Null);
-        
-    }    
-    
-    [Test]
-    public async Task Should_Resolve_CustomBadAfter_And_Run_Pipeline()
-    {
 
-        using var logger = this.EnterMethod();
-        
-        await using var scope = TheRoot.BeginLifetimeScope();
-
-        var builder = scope.Resolve<IPipelineBuilder<TestContext>>();
-        var pipeline = builder.Build();
-
-        var context = new TestContext(DoIt);
+        return;
 
         async Task DoIt()
         {
@@ -189,8 +114,25 @@ public class PipelineTests
             await Task.Delay(1000);
             innerlogger.Debug("Done");
         }
-            
         
+    }    
+    
+    [Test]
+    public async Task Should_Resolve_BadAfter_And_Run_Pipeline()
+    {
+
+        using var logger = this.EnterMethod();
+        
+        await using var scope = TheRoot.BeginLifetimeScope();
+
+        var builder = scope.Resolve<IPipelineBuilder<BadAfterContext>>();
+        builder.SetAction( async (_)=> await DoIt());        
+        
+        var pipeline = builder.Build();
+
+        var context = new BadAfterContext();
+
+
         await pipeline.ExecuteAsync(context);
         
         logger.LogObject(nameof(context), context);        
@@ -199,6 +141,15 @@ public class PipelineTests
         Assert.That(context.Phase, Is.EqualTo(PipelinePhase.After));
         Assert.That(context.FailedStep, Is.EqualTo(typeof(StepBadAfter).GetConciseFullName()));
 
+        return;
+
+        async Task DoIt()
+        {
+            using var innerlogger = this.GetLogger();
+            innerlogger.Debug("Do It");
+            await Task.Delay(1000);
+            innerlogger.Debug("Done");
+        }
         
     }    
     
@@ -209,100 +160,68 @@ public class PipelineTests
     private class TheModule : Module
     {
 
+        
         protected override void Load(ContainerBuilder builder)
         {
 
 
-            builder.AddPipelineBuilder<CustomBuilder,TestContext>(plb =>
+            builder.RegisterPipelineBuilder<TestContext>(steps =>
             {
-
-                plb.AddStep(new StepOne())
-                   .AddStep(new StepTwo())
-                   .AddStep(new StepThree());
-                
+                steps
+                    .Add<StepOne<TestContext>>()
+                    .Add<StepTwo<TestContext>>()
+                    .Add<StepThree<TestContext>>();
             });
 
-            builder.AddPipelineBuilder<CustomBadBeforeBuilder,TestContext>(plb =>
+            builder.RegisterPipelineBuilder<BadBeforeContext>(steps =>
             {
-
-                plb.AddStep(new StepOne())
-                    .AddStep(new StepTwo())
-                    .AddStep(new StepThree());
-                
+                steps
+                    .Add<StepOne<BadBeforeContext>>()
+                    .Add<StepTwo<BadBeforeContext>>()
+                    .Add<StepThree<BadBeforeContext>>()
+                    .Add<StepBadBefore>();
             });
-            
-            builder.AddPipelineBuilder<CustomBadAfterBuilder,TestContext>(plb =>
+
+            builder.RegisterPipelineBuilder<BadAfterContext>(steps =>
             {
-
-                plb.AddStep(new StepOne())
-                    .AddStep(new StepTwo())
-                    .AddStep(new StepThree());
-                
+                steps
+                    .Add<StepOne<BadAfterContext>>()
+                    .Add<StepTwo<BadAfterContext>>()
+                    .Add<StepThree<BadAfterContext>>()
+                    .Add<StepBadAfter>();
             });
-            
-            
-            
+
         }
+
         
     }
     
     
 }
 
-public class CustomBuilder : BasePipelineBuilder<TestContext>
-{
-
-    public override Pipeline<TestContext> Build()
-    {
-        AddStep(new StepEnd());
-        return base.Build();
-    }
     
-}    
 
-public class CustomBadBeforeBuilder : BasePipelineBuilder<TestContext>
+
+
+public class TestContext: BasePipelineContext, IPipelineContext
 {
-
-    public override Pipeline<TestContext> Build()
-    {
-        
-        AddStep(new StepBadBefore());
-        AddStep(new StepEnd());
-        return base.Build();
-    }
-    
 }
 
-public class CustomBadAfterBuilder : BasePipelineBuilder<TestContext>
+public class BadBeforeContext: BasePipelineContext, IPipelineContext
 {
+}
 
-    public override Pipeline<TestContext> Build()
-    {
-        
-        AddStep(new StepBadAfter());
-        AddStep(new StepEnd());
-        return base.Build();
-    }
-    
+public class BadAfterContext: BasePipelineContext, IPipelineContext
+{
 }
 
 
 
-
-
-public class TestContext( Func<Task> dotIt ): BasePipelineContext, IPipelineContext
+[UsedImplicitly]
+public class StepOne<TContext> : BasePipelineStep<TContext>, IPipelineStep<TContext> where TContext : class, IPipelineContext
 {
     
-    [JsonIgnore]
-    public Func<Task> DoIt { get; } = dotIt;
-
-
-}
-
-public class StepOne : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
-{
-    
-    protected override Task Before(TestContext context)
+    protected override Task Before(TContext context)
     {
 
         using var logger = this.EnterMethod();
@@ -313,8 +232,8 @@ public class StepOne : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
         
     }
 
-/*    
-    protected override Task After(TestContext context)
+    
+    protected override Task After(TContext context)
     {
         
         using var logger = this.EnterMethod();
@@ -324,15 +243,16 @@ public class StepOne : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
         return Task.CompletedTask;
         
     }
-*/  
+  
     
 }
 
-public class StepTwo : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
+[UsedImplicitly]
+public class StepTwo<TContext> : BasePipelineStep<TContext>, IPipelineStep<TContext> where TContext : class, IPipelineContext
 {
 
-/*    
-    protected override Task Before(TestContext context)
+    
+    protected override Task Before(TContext context)
     {
         
         using var logger = this.EnterMethod();
@@ -342,9 +262,9 @@ public class StepTwo : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
         return Task.CompletedTask;
         
     }
-*/
 
-    protected override Task After(TestContext context)
+
+    protected override Task After(TContext context)
     {
         
         using var logger = this.EnterMethod();
@@ -358,15 +278,16 @@ public class StepTwo : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
 }
 
 
-public class StepThree : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
+[UsedImplicitly]
+public class StepThree<TContext> : BasePipelineStep<TContext>, IPipelineStep<TContext> where TContext : class, IPipelineContext
 {
 
     public StepThree()
     {
-        ContinueOnFailure = true;
+        ContinueAfterFailure = true;
     }
     
-    protected override Task Before(TestContext context)
+    protected override Task Before(TContext context)
     {
         
         using var logger = this.EnterMethod();
@@ -377,7 +298,7 @@ public class StepThree : BasePipelineStep<TestContext>, IPipelineStep<TestContex
         
     }
 
-    protected override Task After(TestContext context)
+    protected override Task After(TContext context)
     {
         
         using var logger = this.EnterMethod();
@@ -391,10 +312,10 @@ public class StepThree : BasePipelineStep<TestContext>, IPipelineStep<TestContex
 }
 
 
-public class StepBadBefore : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
+public class StepBadBefore : BasePipelineStep<BadBeforeContext>, IPipelineStep<BadBeforeContext>
 {
     
-    protected override Task Before(TestContext context)
+    protected override Task Before(BadBeforeContext context)
     {
 
         
@@ -410,10 +331,10 @@ public class StepBadBefore : BasePipelineStep<TestContext>, IPipelineStep<TestCo
 }
 
 
-public class StepBadAfter : BasePipelineStep<TestContext>, IPipelineStep<TestContext>
+public class StepBadAfter : BasePipelineStep<BadAfterContext>, IPipelineStep<BadAfterContext>
 {
     
-    protected override Task Before(TestContext context)
+    protected override Task Before(BadAfterContext context)
     {
         
         using var logger = this.EnterMethod();
@@ -424,7 +345,7 @@ public class StepBadAfter : BasePipelineStep<TestContext>, IPipelineStep<TestCon
         
     }
 
-    protected override Task After(TestContext context)
+    protected override Task After(BadAfterContext context)
     {
         throw new Exception("I'm Bad After");
     }    
@@ -432,17 +353,3 @@ public class StepBadAfter : BasePipelineStep<TestContext>, IPipelineStep<TestCon
     
 }
 
-
-public class StepEnd : IPipelineStep<TestContext>
-{
-
-    public async Task InvokeAsync( TestContext context, Func<TestContext,Task> next )
-    {
-        
-        await context.DoIt();
-        context.Phase = PipelinePhase.After;
-        
-    }
-
-    
-}

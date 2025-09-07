@@ -6,7 +6,7 @@ namespace Fabrica.Utilities.Pipeline;
 public abstract class BasePipelineStep<TContext> where TContext : class, IPipelineContext
 {
 
-    protected bool ContinueOnFailure { get; set; }
+    public bool ContinueAfterFailure { get; set; }
     
     public async Task InvokeAsync(TContext context, Func<TContext, Task> next)
     {
@@ -14,7 +14,7 @@ public abstract class BasePipelineStep<TContext> where TContext : class, IPipeli
         Guard.IsNotNull(context, nameof(context));
         Guard.IsNotNull(next, nameof(next));
         
-        if (!ContinueOnFailure && !context.Success)
+        if (!ContinueAfterFailure && !context.Success)
             return;
 
         
@@ -22,7 +22,7 @@ public abstract class BasePipelineStep<TContext> where TContext : class, IPipeli
         
         await next(context);
         
-        if (!ContinueOnFailure && !context.Success )
+        if (!ContinueAfterFailure && !context.Success )
             return;
         
         await After(context);        

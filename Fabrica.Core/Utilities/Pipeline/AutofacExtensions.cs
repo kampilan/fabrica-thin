@@ -3,32 +3,75 @@ using CommunityToolkit.Diagnostics;
 
 namespace Fabrica.Utilities.Pipeline;
 
+public interface IRegisterPipelineStep<TContext> where TContext : class, IPipelineContext
+{
+    /// <summary>
+    /// Adds a pipeline step of the specified type to the current pipeline registration.
+    /// </summary>
+    /// <typeparam name="TStep">The type of the pipeline step to be added, which must implement <see cref="IPipelineStep{TContext}"/>.</typeparam>
+    /// <returns>The current <see cref="IRegisterPipelineStep{TContext}"/> instance for chaining further step registrations.</returns>
+    IRegisterPipelineStep<TContext> Add<TStep>() where TStep : class, IPipelineStep<TContext>;
+}
+
+internal class RegisterPipelineStep<TContext>(ContainerBuilder builder): IRegisterPipelineStep<TContext> where TContext : class, IPipelineContext
+{
+
+    IRegisterPipelineStep<TContext> IRegisterPipelineStep<TContext>.Add<TStep>() => Add<TStep>();
+
+    public IRegisterPipelineStep<TContext> Add<TStep>() where TStep : class, IPipelineStep<TContext>
+    {
+
+        Guard.IsNotNull(builder, nameof(builder));
+        
+        builder.RegisterType<TStep>()
+            .As<IPipelineStep<TContext>>()
+            .InstancePerDependency();
+        
+        return this;
+
+    }
+    
+}
+
 public static class AutofacExtensions
 {
 
-    public static ContainerBuilder AddPipelineBuilder<TBuilder,TContext>(this ContainerBuilder afb, Action<TBuilder> builder) where TBuilder : class, IPipelineBuilder<TContext>, new() where TContext : class, IPipelineContext
+    /// <summary>
+    /// Registers a pipeline builder and its steps with the given container builder.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the pipeline context that implements <see cref="IPipelineContext"/>.</typeparam>
+    /// <param name="builder">The Autofac <see cref="ContainerBuilder"/> used to register pipeline components.</param>
+    /// <param name="steps">An action to configure and register the pipeline steps.</param>
+    /// <returns>The same <see cref="ContainerBuilder"/> instance for chaining registrations.</returns>
+    public static ContainerBuilder RegisterPipelineBuilder<TContext>(this ContainerBuilder builder, Action<IRegisterPipelineStep<TContext>> steps ) where TContext : class, IPipelineContext
     {
 
-        Guard.IsNotNull(afb, nameof(afb));
         Guard.IsNotNull(builder, nameof(builder));
+        Guard.IsNotNull(steps, nameof(steps));
         
-        afb.Register(_ =>
-        {
+        steps(new RegisterPipelineStep<TContext>(builder));
+        
+        builder.Register(c =>
+            {
 
-            var comp = new TBuilder();
-            builder(comp);
+                var list = c.Resolve<IEnumerable<IPipelineStep<TContext>>>(); 
+                var comp = new PipelineBuilder<TContext>();
+                
+                foreach( var step in list )
+                {
+                    comp.AddStep(step);
+                }
+                
+                return comp;
+                
+            })
+            .AsSelf()
+            .As<IPipelineBuilder<TContext>>()
+            .InstancePerDependency();
 
-            return comp;
-
-        })
-        .AsSelf()
-        .As<IPipelineBuilder<TContext>>()
-        .InstancePerDependency();
-
-        return afb;
+        return builder;
         
     }
     
-    
-    
+
 }
