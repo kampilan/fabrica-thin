@@ -62,7 +62,8 @@ public class AwsTests
         
         await using var scope = TheRoot.BeginLifetimeScope();
         var service = scope.Resolve<IInstanceMetadata>();
-        
+
+        Assert.That( service.IsRunningOnEc2, Is.EqualTo(false));
         Assert.That( service.InstanceId, Is.EqualTo("1234567890"));
 
         await Task.Delay(35000);

@@ -9,7 +9,7 @@ namespace Fabrica.Aws;
 public interface IInstanceMetadata
 {
     
-    bool UseInstanceMetadata { get; }
+    bool IsRunningOnEc2 { get; }
     
     string InstanceId { get; }
     string Region { get; }
@@ -21,14 +21,14 @@ public interface IInstanceMetadata
 internal class InstanceMetaService: IRequiresStart, IInstanceMetadata
 {
 
-    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(1);
+    public TimeSpan Timeout { get; init; } = TimeSpan.FromSeconds(1);
     
-    public string DefaultInstanceId { get; set; } = string.Empty;
-    public string DefaultRegion { get; set; } = string.Empty;    
-    public string DefaultUserData { get; set; } = string.Empty;    
+    public string DefaultInstanceId { get; init; } = string.Empty;
+    public string DefaultRegion { get; init; } = string.Empty;    
+    public string DefaultUserData { get; init; } = string.Empty;    
     
     
-    private bool _useInstanceMetadata = true;
+    private bool _isRunningOnEc2 = true;
     
     public Task Start()
     {
@@ -46,9 +46,9 @@ internal class InstanceMetaService: IRequiresStart, IInstanceMetadata
 
                 var instanceId = EC2InstanceMetadata.InstanceId;
                 if( string.IsNullOrWhiteSpace(instanceId) )
-                    _useInstanceMetadata = false;
+                    _isRunningOnEc2 = false;
 
-                if( !_useInstanceMetadata )
+                if( !_isRunningOnEc2 )
                 {
                     using var innerLogger = this.GetLogger();
                     innerLogger.Warning("NOT Running on EC2 Instance.");                
@@ -59,7 +59,7 @@ internal class InstanceMetaService: IRequiresStart, IInstanceMetadata
             {
                 using var innerLogger = this.GetLogger();
                 innerLogger.Warning("NOT Running on EC2 Instance.");
-                _useInstanceMetadata = false;
+                _isRunningOnEc2 = false;
             }
             
         }, ct);
@@ -71,7 +71,7 @@ internal class InstanceMetaService: IRequiresStart, IInstanceMetadata
 
         var index = Task.WaitAny( metaTask, delayTask );
         if( index == 1)
-            _useInstanceMetadata = false;
+            _isRunningOnEc2 = false;
 
         logger.Inspect(nameof(index), index);
 
@@ -84,13 +84,13 @@ internal class InstanceMetaService: IRequiresStart, IInstanceMetadata
         
     }
 
-    public bool UseInstanceMetadata => _useInstanceMetadata;
+    public bool IsRunningOnEc2 => _isRunningOnEc2;
     
-    public string InstanceId => _useInstanceMetadata ? EC2InstanceMetadata.InstanceId : DefaultInstanceId;
-    public string Region     => _useInstanceMetadata ? EC2InstanceMetadata.Region.SystemName : DefaultRegion;
-    public string UserData   => _useInstanceMetadata ? EC2InstanceMetadata.UserData: DefaultUserData;     
+    public string InstanceId => _isRunningOnEc2 ? EC2InstanceMetadata.InstanceId : DefaultInstanceId;
+    public string Region     => _isRunningOnEc2 ? EC2InstanceMetadata.Region.SystemName : DefaultRegion;
+    public string UserData   => _isRunningOnEc2 ? EC2InstanceMetadata.UserData: DefaultUserData;     
 
-    bool IInstanceMetadata.UseInstanceMetadata => UseInstanceMetadata;
+    bool IInstanceMetadata.IsRunningOnEc2 => IsRunningOnEc2;
     string IInstanceMetadata.InstanceId => InstanceId;
     string IInstanceMetadata.Region     => Region;
     string IInstanceMetadata.UserData   => UserData;
