@@ -7,6 +7,7 @@ using Amazon.S3;
 using Amazon.SecurityToken;
 using Amazon.SQS;
 using Autofac;
+using Fabrica.Utilities.Container;
 using Fabrica.Utilities.Queue;
 
 // ReSharper disable UnusedMember.Global
@@ -17,9 +18,30 @@ namespace Fabrica.Aws;
 public static class AwsConfigAutofacExtensions
 {
 
-    public static ContainerBuilder UseAws(this ContainerBuilder builder, string profileName)
+    public static ContainerBuilder UseAws(this ContainerBuilder builder, string profileName="", TimeSpan metadataTimeout = default)
     {
 
+        
+        if( metadataTimeout == TimeSpan.Zero )
+            metadataTimeout = TimeSpan.FromSeconds(1);
+        
+        builder.Register(_ =>
+            {
+
+                var comp = new InstanceMetaService
+                {
+                    Timeout = metadataTimeout
+                };
+                
+                return comp;
+                
+            })
+            .As<IInstanceMetadata>()
+            .As<IRequiresStart>()
+            .SingleInstance();
+
+        
+        
         if (string.IsNullOrWhiteSpace(profileName))
             return builder;
 
@@ -40,9 +62,9 @@ public static class AwsConfigAutofacExtensions
     }
 
 
-    public static ContainerBuilder AddS3Client(this ContainerBuilder builder, string regionName )
+    public static ContainerBuilder AddS3Client(this ContainerBuilder builder, string regionName)
     {
-
+        
         builder.Register(c =>
             {
 

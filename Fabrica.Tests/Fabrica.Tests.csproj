@@ -24,6 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Fabrica.Aws\Fabrica.Aws.csproj" />
 	  <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
 	  <ProjectReference Include="..\Fabrica.Endpoints\Fabrica.Endpoints.csproj" />
 	  <ProjectReference Include="..\Fabrica.Identity.Keycloak\Fabrica.Identity.Keycloak.csproj" />
