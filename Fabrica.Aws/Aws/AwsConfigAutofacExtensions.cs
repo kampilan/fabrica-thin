@@ -7,6 +7,7 @@ using Amazon.S3;
 using Amazon.SecurityToken;
 using Amazon.SQS;
 using Autofac;
+using CommunityToolkit.Diagnostics;
 using Fabrica.Utilities.Container;
 using Fabrica.Utilities.Queue;
 
@@ -236,7 +237,8 @@ public static class AwsConfigAutofacExtensions
 
     public static ContainerBuilder AddStsClient(this ContainerBuilder builder, string regionName)
     {
-
+        
+        
         builder.Register(c =>
             {
 
@@ -264,6 +266,35 @@ public static class AwsConfigAutofacExtensions
 
     }
 
+    public static ContainerBuilder AddStsClient(this ContainerBuilder builder, string accessKey, string secretKey, string regionName )
+    {
+
+        Guard.IsNotNullOrWhiteSpace(accessKey, nameof(accessKey));
+        Guard.IsNotNullOrWhiteSpace(secretKey, nameof(secretKey));
+        
+        builder.Register(_ =>
+            {
+
+                RegionEndpoint? region = null;
+                if (!string.IsNullOrWhiteSpace(regionName))
+                    region = RegionEndpoint.GetBySystemName(regionName);
+
+                var credentials = new BasicAWSCredentials(accessKey, secretKey);
+
+                if (region is not null)
+                    return new AmazonSecurityTokenServiceClient(credentials, region);
+
+                return new AmazonSecurityTokenServiceClient(credentials);
+
+
+            })
+            .As<IAmazonSecurityTokenService>()
+            .SingleInstance();
+
+
+        return builder;
+
+    }    
 
     public static ContainerBuilder AddStsClient(this ContainerBuilder builder)
     {
@@ -289,7 +320,28 @@ public static class AwsConfigAutofacExtensions
 
     }
 
+    public static ContainerBuilder AddStsClient(this ContainerBuilder builder, string accessKey, string secretKey )
+    {
 
+        Guard.IsNotNullOrWhiteSpace(accessKey, nameof(accessKey));
+        Guard.IsNotNullOrWhiteSpace(secretKey, nameof(secretKey));
+        
+        builder.Register(_ =>
+            {
+                var credentials = new BasicAWSCredentials(accessKey, secretKey);
+                return new AmazonSecurityTokenServiceClient(credentials);
+            })
+            .As<IAmazonSecurityTokenService>()
+            .SingleInstance();
+
+
+        return builder;
+
+    }
+    
+    
+    
+    
     public static ContainerBuilder AddStsConfiguration(this ContainerBuilder builder, string roleArn, string policy, TimeSpan duration)
     {
 

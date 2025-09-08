@@ -1,5 +1,6 @@
 ﻿using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
+using CommunityToolkit.Diagnostics;
 
 // ReSharper disable UnusedMember.Global
 
@@ -12,10 +13,8 @@ public static class StsExtensions
     public static async Task<CredentialSet> CreateCredentialSet(this IAmazonSecurityTokenService service, string arn, string uid, string policy = "", TimeSpan duration=default)
     {
 
-        if (string.IsNullOrWhiteSpace(arn)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(arn));
-        if (string.IsNullOrWhiteSpace(uid)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(uid));
-
-
+        Guard.IsNotNullOrWhiteSpace(arn, nameof(arn));
+        Guard.IsNotNullOrWhiteSpace(uid, nameof(uid));
 
         duration = duration == default || duration.TotalSeconds < 900 ? TimeSpan.FromSeconds(900) : duration;
         var durSeconds = Convert.ToInt32(duration.TotalSeconds);
@@ -25,7 +24,7 @@ public static class StsExtensions
         {
             RoleArn = arn,
             RoleSessionName = uid,
-            DurationSeconds = durSeconds,
+            DurationSeconds = durSeconds
         };
 
         if( !string.IsNullOrWhiteSpace(policy) )
@@ -55,7 +54,6 @@ public static class StsExtensions
 
     }
 
-
 }
 
 public class StsConfiguration
@@ -64,7 +62,7 @@ public class StsConfiguration
     public string RoleArn { get; set; } = string.Empty;
     public string Policy { get; set; } = string.Empty;
 
-    public TimeSpan Duration { get; set; } = default;
+    public TimeSpan Duration { get; set; } = TimeSpan.Zero;
 
 }
 
@@ -72,7 +70,7 @@ public class StsConfiguration
 public class CredentialSet
 {
 
-    public string Region{ get; set; } = string.Empty;
+    public string Region { get; set; } = string.Empty;
 
     public string AccessKey { get; set; } = string.Empty;
     public string SecretKey { get; set; } = string.Empty;

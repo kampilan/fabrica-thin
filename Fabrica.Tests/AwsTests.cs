@@ -30,7 +30,7 @@ public class AwsTests
         var builder = new ContainerBuilder();
         builder.RegisterModule<TheModule>();
 
-        TheRoot = builder.Build();
+        TheRoot = await builder.BuildAndStart();
         
     }
 
@@ -70,7 +70,27 @@ public class AwsTests
 
     }
 
+    [Test]  
+    public async Task Should_Find_Default_InstanceId_on_Metadata()
+    {
 
+        await using var scope = TheRoot.BeginLifetimeScope();
+
+        var metadata = scope.Resolve<IInstanceMetadata>();
+
+        Assert.That(metadata, Is.Not.Null);
+        Assert.That(metadata.IsRunningOnEc2, Is.False);
+        Assert.That(metadata.InstanceId, Is.Not.Null);
+        Assert.That(metadata.InstanceId, Is.Not.Empty);
+        Assert.That(metadata.InstanceId, Is.Not.WhiteSpace);
+
+        var instanceId = metadata.InstanceId;
+        
+        
+    }
+    
+    
+    
     private class TheModule : Module
     {
 
