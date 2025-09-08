@@ -13,6 +13,7 @@ public interface IInstanceMetadata
     
     string InstanceId { get; }
     string Region { get; }
+    string AvailabilityZone { get; }
     string UserData { get; }    
     
 }
@@ -88,11 +89,13 @@ internal class InstanceMetaService: IRequiresStart, IInstanceMetadata
     
     public string InstanceId => _isRunningOnEc2 ? EC2InstanceMetadata.InstanceId : DefaultInstanceId;
     public string Region     => _isRunningOnEc2 ? EC2InstanceMetadata.Region.SystemName : DefaultRegion;
+    public string AvailabilityZone => _isRunningOnEc2 ? EC2InstanceMetadata.AvailabilityZone : string.Empty;   
     public string UserData   => _isRunningOnEc2 ? EC2InstanceMetadata.UserData: DefaultUserData;     
 
     bool IInstanceMetadata.IsRunningOnEc2 => IsRunningOnEc2;
     string IInstanceMetadata.InstanceId => InstanceId;
-    string IInstanceMetadata.Region     => Region;
-    string IInstanceMetadata.UserData   => UserData;
+    string IInstanceMetadata.Region => Region;
+    string IInstanceMetadata.AvailabilityZone => AvailabilityZone;    
+    string IInstanceMetadata.UserData => UserData;
     
 }
