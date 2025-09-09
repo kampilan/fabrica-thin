@@ -9,6 +9,7 @@
         <Authors>Pond Hawk Technologies Inc.</Authors>
         <Description>DynamoDB implenentation of Fabrica Identity Grant Repository</Description>
         <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+        <PackageIcon>smithy.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,6 +18,13 @@
     <ItemGroup>
       <ProjectReference Include="..\Fabrica.Aws\Fabrica.Aws.csproj" />
       <ProjectReference Include="..\Fabrica.Identity.Client\Fabrica.Identity.Client.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="smithy.png">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>

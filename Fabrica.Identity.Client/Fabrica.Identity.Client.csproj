@@ -9,6 +9,7 @@
         <Authors>Pond Hawk Technologies Inc.</Authors>
         <Description>Automated Token management for making authenticated HttpClient calls.</Description>
         <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+        <PackageIcon>smithy.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +20,13 @@
     <ItemGroup>
       <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
       <ProjectReference Include="..\Fabrica.Watch\Fabrica.Watch.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="smithy.png">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
