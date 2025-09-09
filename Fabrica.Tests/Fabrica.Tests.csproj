@@ -17,16 +17,20 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+		<PackageReference Include="Microsoft.Extensions.Http.Resilience" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk"  />
 		<PackageReference Include="NUnit"  />
 		<PackageReference Include="NUnit3TestAdapter" />
 		<PackageReference Include="PropertyChanged.Fody" />
+        <PackageReference Include="Microsoft.Extensions.Http" />        
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Fabrica.Aws\Fabrica.Aws.csproj" />
 	  <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
 	  <ProjectReference Include="..\Fabrica.Endpoints\Fabrica.Endpoints.csproj" />
+	  <ProjectReference Include="..\Fabrica.Identity.Client.DynamoDb\Fabrica.Identity.Client.DynamoDb.csproj" />
+	  <ProjectReference Include="..\Fabrica.Identity.Client\Fabrica.Identity.Client.csproj" />
 	  <ProjectReference Include="..\Fabrica.Identity.Keycloak\Fabrica.Identity.Keycloak.csproj" />
 	  <ProjectReference Include="..\Fabrica.Mediator\Fabrica.Mediator.csproj" />
 	  <ProjectReference Include="..\Fabrica.Patch\Fabrica.Patch.csproj" />
