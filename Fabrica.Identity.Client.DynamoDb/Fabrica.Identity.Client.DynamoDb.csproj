@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Fabrica.Identity</RootNamespace>
+        <Title>Fabrica Identity Client DynamoDb</Title>
+        <Authors>Pond Hawk Technologies Inc.</Authors>
+        <Description>DynamoDB implenentation of Fabrica Identity Grant Repository</Description>
+        <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+    </PropertyGroup>
+
+    <ItemGroup>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fabrica.Aws\Fabrica.Aws.csproj" />
+      <ProjectReference Include="..\Fabrica.Identity.Client\Fabrica.Identity.Client.csproj" />
+    </ItemGroup>
+
+</Project>

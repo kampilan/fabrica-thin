@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Fabrica.Identity</RootNamespace>
+        <Title>Fabrica Identity Client</Title>
+        <Authors>Pond Hawk Technologies Inc.</Authors>
+        <Description>Automated Token management for making authenticated HttpClient calls.</Description>
+        <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Diagnostics" />
+      <PackageReference Include="Microsoft.Extensions.Http" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+      <ProjectReference Include="..\Fabrica.Watch\Fabrica.Watch.csproj" />
+    </ItemGroup>
+
+</Project>
