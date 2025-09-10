@@ -1,4 +1,5 @@
-﻿using Fabrica.Watch.Sink;
+﻿using System.Runtime.CompilerServices;
+using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
 
 namespace Fabrica.Watch;
@@ -23,56 +24,67 @@ public class QuietLoggerFactory: IWatchFactory
     {
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public bool IsTraceEnabled(string category)
     {
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public bool IsDebugEnabled(string category)
     {
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public bool IsTraceEnabled(Type type)
     {
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public bool IsDebugEnabled(Type type)
     {
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public bool IsTraceEnabled<T>()
     {
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public bool IsDebugEnabled<T>()
     {
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public ILogger GetLogger(string category, bool retroOn = true)
     {
         return QuietLogger.Single;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public ILogger GetLogger<T>(bool retroOn = true)
     {
         return QuietLogger.Single;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public ILogger GetLogger(Type type, bool retroOn = true)
     {
         return QuietLogger.Single;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public ILogger GetLogger(ref LoggerRequest request, bool retroOn = true)
     {
         return QuietLogger.Single;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public LogEvent AcquireLogEvent()
     {
         return LogEvent.Single;
@@ -92,40 +104,47 @@ public class QuietLogger: ILogger
     {
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LogEvent CreateEvent( Level level, object? title )
     {
         return QuietEvent;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public LogEvent CreateEvent( Level level, object? title, PayloadType type, string? payload )
     {
         return QuietEvent;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public LogEvent CreateEvent( Level level, object? title, object? payload )
     {
         return QuietEvent;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public LogEvent CreateEvent( Level level, object? title, Exception ex, object? context )
     {
         return QuietEvent;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public void LogEvent( LogEvent logEvent )
     {
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public string GetCurrentScope()
     {
         return string.Empty;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public void SetCurrentScope(string name)
     {
     }
 
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public IDisposable BeginScope<TState>(TState state)
     {
         return this;

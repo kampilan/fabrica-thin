@@ -4,6 +4,9 @@ using Fabrica.Watch.Sink;
 using Microsoft.Data.Sqlite;
 using TaskSchedulerEngine;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Fabrica.Watch.SqlIte;
 
 public class SqliteSink: IEventSinkProvider
