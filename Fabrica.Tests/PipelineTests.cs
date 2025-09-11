@@ -46,6 +46,40 @@ public class PipelineTests
 
 
     [Test] 
+    public async Task Should_Resolve_Pipeline_And_Run_Empty_Pipeline()
+    {
+
+        using var logger = this.EnterMethod();
+        
+        await using var scope = TheRoot.BeginLifetimeScope();
+
+        var factory  = scope.Resolve<IPipelineFactory>();
+        var pipeline = factory.Create<EmptyContext>();
+        var context  = new EmptyContext();
+        
+        await pipeline.ExecuteAsync(context,async (_)=> await DoIt());
+
+        logger.LogObject(nameof(context), context);
+        
+        Assert.That(context.Success, Is.True);
+        Assert.That(context.Phase, Is.EqualTo(PipelinePhase.After));
+        Assert.That(context.FailedStep, Is.EqualTo(""));
+        Assert.That(context.Cause, Is.Null);
+
+        return;
+
+        async Task DoIt()
+        {
+            using var innerlogger = this.GetLogger();
+            innerlogger.Debug("Do It");
+            await Task.Delay(1000);
+            innerlogger.Debug("Done");
+        }
+        
+    }    
+    
+    
+    [Test] 
     public async Task Should_Resolve_Pipeline_And_Run_Pipeline()
     {
 
@@ -230,6 +264,7 @@ public class PipelineTests
         {
 
             builder.RegisterPipelineFactory()
+                .AddPipeline<EmptyContext>(_=>{})
                 .AddPipeline<TestContext>(steps =>
                 {
                     steps
@@ -266,6 +301,10 @@ public class PipelineTests
     
 
 
+
+public class EmptyContext: BasePipelineContext, IPipelineContext
+{
+}
 
 public class TestContext: BasePipelineContext, IPipelineContext
 {
