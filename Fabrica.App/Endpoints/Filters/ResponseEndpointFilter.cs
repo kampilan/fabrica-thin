@@ -5,6 +5,7 @@ using Fabrica.Models;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 // ReSharper disable UnusedMember.Global
 
@@ -20,12 +21,17 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
 
 
         using var logger = EnterMethod();
-
+        
         if( context.HttpContext.Response.StatusCode == 401 )
         {
             var obj = new { CustomErrorMessage = "401 Unauthorized" };
             return  Results.Json(obj, options, "application/json", 401);           
         }
+
+        
+        if( result is IResult )
+            return result;        
+        
         
         if (result is IValueResponse {IsSuccessful: true} ok)
         {
