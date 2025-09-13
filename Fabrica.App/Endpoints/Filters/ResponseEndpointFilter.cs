@@ -3,14 +3,15 @@ using System.Text.Json;
 using Fabrica.Exceptions;
 using Fabrica.Models;
 using Fabrica.Utilities.Container;
+using Fabrica.Utilities.Types;
 using Fabrica.Watch;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 // ReSharper disable UnusedMember.Global
 
 namespace Fabrica.App.Endpoints.Filters;
 
+// ReSharper disable once UnusedType.Global
 public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOptions options): CorrelatedObject(correlation), IEndpointFilter
 {
 
@@ -18,85 +19,120 @@ public class ResponseEndpointFilter(ICorrelation correlation, JsonSerializerOpti
     {
 
         var result = await next(context);
-
-
+        
+        // ***********************************************************************
+        // *** Result Filter starts here ***
+        // ***********************************************************************        
         using var logger = EnterMethod();
+
+
         
-        if( context.HttpContext.Response.StatusCode == 401 )
+        // ***********************************************************************        
+        if (result is null)
         {
-            var obj = new { CustomErrorMessage = "401 Unauthorized" };
-            return  Results.Json(obj, options, "application/json", 401);           
+            logger.Debug( "Null Result encountered");
+            return Results.NoContent();       
         }
 
         
-        if( result is IResult )
-            return result;        
-        
-        
-        if (result is IValueResponse {IsSuccessful: true} ok)
+        // ***********************************************************************
+        switch (logger.IsTraceEnabled)
         {
+            case true when result is IResult r:
+            {
+                var ctx = new { Type = r.GetType().GetConciseFullName() };
+                logger.LogObject(nameof(IResult), ctx);
+                break;
+            }
+            case true when result is IValueResponse vr:
+            {
+                var ctx = new
+                {
+                    Type = nameof(IValueResponse),
+                    vr.IsSuccessful,
+                    vr.Kind,
+                };
+                logger.LogObject("Response", ctx);
+                break;
+            }
+            case true when result is IResponse ur:
+            {
+                var ctx = new
+                {
+                    Type = nameof(IResponse),
+                    ur.IsSuccessful,
+                    ur.Kind,
+                };
+                logger.LogObject("Response", ctx);
+                break;
+            }
+            case true:
+            {
+                var ctx = new { Type = result.GetType().GetConciseFullName() };
+                logger.LogObject(nameof(result), ctx);
+                break;
+            }
+        }
+        
+        
 
-            if( ok.Value is Stream st )
+        // *************************************************
+        logger.Debug("Attempting to map Response to Result");
+
+        switch (result)
+        {
+            case IResult:
+                return result;
+            case IValueResponse { IsSuccessful: true, Value: Stream st }:
                 return Results.Stream(st, "application/json");
-
-            return Results.Json(ok.Value, options: options);
-
-        }
-
-        if (result is IResponse { IsSuccessful: true })
-            return Results.Ok();
-
-
-        if (result is IValueResponse { IsSuccessful: false } er)
-        {
-
-            var status = MapToStatus(er.Kind);
-
-            var problemDetail = new ProblemDetail
+            case IValueResponse { IsSuccessful: true } ok:
+                return Results.Json(ok.Value, options: options);
+            case IResponse { IsSuccessful: true }:
+                return Results.Ok();
+            case IValueResponse { IsSuccessful: false } er:
             {
-                Type          = er.Kind.ToString(),
-                Title         = er.ErrorCode,
-                Detail        = er.Explanation,
-                StatusCode    = status,
-                Instance      = context.HttpContext.Request.Path,
-                CorrelationId = Correlation.Uid,
-                Segments      = er.Details
-            };
+                var status = MapToStatus(er.Kind);
 
-            logger.LogObject(nameof(problemDetail), problemDetail);
+                var problemDetail = new ProblemDetail
+                {
+                    Type          = er.Kind.ToString(),
+                    Title         = er.ErrorCode,
+                    Detail        = er.Explanation,
+                    StatusCode    = status,
+                    Instance      = context.HttpContext.Request.Path,
+                    CorrelationId = Correlation.Uid,
+                    Segments      = er.Details
+                };
 
-            return Results.Json(problemDetail, options, "application/problem+json", status);
+                logger.LogObject(nameof(problemDetail), problemDetail);
 
-        }
-
-        if( result is IResponse { IsSuccessful: false } er2 )
-        {
-
-            var status = MapToStatus(er2.Kind);
-
-            var problemDetail = new ProblemDetail
+                return Results.Json(problemDetail, options, "application/problem+json", status);
+            }
+            case IResponse { IsSuccessful: false } er2:
             {
-                Type          = er2.Kind.ToString(),
-                Title         = er2.ErrorCode,
-                Detail        = er2.Explanation,
-                StatusCode    = status,
-                Instance      = context.HttpContext.Request.Path,
-                CorrelationId = Correlation.Uid,
-                Segments      = er2.Details
-            };
+                var status = MapToStatus(er2.Kind);
 
-            logger.LogObject(nameof(problemDetail), problemDetail);
+                var problemDetail = new ProblemDetail
+                {
+                    Type          = er2.Kind.ToString(),
+                    Title         = er2.ErrorCode,
+                    Detail        = er2.Explanation,
+                    StatusCode    = status,
+                    Instance      = context.HttpContext.Request.Path,
+                    CorrelationId = Correlation.Uid,
+                    Segments      = er2.Details
+                };
 
+                logger.LogObject(nameof(problemDetail), problemDetail);
 
-            return Results.Json(problemDetail, options, "application/problem+json", status);
+                return Results.Json(problemDetail, options, "application/problem+json", status);
+            }
+            default:
+                return Results.Json(result, options);
 
-
+            
         }
-
-
-        return Results.Json(result, options);
-
-
+        
     }
 
 
