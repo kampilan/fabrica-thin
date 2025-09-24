@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
 namespace Fabrica.One.Bootstraps;
@@ -60,15 +61,12 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
 
     public string ContentRootPathOverride { get; set; } = string.Empty;
 
-    public bool IsDevelopment { get; private set; }
-    public bool IsStaging { get; private set; }
-    public bool IsProduction { get; private set; }
     public string EnvironmentName { get; private set; } = string.Empty;
     public string ContentRootPath { get; private set; } = string.Empty;
     public string ApplicationName { get; private set; } = string.Empty;
 
     protected IHostBuilder Builder { get; set; } = null!;
-
+    protected IMissionContext MissionContext { get; set; } = null!;
 
     public virtual void ConfigureWatch()
     {
@@ -160,17 +158,11 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
             cb.AddCorrelation();
 
 
-            var mc = Configuration.Get<MissionContext>();
-            if (mc is not null)
-            {
-
-                cb.RegisterInstance(mc)
-                    .AsSelf()
-                    .As<IMissionContext>()
-                    .SingleInstance();
-
-            }
-
+            MissionContext = Configuration.Get<MissionContext>()??new MissionContext();
+            cb.RegisterInstance(MissionContext)
+                .AsSelf()
+                .As<IMissionContext>()
+                .SingleInstance();
 
 
             var inner = GetLogger();
@@ -180,7 +172,7 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
                 inner.Debug("Attempting to call Build");
 
                 var services = new ServiceCollection();
-
+                
                 Build( Builder, services, cb );
 
                 cb.Populate(services);

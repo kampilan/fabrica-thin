@@ -46,14 +46,17 @@ public class NotFoundError: Error
 public class NotValidError : Error
 {
 
-    public static NotValidError Create(IEnumerable<EventDetail> violations )
+    public static NotValidError Create(IEnumerable<EventDetail> violations, string? context=null )
     {
 
+        if( string.IsNullOrWhiteSpace(context))
+            context = "No context available";
+        
         var error = new NotValidError
         {
             Kind = ErrorKind.Predicate,
             ErrorCode = "ValidationFailure",
-            Explanation = "Validation errors exist.",
+            Explanation = $"Validation errors exist. {context}",
             Details = [..violations]
         };
 
@@ -67,9 +70,12 @@ public class NotValidError : Error
 public class UnhandledError : Error
 {
 
-    public static UnhandledError Create( Exception cause )
+    public static UnhandledError Create( Exception cause, string? context=null )
     {
 
+        if( string.IsNullOrWhiteSpace(context))
+            context = "No context available";
+        
         var errorCode = cause.GetType().Name.Replace("Exception", "");
         if (string.IsNullOrWhiteSpace(errorCode))
             errorCode = "Exception";
@@ -78,7 +84,7 @@ public class UnhandledError : Error
         {
             Kind        = ErrorKind.System,
             ErrorCode   = errorCode,
-            Explanation = "An unhandled exception was caught. See logs for details."
+            Explanation = $"An unhandled exception was caught. {context}"
         };
 
         return error;

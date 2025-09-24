@@ -1,4 +1,6 @@
 ﻿using Fabrica.Exceptions;
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 // ReSharper disable UnusedMember.Global
 
@@ -56,7 +58,7 @@ public class Response: IResponse
 
     public string Uid { get; set; } = string.Empty;
 
-    public long Affected { get; set; } = 0;
+    public long Affected { get; set; }
 
 
     public ErrorKind Kind { get; protected set; } = ErrorKind.System;

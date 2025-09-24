@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Title>Fabrica.App</Title>
+        <Authors>Pond Hawk Technologies Inc.</Authors>
+        <Description>Tools for building Fabrica based REST API backends.</Description>
+        <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+        <PackageIcon>smithy.png</PackageIcon>
+        <RootNamespace>Fabrica.App</RootNamespace>
+        <PackageId>Fabrica.App.Endpoints</PackageId>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="AWSSDK.S3" />
+        <PackageReference Include="AWSSDK.SecretsManager" />
+        <PackageReference Include="AWSSDK.SecurityToken" />
+        <PackageReference Include="AWSSDK.SQS" />
+        <PackageReference Include="CommunityToolkit.Diagnostics" />
+        <PackageReference Include="Autofac" />
+        <PackageReference Include="Humanizer.Core" />
+        <PackageReference Include="jose-jwt" />
+        <PackageReference Include="Mapster" />
+        <PackageReference Include="MediatR" />
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" />
+        <PackageReference Include="SmartFormat" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fabrica.App\Fabrica.App.csproj" />
+      <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+      <ProjectReference Include="..\Fabrica.Rql.Parser\Fabrica.Rql.Parser.csproj" />
+      <ProjectReference Include="..\Fabrica.Rql\Fabrica.Rql.csproj" />
+      <ProjectReference Include="..\Fabrica.Rules\Fabrica.Rules.csproj" />
+      <ProjectReference Include="..\Fabrica.Watch\Fabrica.Watch.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <None Update="smithy.png">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+    </ItemGroup>    
+    
+    
+</Project>

@@ -25,18 +25,20 @@ SOFTWARE.
 
 using Fabrica.Utilities.Hosting;
 
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+
 namespace Fabrica.One.Hosting;
 
 public class MissionContext : IMissionContext
 {
 
 
-    public string MissionName { get; set; } = "";
-    public string Environment { get; set; } = "";
+    public string MissionName { get; set; } = string.Empty;
+    public string Environment { get; set; } = string.Empty;
 
-    public string ApplianceId { get; set; } = "";
-    public string ApplianceName { get; set; } = "";
-    public string ApplianceBuild { get; set; } = "";
+    public string ApplianceId { get; set; } = string.Empty;
+    public string ApplianceName { get; set; } = string.Empty;
+    public string ApplianceBuild { get; set; } = string.Empty;
     public DateTime ApplianceBuildDate { get; set; } = DateTime.MinValue;
     public string ApplianceRoot { get; set; } = "";
     public DateTime ApplianceStartTime { get; set; } = DateTime.MinValue;
@@ -45,3 +47,5 @@ public class MissionContext : IMissionContext
 
 
 }
+
+

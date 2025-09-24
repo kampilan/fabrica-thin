@@ -30,13 +30,16 @@ public abstract class CreateEntityCommandHandler<TRequest,TEntity,TDelta>(IComma
 
         // **********************************************************
         logger.DebugFormat( "Attempting to persist new {0}", Name );        
-        await Service.Repository.PersistAsync(entity, ct);
-            
+        var persistResult = await Service.Repository.PersistAsync(entity, ct);
+        if( persistResult.IsError )
+            return persistResult.AsError;            
 
 
         // *****************************************************************
         logger.Debug("Attempting to save changes");
-        await Service.Repository.SaveAsync(ct);
+        var saveResult = await Service.Repository.SaveAsync(ct);
+        if (saveResult.IsError)
+            return saveResult.AsError;
 
         
         

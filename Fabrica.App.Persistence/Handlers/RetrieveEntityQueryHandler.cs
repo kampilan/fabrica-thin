@@ -23,14 +23,14 @@ public abstract class RetrieveEntityQueryHandler<TRequest, TEntity>( IQueryServi
 
         
         // *************************************************
-        var one = await Service.Repository.EagerByUidAsync<TEntity>( request.Uid, GetEagerQueryable, ct );
-        if( one is null )
-            return Response<TEntity>.NotFound($"Could not find {nameof(TEntity)} using Uid: ({request.Uid})");
+        var oneResult = await Service.Repository.EagerByUidAsync<TEntity>( request.Uid, GetEagerQueryable, ct );
+        if (oneResult.IsError)
+            return oneResult.ToResponse();
 
         
         // *************************************************
         logger.Debug("Attempting to call OnSuccess");
-        var result = await OnSuccess( request, one, ct );    
+        var result = await OnSuccess( request, oneResult.AsEntity, ct );    
         
         
         // *************************************************        

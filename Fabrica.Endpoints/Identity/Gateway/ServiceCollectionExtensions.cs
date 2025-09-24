@@ -42,6 +42,17 @@ public static class ServiceCollectionExtensions
 
         });
 
+        services.AddTransient<GatewayTokenHttpHandler>((s) =>
+        {
+
+            var source = s.GetRequiredKeyedService<IAccessTokenSource>("Fabrica.Gateway");
+            var handler = new GatewayTokenHttpHandler(source);
+
+            return handler;
+
+        });
+        
+        
         return services;
 
     }

@@ -5,7 +5,9 @@ var configuration = Argument("configuration", "Release");
 var projects = new List<string>
 	{
 		"Fabrica.Api.Support",
-		"Fabrica.App",		
+		"Fabrica.App",
+		"Fabrica.App.Endpoints",
+		"Fabrica.App.Persistence",
 		"Fabrica.Aws",
 		"Fabrica.Core",
 		"Fabrica.Endpoints",

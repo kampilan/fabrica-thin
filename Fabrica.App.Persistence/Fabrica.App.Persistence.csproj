@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Fabrica.App</RootNamespace>
+        <Title>Fabrica.App.Persistence</Title>
+        <Description>Tools for building Fabrica based CRUD REST API backends.</Description>
+        <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+        <PackageIcon>smithy.png</PackageIcon>
+        <AssemblyName>Fabrica.App.Persistence</AssemblyName>
+        <Authors>Pond Hawk Technologies Inc.</Authors>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fabrica.App.Endpoints\Fabrica.App.Endpoints.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+        <PackageReference Include="OneOf"  />
+        <PackageReference Include="OneOf.SourceGenerator"  />        
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="smithy.png">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+    </ItemGroup>
+    
+    
+</Project>

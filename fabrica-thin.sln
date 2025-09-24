@@ -55,7 +55,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.Identity.Client", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.Identity.Client.DynamoDb", "Fabrica.Identity.Client.DynamoDb\Fabrica.Identity.Client.DynamoDb.csproj", "{95700817-9FCB-411A-B244-35524800E306}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.App", "Fabrica.App\Fabrica.App.csproj", "{BD88D216-44DA-4BA4-BDD0-84BC793E4B4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.App.Endpoints", "Fabrica.App.Endpoints\Fabrica.App.Endpoints.csproj", "{BD88D216-44DA-4BA4-BDD0-84BC793E4B4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.App.Persistence", "Fabrica.App.Persistence\Fabrica.App.Persistence.csproj", "{88B9016F-7E1A-4AA6-872B-57812A9D5B01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.App", "Fabrica.App\Fabrica.App.csproj", "{1BBCA493-74F5-424C-A25D-2DAD35DE4429}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +163,14 @@ Global
 		{BD88D216-44DA-4BA4-BDD0-84BC793E4B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD88D216-44DA-4BA4-BDD0-84BC793E4B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD88D216-44DA-4BA4-BDD0-84BC793E4B4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88B9016F-7E1A-4AA6-872B-57812A9D5B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B9016F-7E1A-4AA6-872B-57812A9D5B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B9016F-7E1A-4AA6-872B-57812A9D5B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B9016F-7E1A-4AA6-872B-57812A9D5B01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BBCA493-74F5-424C-A25D-2DAD35DE4429}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BBCA493-74F5-424C-A25D-2DAD35DE4429}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BBCA493-74F5-424C-A25D-2DAD35DE4429}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BBCA493-74F5-424C-A25D-2DAD35DE4429}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

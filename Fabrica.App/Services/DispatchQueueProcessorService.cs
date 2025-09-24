@@ -10,9 +10,9 @@ namespace Fabrica.App.Services;
 public abstract class DispatchQueueProcessorService<TService,TMessage>(IAmazonSQS sqs, string queueName, ILifetimeScope rootScope): AbstractQueueProcessorService<TService,TMessage>(sqs, queueName, rootScope) where TService : AbstractQueueProcessorService<TService,TMessage> where TMessage : class
 {
     
-    protected abstract Task<BaseRequest> BuildRequest( QueueMessage<TMessage> message, ILogger logger );
+    protected abstract Task<BaseRequest> BuildRequest( TMessage message, ILogger logger );
     
-    protected sealed override async Task<ProcessResult> ProcessMessageAsync( QueueMessage<TMessage> message, ILogger logger, ILifetimeScope scope, CancellationToken ct )
+    protected sealed override async Task<ProcessResult> ProcessMessageAsync( TMessage message, ILogger logger, ILifetimeScope scope, CancellationToken ct )
     {
         
         Guard.IsNotNull(message);       

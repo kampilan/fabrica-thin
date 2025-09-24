@@ -20,17 +20,17 @@ public abstract class UpdateEntityCommandHandler<TRequest,TEntity,TDelta>(IComma
 
         // *****************************************************************
         logger.DebugFormat("Attempting to fetch {0} by Uid", Name );
-        var entity = await Service.Repository.EagerByUidAsync<TEntity>( request.Uid, GetEagerQueryable, ct );
-        if( entity is null )
-            return Response<TEntity>.NotFound($"Could not find {Name} using Uid: ({request.Uid})");
+        var oneResult = await Service.Repository.EagerByUidAsync<TEntity>( request.Uid, GetEagerQueryable, ct );
+        if( oneResult.IsError )
+            return oneResult.ToResponse();
 
 
         
         // *****************************************************************
         logger.DebugFormat( "Attempting to map Delta to new {0}", Name );
-        Service.Mapper.Map(request.Delta, entity);
+        Service.Mapper.Map(request.Delta, oneResult.AsEntity);
 
-        logger.LogObject("Updated", entity);
+        logger.LogObject("Updated", oneResult.AsEntity);
 
 
 
@@ -44,12 +44,12 @@ public abstract class UpdateEntityCommandHandler<TRequest,TEntity,TDelta>(IComma
         
         // *************************************************
         logger.Debug("Attempting to call OnSuccess");
-        var result = await OnSuccess( request, entity, ct );    
+        var result = await OnSuccess( request, oneResult.AsEntity, ct );    
         
        
         
         // *****************************************************************
-        return entity;            
+        return result;            
         
         
     }    

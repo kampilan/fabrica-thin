@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using CommunityToolkit.Diagnostics;
+using Fabrica.Watch;
 
 namespace Fabrica.Identity.Client;
 
@@ -29,8 +30,12 @@ public class TokenSourceHttpHandler(ITokenSource source) : DelegatingHandler
     {
 
         Guard.IsNotNull(source, nameof(source));
+
+        using var logger = this.EnterMethod();
         
         var token = await source.GetToken().ConfigureAwait(false);
+        
+        logger.Inspect(nameof(token), token);
 
         if( !string.IsNullOrWhiteSpace(token) )
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);

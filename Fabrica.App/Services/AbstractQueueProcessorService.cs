@@ -65,7 +65,7 @@ public abstract class AbstractQueueProcessorService<TService,TMessage>( IAmazonS
             }
             finally
             {
-                logger.EnterScope($"{typeof(TService).GetConciseFullName()}.{nameof(ValidateConfiguration)}");
+                logger.LeaveScope($"{typeof(TService).GetConciseFullName()}.{nameof(ValidateConfiguration)}");
             }
         }
         catch (Exception cause)
@@ -110,13 +110,13 @@ public abstract class AbstractQueueProcessorService<TService,TMessage>( IAmazonS
     }
 
     
-    protected virtual QueueMessage<TMessage> ParseMessage( string message, ILogger logger )
+    protected virtual TMessage ParseMessage( string message, ILogger logger )
     {
         
         // *************************************************
         logger.Debug("Attempting to parse body into QueueMessage");
 
-        var qm = JsonSerializer.Deserialize<QueueMessage<TMessage>>(message, JsonBodyOptions );
+        var qm = JsonSerializer.Deserialize<TMessage>(message, JsonBodyOptions );
 
         if (qm is null)
             throw new Exception("Parse produced null QueueMessage");
@@ -137,7 +137,7 @@ public abstract class AbstractQueueProcessorService<TService,TMessage>( IAmazonS
     /// <param name="scope">The lifetime scope instance used to manage scoped dependencies during the message processing.</param>
     /// <param name="ct">A cancellation token that propagates notifications if the operation should be canceled.</param>
     /// <returns>A task representing the asynchronous operation. The result is a <see cref="ProcessResult"/> indicating the outcome of the processing.</returns>
-    protected abstract Task<ProcessResult> ProcessMessageAsync(QueueMessage<TMessage> message, ILogger logger, ILifetimeScope scope, CancellationToken ct);
+    protected abstract Task<ProcessResult> ProcessMessageAsync( TMessage message, ILogger logger, ILifetimeScope scope, CancellationToken ct);
 
 
     /// <summary>
