@@ -5,6 +5,7 @@ using Amazon.SQS.Model;
 using Autofac;
 using CommunityToolkit.Diagnostics;
 using Fabrica.Utilities.Container;
+using Fabrica.Utilities.Queue;
 using Fabrica.Utilities.Types;
 using Fabrica.Watch;
 using Microsoft.Extensions.Hosting;

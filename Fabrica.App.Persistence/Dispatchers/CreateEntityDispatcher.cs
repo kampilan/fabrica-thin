@@ -1,5 +1,6 @@
 ﻿using Fabrica.App.Requests;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 

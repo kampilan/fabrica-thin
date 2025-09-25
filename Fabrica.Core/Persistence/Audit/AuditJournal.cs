@@ -25,11 +25,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using Fabrica.Persistence.Entities;
 using Fabrica.Utilities.Types;
 
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
 
-namespace Fabrica.Persistence;
+namespace Fabrica.Persistence.Audit;
 
 /// <summary>
 /// Audit Journal Entity. Used by the auditing system to persist audit journals to

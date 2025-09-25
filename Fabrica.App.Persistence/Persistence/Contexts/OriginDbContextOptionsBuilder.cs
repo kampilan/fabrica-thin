@@ -1,5 +1,5 @@
-﻿using Fabrica.App.Persistence.Connections;
-using Fabrica.App.Persistence.UnitOfWork;
+﻿using Fabrica.Persistence.Connections;
+using Fabrica.Persistence.UnitOfWork;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
 using Microsoft.EntityFrameworkCore;

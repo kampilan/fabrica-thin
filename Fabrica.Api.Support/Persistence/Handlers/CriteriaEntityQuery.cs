@@ -1,6 +1,7 @@
 ﻿using Fabrica.Api.Persistence.Requests;
 using Fabrica.Models;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using Fabrica.Rql.Builder;
 using Fabrica.Rql.Serialization;
 using Fabrica.Utilities.Container;

@@ -23,16 +23,12 @@ SOFTWARE.
 */
 
 using System.Data.Common;
-using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 
-namespace Fabrica.App.Persistence.Connections;
+namespace Fabrica.Persistence.Connections;
 
-public class ConnectionResolver(ICorrelation correlation, DbProviderFactory factory, string replicaConnectionStr, string originConnectionStr) : IConnectionResolver
+public class ConnectionResolver( DbProviderFactory factory, string replicaConnectionStr, string originConnectionStr ) : IConnectionResolver
 {
-
-    private ICorrelation Correlation { get; } = correlation;
-
 
     public string ReplicaConnectionStr { get; } = replicaConnectionStr;
     public string OriginConnectionStr { get; } = originConnectionStr;

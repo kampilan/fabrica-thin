@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Title>Fabrica.Outbox</Title>
+        <Description>An implementation of a simple Outbox processor Background service</Description>
+        <Copyright>Pond Hawk Technologies Inc. (c) 2025</Copyright>
+        <PackageIcon>smithy.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fabrica.Core\Fabrica.Core.csproj" />
+      <ProjectReference Include="..\Fabrica.Watch\Fabrica.Watch.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.SQS" />
+      <PackageReference Include="Dapper" />
+      <PackageReference Include="JetBrains.Annotations" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="smithy.png">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+    </ItemGroup>
+
+</Project>

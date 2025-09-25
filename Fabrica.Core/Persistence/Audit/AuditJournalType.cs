@@ -22,9 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Fabrica.App.Persistence.UnitOfWork
+namespace Fabrica.Persistence.Audit
 {
-
-    public enum UnitOfWorkState { Unknown, CanCommit, MustRollback }
+    public enum AuditJournalType { Unknown=0, Read=1, Created=2, Updated=3, Deleted=4, UnmodifiedRoot=5, Detail=10  }
 
 }

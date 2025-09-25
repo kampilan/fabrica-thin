@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2021 The Kampilan Group Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,18 @@ SOFTWARE.
 
 using System.Data.Common;
 
-namespace Fabrica.App.Persistence.UnitOfWork
+namespace Fabrica.Persistence.Connections;
+
+public interface IConnectionResolver
 {
 
-
-    public interface IUnitOfWork: IDisposable
-    {
-
-
-        DbConnection OriginConnection { get; }
+    string ReplicaConnectionStr { get; }
+    string OriginConnectionStr { get; }
 
 
-        DbTransaction Transaction { get; }
+    DbConnection GetReplicaConnection();
+    DbConnection GetOriginConnection();
 
-        UnitOfWorkState State { get; }
-
-        void CanCommit();
-        void MustRollback();
-
-        void Close();
-
-
-    }
+    void CloseConnection( DbConnection connection );
 
 }

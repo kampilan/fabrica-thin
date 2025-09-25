@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.App.Persistence", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.App", "Fabrica.App\Fabrica.App.csproj", "{1BBCA493-74F5-424C-A25D-2DAD35DE4429}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrica.Outbox", "Fabrica.Outbox\Fabrica.Outbox.csproj", "{A4BA1FF9-6AA6-4434-AFA3-3BDD2BE3B892}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,10 @@ Global
 		{1BBCA493-74F5-424C-A25D-2DAD35DE4429}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BBCA493-74F5-424C-A25D-2DAD35DE4429}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BBCA493-74F5-424C-A25D-2DAD35DE4429}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4BA1FF9-6AA6-4434-AFA3-3BDD2BE3B892}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4BA1FF9-6AA6-4434-AFA3-3BDD2BE3B892}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4BA1FF9-6AA6-4434-AFA3-3BDD2BE3B892}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4BA1FF9-6AA6-4434-AFA3-3BDD2BE3B892}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

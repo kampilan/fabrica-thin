@@ -5,6 +5,7 @@
 
 using Fabrica.Models;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using MediatR;
 
 namespace Fabrica.App.Requests;

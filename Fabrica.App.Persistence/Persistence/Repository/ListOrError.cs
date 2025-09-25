@@ -1,6 +1,7 @@
 ﻿using Fabrica.Exceptions;
 using Fabrica.Models;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using OneOf;
 
 namespace Fabrica.App.Persistence.Repository;

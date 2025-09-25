@@ -4,7 +4,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace Fabrica.App.Services;
+namespace Fabrica.Utilities.Queue;
 
 public interface IQueueMessage
 {
@@ -24,7 +24,7 @@ public class QueueMessage<T>: IQueueMessage where T : class
 
     public string Topic { get; set; } = string.Empty; 
 
-    public Dictionary<string,string> Attributes { get; set; } = new ();
+    public Dictionary<string,string> Attributes { get; set; } = [];
     
     public T Body { get; set; } = null!;
 

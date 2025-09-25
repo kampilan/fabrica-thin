@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 
 namespace Fabrica.App.Persistence.Repository;
 

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 // ReSharper disable CollectionNeverUpdated.Local
 
-namespace Fabrica.Persistence;
+namespace Fabrica.Persistence.Entities;
 
 public class BaseDelta
 {

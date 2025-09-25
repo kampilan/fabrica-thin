@@ -12,6 +12,7 @@
     <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.2.3" />
     <PackageVersion Include="AWSSDK.SQS" Version="4.0.1.5" />
     <PackageVersion Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
+    <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.9" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />

@@ -1,4 +1,4 @@
-﻿namespace Fabrica.Persistence;
+﻿namespace Fabrica.Persistence.Entities;
 
 public interface ITimeStamped
 {

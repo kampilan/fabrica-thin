@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using Fabrica.Exceptions;
 using Fabrica.Identity;
+using Fabrica.Persistence.Audit;
+using Fabrica.Persistence.Entities;
 using Fabrica.Persistence.Repository;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;

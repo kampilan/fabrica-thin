@@ -2,6 +2,7 @@
 
 using System.Linq.Expressions;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

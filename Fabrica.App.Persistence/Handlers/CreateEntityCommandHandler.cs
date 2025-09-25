@@ -1,6 +1,7 @@
 ﻿using Fabrica.App.Requests;
 using Fabrica.Models;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using Fabrica.Watch;
 
 // ReSharper disable MemberCanBePrivate.Global

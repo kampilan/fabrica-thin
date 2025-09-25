@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Fabrica.Exceptions;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using Fabrica.Rules.Exceptions;
 using Fabrica.Utilities.Container;
 using Fabrica.Utilities.Types;

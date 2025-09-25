@@ -3,6 +3,8 @@ using System.Reflection;
 using Autofac;
 using Fabrica.Exceptions;
 using Fabrica.Identity;
+using Fabrica.Persistence.Audit;
+using Fabrica.Persistence.Entities;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;

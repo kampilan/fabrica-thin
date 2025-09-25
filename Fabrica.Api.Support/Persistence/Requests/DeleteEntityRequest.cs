@@ -1,5 +1,6 @@
 ﻿
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 
 namespace Fabrica.Api.Persistence.Requests;
 

@@ -1,5 +1,6 @@
 ﻿using Fabrica.App.Requests;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global

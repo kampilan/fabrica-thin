@@ -1,5 +1,5 @@
 ﻿using Fabrica.App.Persistence.Repository;
-using Fabrica.App.Persistence.UnitOfWork;
+using Fabrica.Persistence.UnitOfWork;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
 using MapsterMapper;

@@ -6,6 +6,7 @@ using Fabrica.Endpoints;
 using Fabrica.Exceptions;
 using Fabrica.Mediator;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using Fabrica.Utilities.Container;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

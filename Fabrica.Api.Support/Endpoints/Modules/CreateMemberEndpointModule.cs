@@ -4,6 +4,7 @@ using Fabrica.Exceptions;
 using Fabrica.Mediator;
 using Fabrica.Models;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using Fabrica.Utilities.Container;
 using Humanizer;
 using Microsoft.AspNetCore.Builder;

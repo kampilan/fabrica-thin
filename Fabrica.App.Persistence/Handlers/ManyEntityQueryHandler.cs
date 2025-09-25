@@ -1,6 +1,7 @@
 ﻿using Fabrica.App.Requests;
 using Fabrica.Models;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 using Fabrica.Rql.Serialization;
 using Fabrica.Watch;
 using Humanizer;

@@ -1,7 +1,8 @@
 ﻿using System.Collections.ObjectModel;
+
 // ReSharper disable UnusedMember.Global
 
-namespace Fabrica.Persistence;
+namespace Fabrica.Persistence.Entities;
 
 public class ObservableDependents<TMember>: ObservableCollection<TMember> where TMember : class, IDependentEntity
 {

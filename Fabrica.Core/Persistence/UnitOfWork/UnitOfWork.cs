@@ -24,7 +24,7 @@ SOFTWARE.
 
 using System.Data;
 using System.Data.Common;
-using Fabrica.Persistence.Connection;
+using Fabrica.Persistence.Connections;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 

@@ -1,4 +1,4 @@
-﻿namespace Fabrica.Persistence;
+﻿namespace Fabrica.Persistence.Entities;
 
 public abstract class BaseReferenceEntity<TImp> where TImp : BaseReferenceEntity<TImp>, IReferenceEntity
 {

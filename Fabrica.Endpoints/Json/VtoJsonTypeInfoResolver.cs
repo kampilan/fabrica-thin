@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization.Metadata;
 using System.Text.Json;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Entities;
 
 namespace Fabrica.Json;
 

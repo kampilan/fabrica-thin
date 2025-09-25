@@ -17,6 +17,7 @@ var projects = new List<string>
 		"Fabrica.Identity.Keycloak",
 		"Fabrica.Mediator",
 		"Fabrica.One",
+		"Fabrica.Outbox",		
 		"Fabrica.Patch",
 		"Fabrica.Persistence.Ef",
 		"Fabrica.Rql",

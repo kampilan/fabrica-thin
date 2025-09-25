@@ -3,6 +3,8 @@ using Fabrica.App.Persistence.Contexts;
 using Fabrica.Exceptions;
 using Fabrica.Identity;
 using Fabrica.Persistence;
+using Fabrica.Persistence.Audit;
+using Fabrica.Persistence.Entities;
 using Fabrica.Rules;
 using Fabrica.Utilities.Container;
 using Fabrica.Utilities.Types;
