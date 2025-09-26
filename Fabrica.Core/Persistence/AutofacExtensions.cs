@@ -2,6 +2,7 @@
 using Autofac;
 using CommunityToolkit.Diagnostics;
 using Fabrica.Persistence.Connections;
+using Fabrica.Persistence.Outbox;
 using Fabrica.Persistence.UnitOfWork;
 using Fabrica.Utilities.Container;
 
@@ -52,15 +53,21 @@ public static class AutofacExtensions
     public static ContainerBuilder UsePersistence(this ContainerBuilder builder )
     {
 
+        builder.RegisterType<OutboxSignal>()
+            .As<IOutboxSignal>()
+            .SingleInstance();
 
+        
         // ************************************************
         builder.Register(c =>
             {
 
+                var signal = c.Resolve<IOutboxSignal>();
+                
                 var correlation = c.Resolve<ICorrelation>();
                 var resolver    = c.Resolve<IConnectionResolver>();
 
-                var comp = new UnitOfWork.UnitOfWork(correlation, resolver);
+                var comp = new UnitOfWork.UnitOfWork(correlation, resolver, signal );
                 return comp;
 
             })

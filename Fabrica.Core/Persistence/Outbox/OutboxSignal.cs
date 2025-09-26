@@ -1,11 +1,9 @@
-﻿using Fabrica.Persistence.Outbox;
+﻿namespace Fabrica.Persistence.Outbox;
 
-namespace Fabrica.Outbox;
-
-public class OutboxSignal: IOutboxSignal
+public sealed class OutboxSignal: IOutboxSignal
 {
 
-    private readonly AutoResetEvent _signal = new (false);
+    private readonly AutoResetEvent _signal = new (true);
 
     public void Set()
     {
@@ -23,5 +21,6 @@ public class OutboxSignal: IOutboxSignal
         return signaled;
         
     }
+
     
 }

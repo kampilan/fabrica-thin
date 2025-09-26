@@ -62,7 +62,10 @@ public abstract class AbstractOutboxService<TOutbox>(IOutboxSignal signal): Back
                     logger.Debug("Attempting to fetch Outbox entity");
                     await using var transaction = await connection.BeginTransactionAsync(stoppingToken);
 
-                    current = await connection.QueryFirstOrDefaultAsync<TOutbox>(GetFetchSql(), transaction: transaction);
+                    var fetchSql = GetFetchSql();
+                    logger.LogSql("Fetch", fetchSql);
+
+                    current = await connection.QueryFirstOrDefaultAsync<TOutbox>(fetchSql, transaction: transaction);
 
                     if( current is not null )
                     {
@@ -71,9 +74,17 @@ public abstract class AbstractOutboxService<TOutbox>(IOutboxSignal signal): Back
                         
                         await ProcessOutboxAsync( current );
 
-                        var completionSql = GetCompletionSql();
-                        await connection.ExecuteAsync(completionSql, new { current.Id }, transaction: transaction);
 
+                        
+                        var completionSql = GetCompletionSql();
+                        logger.LogSql("Completion", completionSql);                        
+
+                        var affected = await connection.ExecuteAsync(completionSql, new { current.Id }, transaction: transaction);
+
+                        logger.Inspect(nameof(affected), affected);
+                        
+
+                        
                         await transaction.CommitAsync(stoppingToken);
 
                     }

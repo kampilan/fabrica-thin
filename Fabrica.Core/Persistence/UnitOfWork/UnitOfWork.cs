@@ -25,12 +25,13 @@ SOFTWARE.
 using System.Data;
 using System.Data.Common;
 using Fabrica.Persistence.Connections;
+using Fabrica.Persistence.Outbox;
 using Fabrica.Utilities.Container;
 using Fabrica.Watch;
 
 namespace Fabrica.Persistence.UnitOfWork;
 
-public class UnitOfWork( ICorrelation context, IConnectionResolver resolver ) : IUnitOfWork
+public class UnitOfWork( ICorrelation context, IConnectionResolver resolver, IOutboxSignal signal ) : IUnitOfWork
 {
 
     private ICorrelation Correlation { get; } = context;
@@ -48,7 +49,7 @@ public class UnitOfWork( ICorrelation context, IConnectionResolver resolver ) : 
 
             Connection = Resolver.GetOriginConnection();
 
-            if (Connection.State != ConnectionState.Open)
+            if( Connection.State != ConnectionState.Open )
                 Connection.Open();
 
             Transaction = Connection.BeginTransaction();
@@ -81,57 +82,45 @@ public class UnitOfWork( ICorrelation context, IConnectionResolver resolver ) : 
     public void Close()
     {
 
-        var logger = Correlation.GetLogger(this);
+        using var logger = Correlation.EnterMethod(GetType());
 
-        try
+
+        logger.Inspect(nameof(IsClosed), IsClosed);
+        logger.Inspect(nameof(State), State);
+
+
+        if( IsClosed )
+            return;
+
+
+        // *****************************************************************
+         if( Transaction != null )
         {
-
-            logger.EnterMethod();
-
-            logger.Inspect( nameof(IsClosed), IsClosed );
-            logger.Inspect( nameof(State), State );
-
-
-            if( IsClosed )
-                return;
-
-
-            // *****************************************************************
-            if ( Transaction != null )
+            if (State == UnitOfWorkState.CanCommit)
             {
-                if (State == UnitOfWorkState.CanCommit)
-                    Transaction.Commit();
-                else
-                    Transaction.Rollback();
-
-                Transaction.Dispose();
-                Transaction = null;
-
+                Transaction.Commit();
+                signal.Set();
             }
+            else
+                Transaction.Rollback();
 
-
-
-            // *****************************************************************
-            if (Connection != null)
-            {
-                if (Connection.State == ConnectionState.Open)
-                    Connection.Close();
-
-                Connection = null;
-
-            }
-
-
-
-            // *****************************************************************
-            IsClosed = true;
-
-
+            Transaction.Dispose();
+            Transaction = null;
         }
-        finally
+
+
+        // *****************************************************************
+        if (Connection != null)
         {
-            logger.LeaveMethod();
+            if (Connection.State == ConnectionState.Open)
+                Connection.Close();
+
+            Connection = null;
         }
+
+
+        // *****************************************************************
+        IsClosed = true;
 
 
     }
