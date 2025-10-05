@@ -4,7 +4,7 @@ using System.Text.Json.Serialization.Metadata;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Fabrica.App.Endpoints.Json;
+namespace Fabrica.Utilities.Text.Json;
 
 public class CompactJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
 {

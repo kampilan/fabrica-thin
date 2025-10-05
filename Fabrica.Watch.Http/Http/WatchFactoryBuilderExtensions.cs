@@ -1,5 +1,4 @@
 ﻿using Fabrica.Watch.Http.Sink;
-using System;
 
 namespace Fabrica.Watch.Http;
 
@@ -24,14 +23,14 @@ public static class WatchFactoryBuilderExtensions
     }
 
 
-    public static JsonHttpEventSinkProvider UseHttpSink(this WatchFactoryBuilder builder, string uri, string domainUid, TimeSpan pollingInterval = default)
+    public static JsonHttpEventSinkProvider UseHttpSink(this WatchFactoryBuilder builder, string sinkEndpoint, string domainUid, TimeSpan pollingInterval = default)
     {
 
-        builder.PollingInterval = pollingInterval != default?pollingInterval:TimeSpan.FromMilliseconds(50);
+        builder.PollingInterval = pollingInterval != TimeSpan.Zero?pollingInterval:TimeSpan.FromMilliseconds(50);
 
         var sink = new JsonHttpEventSinkProvider
         {
-            SinkEndpoint = uri,
+            SinkEndpoint = sinkEndpoint,
             DomainUid    = domainUid
         };
 

@@ -45,28 +45,47 @@ public static class AutofacExtensions
 
 
     /// <summary>
-    /// Configures persistence services in the Autofac container. Registers an instance of <see cref="IUnitOfWork"/>
-    /// backed by connections resolved via the <see cref="IConnectionResolver"/> and correlated using the <see cref="ICorrelation"/>.
+    /// Configures and registers persistence-related services in the Autofac container. This includes
+    /// unit of work components, commit signal management, and required dependencies for persistence
+    /// operations.
     /// </summary>
-    /// <param name="builder">The Autofac <see cref="ContainerBuilder"/> instance used for registering dependencies.</param>
+    /// <param name="builder">The Autofac <see cref="ContainerBuilder"/> instance to configure persistence services.</param>
+    /// <param name="commitSignalDuration">
+    /// An optional <see cref="TimeSpan"/> specifying the interval for the commit signal.
+    /// Defaults to 100 seconds if not provided.
+    /// </param>
     /// <returns>The updated <see cref="ContainerBuilder"/> instance for further configuration.</returns>
-    public static ContainerBuilder UsePersistence(this ContainerBuilder builder )
+    public static ContainerBuilder UsePersistence(this ContainerBuilder builder, TimeSpan commitSignalDuration = default )
     {
 
-        builder.RegisterType<OutboxSignal>()
-            .As<IOutboxSignal>()
+        if( commitSignalDuration == TimeSpan.Zero )
+            commitSignalDuration = TimeSpan.FromMilliseconds(100);    
+
+        
+        builder.Register(c =>
+            {
+
+                var comp = new WaitEventUowCommitSignal
+                {
+                    SignalInterval = commitSignalDuration
+                };
+                
+                return comp;
+                
+            })
+            .As<IUnitOfWorkCommitSignal>()
             .SingleInstance();
+
 
         
         // ************************************************
         builder.Register(c =>
             {
 
-                var signal = c.Resolve<IOutboxSignal>();
-                
                 var correlation = c.Resolve<ICorrelation>();
                 var resolver    = c.Resolve<IConnectionResolver>();
-
+                var signal      = c.Resolve<IUnitOfWorkCommitSignal>();
+                
                 var comp = new UnitOfWork.UnitOfWork(correlation, resolver, signal );
                 return comp;
 

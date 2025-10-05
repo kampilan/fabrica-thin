@@ -666,6 +666,30 @@ public class OriginRepository(ICorrelation correlation, DbContext context): Corr
 
     }
 
+    public Task<OkOrError> DeleteRange<TEntity>(IEnumerable<TEntity> entities, CancellationToken ct = default) where TEntity : class, IEntity
+    {
+
+        using var logger = EnterMethod();
+
+        try
+        {
+
+            context.RemoveRange(entities);
+
+            return Task.FromResult<OkOrError>(Ok.Singleton);
+
+        }
+        catch (Exception cause)
+        {
+
+            logger.Error(cause,  "Delete range failed");
+
+            return  Task.FromResult<OkOrError>(UnhandledError.Create(cause));
+
+        }        
+        
+    }
+
     public async Task<CountOrError> SaveAsync( CancellationToken ct = default )
     {
 

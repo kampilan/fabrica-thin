@@ -18,10 +18,10 @@ public abstract class CreateEntityCommandHandler<TRequest,TEntity,TDelta>(IComma
 
         using var logger = EnterMethod();
 
-        
 
         // *****************************************************************
         logger.DebugFormat( "Attempting to map Delta to new {0}", Name );
+        logger.LogObject(nameof(request.Delta), request.Delta); 
         var entity = new TEntity();
         Service.Mapper.Map(request.Delta, entity);
 

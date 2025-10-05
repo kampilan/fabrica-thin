@@ -29,6 +29,7 @@ public abstract class UpdateEntityCommandHandler<TRequest,TEntity,TDelta>(IComma
         
         // *****************************************************************
         logger.DebugFormat( "Attempting to map Delta to new {0}", Name );
+        logger.LogObject(nameof(request.Delta), request.Delta);        
         Service.Mapper.Map(request.Delta, oneResult.AsEntity);
 
         logger.LogObject("Updated", oneResult.AsEntity);

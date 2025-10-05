@@ -1,4 +1,6 @@
-﻿namespace Fabrica.Persistence.Outbox;
+﻿using System.Text.Json.Nodes;
+
+namespace Fabrica.Persistence.Outbox;
 
 public interface IOutbox
 {
@@ -7,6 +9,6 @@ public interface IOutbox
     string Description { get; }
     string Destination { get; }
     string Topic { get; }
-    string Payload { get; }
+    JsonObject Payload { get; }
     
 }

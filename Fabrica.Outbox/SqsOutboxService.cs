@@ -3,38 +3,19 @@ using System.Text.Json.Nodes;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Fabrica.Persistence.Outbox;
+using Fabrica.Persistence.UnitOfWork;
 using Fabrica.Utilities.Queue;
 using Fabrica.Watch;
 
 namespace Fabrica.Outbox;
 
-public abstract class SqsOutboxService<TOutbox>( IOutboxSignal signal, IAmazonSQS sqs ) : AbstractOutboxService<TOutbox>(signal) where TOutbox: class, IOutbox
+public abstract class SqsOutboxService<TOutbox>( IUnitOfWorkCommitSignal signal, IAmazonSQS sqs ) : AbstractOutboxService<TOutbox>(signal) where TOutbox: class, IOutbox
 {
 
     protected override async Task ProcessOutboxAsync(TOutbox outbox)
     {
 
         using var logger = this.EnterMethod();
-        
-
-        
-         // *************************************************
-        logger.Debug("Attempting to parse outbox payload");
-        logger.LogJson( nameof(outbox.Payload), outbox.Payload );
-        JsonNode? body = null;
-        try
-        {
-            body = JsonNode.Parse(outbox.Payload);
-        }
-        catch (Exception cause)
-        {
-            var ctx = new { outbox.Id, outbox.Description, outbox.Destination, outbox.Topic };
-            logger.ErrorWithContext( cause, ctx, "Failed to process outbox. Could not parse outbox payload" );
-        }
-        
-        if( body is null )
-            return;
-        
 
         
          // *************************************************
@@ -46,7 +27,7 @@ public abstract class SqsOutboxService<TOutbox>( IOutboxSignal signal, IAmazonSQ
             var message = new JsonQueueMessage
             {
                 Topic = outbox.Topic,
-                Body = body,
+                Body = outbox.Payload,
             };
             
             json = JsonSerializer.Serialize(message);

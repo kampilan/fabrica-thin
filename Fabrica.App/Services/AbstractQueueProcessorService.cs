@@ -59,15 +59,7 @@ public abstract class AbstractQueueProcessorService<TService,TMessage>( IAmazonS
         logger.Debug("Attempting to Validate configuration");
         try
         {
-            try
-            {
-                logger.EnterScope($"{typeof(TService).GetConciseFullName()}.{nameof(ValidateConfiguration)}");
                 await ValidateConfiguration(logger, ct);
-            }
-            finally
-            {
-                logger.LeaveScope($"{typeof(TService).GetConciseFullName()}.{nameof(ValidateConfiguration)}");
-            }
         }
         catch (Exception cause)
         {
@@ -149,6 +141,7 @@ public abstract class AbstractQueueProcessorService<TService,TMessage>( IAmazonS
     /// <returns>A task that represents the asynchronous operation.</returns>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+
         // ********************************************************************************        
         await StartupAsync(stoppingToken);
 
@@ -200,7 +193,7 @@ public abstract class AbstractQueueProcessorService<TService,TMessage>( IAmazonS
                     var elapsed = TimeSpan.FromTicks(Stopwatch.GetTimestamp() - start);
 
                     if( innerLogger.IsDebugEnabled )
-                        innerLogger.Debug($"Processed message on Service ({typeof(TService).GetConciseName()}) in {elapsed.TotalMicroseconds} microseconds");
+                        innerLogger.Debug($"Processed message on Service ({typeof(TService).GetConciseName()}) in {elapsed.Milliseconds} msec(s)");
 
 
                     

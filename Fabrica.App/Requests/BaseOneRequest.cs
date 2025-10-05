@@ -1,10 +1,4 @@
-﻿
-
-// ReSharper disable PropertyCanBeMadeInitOnly.Global
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
-
-using Fabrica.Models;
-using Fabrica.Persistence;
+﻿using Fabrica.Models;
 using Fabrica.Persistence.Entities;
 using MediatR;
 
@@ -16,7 +10,6 @@ public abstract class BaseOneRequest<TResponse> : AbstractRequest, IRequest<Resp
     public string Uid { get; set; } = string.Empty;
     
 }
-
 
 public abstract class BaseOneRequest<TResponse,TDelta> : AbstractRequest, IRequest<Response<TResponse>> where TResponse : class where TDelta : BaseDelta
 {

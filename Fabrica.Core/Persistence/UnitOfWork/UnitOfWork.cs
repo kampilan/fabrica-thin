@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2021 The Kampilan Group Inc.
+Copyright (c) 2025 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ using Fabrica.Watch;
 
 namespace Fabrica.Persistence.UnitOfWork;
 
-public class UnitOfWork( ICorrelation context, IConnectionResolver resolver, IOutboxSignal signal ) : IUnitOfWork
+public class UnitOfWork( ICorrelation context, IConnectionResolver resolver, IUnitOfWorkCommitSignal signal ) : IUnitOfWork
 {
 
     private ICorrelation Correlation { get; } = context;

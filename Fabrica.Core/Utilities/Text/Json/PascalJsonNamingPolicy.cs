@@ -2,7 +2,7 @@
 
 // ReSharper disable UnusedMember.Global
 
-namespace Fabrica.App.Endpoints.Json;
+namespace Fabrica.Utilities.Text.Json;
 
 public class PascalJsonNamingPolicy : JsonNamingPolicy
 {
