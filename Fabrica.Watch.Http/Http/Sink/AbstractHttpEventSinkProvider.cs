@@ -1,10 +1,12 @@
-﻿using Autofac;
-using Autofac.Extensions.DependencyInjection;
+﻿using CommunityToolkit.Diagnostics;
+using Fabrica.Rql.Builder;
+using Fabrica.Rql.Serialization;
+using Fabrica.Watch.Http.Models;
+using Fabrica.Watch.Http.Switches;
 using Fabrica.Watch.Sink;
-using Microsoft.Extensions.DependencyInjection;
-using Polly;
-using Polly.Registry;
-using Polly.Retry;
+using Flurl;
+using Flurl.Http;
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
 
 
 // ReSharper disable UnusedAutoPropertyAccessor.Local
@@ -14,66 +16,73 @@ namespace Fabrica.Watch.Http.Sink;
 public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
 {
 
-    private static readonly string Key = "Fabrica.Watch.Http.Sink";
+    public string ServerUrl { get; set; } = string.Empty;
+    public string DomainName { get; set; } = string.Empty;
 
-    public string SinkEndpoint { get; set; } = "";
-    public string DomainUid { get; set; } = "";
-
-    private IContainer Container { get; set; } = null!;
-    private IHttpClientFactory Factory { get; set; } = null!;
-
-    protected ConsoleEventSink DebugSink { get; } = new();
+    private ConsoleEventSink DebugSink { get; } = new();
 
     protected abstract Task<HttpContent> BuildContentAsync(LogEventBatch batch);
 
 
-    public Task Start()
+    private string _endpoint = "";
+    private string _domainUid = "";
+    public async Task Start()
     {
 
-        var builder = new ContainerBuilder();
+        Guard.IsNotNullOrWhiteSpace(ServerUrl);
+        Guard.IsNotNullOrWhiteSpace(DomainName);
 
-        var services = new ServiceCollection();
-
-        services.AddResiliencePipeline( Key, pb =>
+        
+        // *************************************************
+        try
         {
 
-            pb.AddRetry(new RetryStrategyOptions
-            {
-                MaxRetryAttempts = 1, 
-                BackoffType = DelayBackoffType.Constant, 
-                UseJitter = true,
-                Delay = TimeSpan.FromMilliseconds(50)
-            });
-
-        });
-
-        services.AddHttpClient( Key, c =>
-        {
-
-            if( !string.IsNullOrWhiteSpace(SinkEndpoint) )
-                c.BaseAddress = new Uri(SinkEndpoint);
-
-            c.Timeout = TimeSpan.FromSeconds(5);
+            var uri = new Uri(ServerUrl);
+            Guard.IsTrue(uri.IsAbsoluteUri, "ServerUrl must be an absolute path");
             
-        });
+        }
+        catch (Exception cause)
+        {
+            var logger = DebugSink.GetLogger<HttpSwitchSource>();
+            logger.Error( cause, "Failed to validate Url: ({0})", ServerUrl );
+        }
 
 
-        builder.Populate(services);
+        
+        // *************************************************        
+        try
+        {
 
-        Container = builder.Build();
+            
+            var rql = RqlFilterBuilder<DomainEntity>
+                .Where(e=>e.Name).Equals(DomainName)
+                .ToRqlCriteria();            
+            
+            var list = await ServerUrl
+                .AppendPathSegment("domains")
+                .AppendQueryParam("rql", rql, true)
+                .GetJsonAsync<List<DomainExplorer>>();
 
-        Factory = Container.Resolve<IHttpClientFactory>();
+            if( list is not null && list.Count > 0 )
+            {
+                var domain = list.First();
+                _endpoint = "http://localhost:8181";
+                _domainUid = domain.Uid;
+            }
 
+            
+        }
+        catch (Exception cause)
+        {
+            var logger = DebugSink.GetLogger(GetType());
+            logger.Error( cause, "Failed to fetch Domain using Name: ({0}) from Url: ({1})", DomainName, ServerUrl );
+        }        
 
-        return Task.CompletedTask;
 
     }
 
     public Task Stop()
     {
-
-        Container.Dispose();
-
         return Task.CompletedTask;
 
     }
@@ -82,55 +91,32 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
     public async Task Accept( LogEventBatch batch, CancellationToken ct=default )
     {
 
-        using var logger = DebugSink.GetLogger<AbstractHttpEventSinkProvider>();
 
         try
         {
 
 
+            // *****************************************************************            
             if( string.IsNullOrWhiteSpace(batch.DomainUid) )
-                batch.DomainUid = DomainUid;
-
-            logger.Inspect(nameof(batch.Uid), batch.Uid);
-            logger.Inspect(nameof(batch.DomainUid), batch.DomainUid);
+                batch.DomainUid = _domainUid;
 
 
-            await using var scope = Container.BeginLifetimeScope();
-
-
-
+            
             // *****************************************************************
-            logger.Debug("Attempting to resolve Resilience Pipeline");
-            var pp = scope.Resolve<ResiliencePipelineProvider<string>>();
-            var pipeline = pp.GetPipeline(Key);
-
-
-
-            // *****************************************************************
-            logger.Debug("Attempting to resolve HTTP Factory");
-            var factory = scope.Resolve<IHttpClientFactory>();
-            using var client = factory.CreateClient(Key);
-
-
-
-            // *****************************************************************
-            logger.Debug("Attempting to serialize batch into HttpContent");
             var content = await BuildContentAsync(batch);
 
+            
+            // *****************************************************************            
+            await _endpoint
+                .AppendPathSegment("sink")
+                .PostAsync( content, cancellationToken: ct );
 
-
-            // *****************************************************************
-            logger.Debug("Attempting to post batch");
-            await pipeline.ExecuteAsync(async t =>
-            {
-                await client.PostAsync("", content, t);
-
-            }, ct);
 
 
         }
         catch (Exception cause )
         {
+            var logger = DebugSink.GetLogger( GetType());
             logger.Error(cause, "Failed to accept batch");
         }
 

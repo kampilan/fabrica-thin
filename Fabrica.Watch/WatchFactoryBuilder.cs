@@ -48,7 +48,7 @@ public class WatchFactoryBuilder
     public ISwitchSource Source { get; set; } = new SwitchSource();
 
 
-    private readonly List<IEventSinkProvider> _sinks = new List<IEventSinkProvider>();
+    private readonly List<IEventSinkProvider> _sinks = [];
     public void AddSink(IEventSinkProvider sink)
     {
         _sinks.Add(sink);

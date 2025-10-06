@@ -141,6 +141,8 @@ public static class LogEventBatchSerializer
 
         await compressor.CopyToAsync(stream);
 
+        stream.Position = 0;
+        
         return stream;
 
     }

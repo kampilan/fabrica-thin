@@ -76,7 +76,7 @@ public class RequestLoggingMiddleware(RequestDelegate next)
         else if ( diagLogger.IsDebugEnabled )
         {
 
-            var le = diagLogger.CreateEvent(Level.Debug, $"Diagnostics - HTTP Request {context.Request.Method.ToUpper()} {context.Request.Path}", PayloadType.None);
+            var le = diagLogger.CreateEvent(Level.Debug, $"Diagnostics - HTTP Request {context.Request.Method.ToUpper()} {context.Request.Path}", PayloadType.None, null );
             diagLogger.LogEvent(le);
 
         }
@@ -90,7 +90,7 @@ public class RequestLoggingMiddleware(RequestDelegate next)
         // ****************************************************************************************
         if ( diagLogger.IsDebugEnabled )
         {
-            var le = diagLogger.CreateEvent(Level.Debug, $"Diagnostics - HTTP Response {context.Request.Method.ToUpper()} {context.Request.Path} - Status: {context.Response.StatusCode}", PayloadType.None );
+            var le = diagLogger.CreateEvent(Level.Debug, $"Diagnostics - HTTP Response {context.Request.Method.ToUpper()} {context.Request.Path} - Status: {context.Response.StatusCode}", PayloadType.None, null );
             diagLogger.LogEvent(le);
         }
 
@@ -219,11 +219,6 @@ public class RequestLoggingMiddleware(RequestDelegate next)
                 var form = await reader.ReadToEndAsync();
                 if (!string.IsNullOrWhiteSpace(form))
                     bodyContent = MakeFormPretty(form);
-            }
-            else
-            {
-                var reader = new StreamReader(body);
-                bodyContent = await reader.ReadToEndAsync();
             }
 
             body.Seek(0, SeekOrigin.Begin);

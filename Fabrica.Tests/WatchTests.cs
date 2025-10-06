@@ -28,38 +28,36 @@ public class WatchTests
 
 
     [Test]
-    public void Test_0620_0200_Watch_Factory_Should_Start_and_Stopped()
+    public async Task Test_0620_0200_Watch_Factory_Should_Start_and_Stopped()
     {
-
 
         var maker = WatchFactoryBuilder.Create();
 
-        maker.UseLocalSwitchSource()
-            .WhenMatched("Microsoft", "", Level.Warning, Color.LightGreen)
-            .WhenNotMatched(Level.Debug, Color.LightSalmon);
-
-        maker.UseRealtime();
+        maker.UseBinaryHttpSink("http://localhost:8181", "Fabrica.Watch.Development" );
 
         maker.Build();
-
-        var logger = WatchFactoryLocator.Factory.GetLogger("Test");
-        logger.Debug("Testing");
+        
+        await Task.Delay(2000);
+        
+        
+        var logger = WatchFactoryLocator.Factory.GetLogger("Fabrica.Pump");
+        logger.Trace("Testing");
 
         logger.Dispose();
 
-        WatchFactoryLocator.Factory.Stop();
+        await Task.Delay(2000);
+        await WatchFactoryLocator.Factory.Stop();
 
-
-
+/*
         maker.Build();
 
-        var logger2 = WatchFactoryLocator.Factory.GetLogger("Test");
+        var logger2 = WatchFactoryLocator.Factory.GetLogger("Fabrica.Watch.Features");
         logger2.Debug("Testing");
 
         logger2.Dispose();
 
         WatchFactoryLocator.Factory.Stop();
-
+*/
 
     }
 
@@ -156,30 +154,6 @@ public class WatchTests
 
     }
 
-    
-    [Test]
-    public async Task Test_0620_0500_Should_Send_To_Relay()
-    {
-
-    
-        var maker = WatchFactoryBuilder.Create();
-        maker.UseForegroundFactory();
-        maker.UseRelaySink();
-        
-        maker.UseLocalSwitchSource()
-            .WhenMatched("Fabrica.Tests", "", Level.Debug, Color.LightGreen)
-            .WhenNotMatched(Level.Warning, Color.LightSalmon);
-
-        maker.Build();
-
-        using var logger = this.EnterMethod();
-
-        logger.Debug("Attempting to log just a test event]");
-
-        await Task.Delay(TimeSpan.FromSeconds(3));
-
-        
-    }
 
     [Test]
     public async Task Test_0620_0600_Should_Not_Log_Sensitive_Property()

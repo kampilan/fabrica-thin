@@ -111,7 +111,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
         EventPool.Warm(InitialPoolSize);
 
 
-        Switches.Start();
+        await Switches.Start();
 
         foreach (var sink in Sinks)
             await sink.Start();

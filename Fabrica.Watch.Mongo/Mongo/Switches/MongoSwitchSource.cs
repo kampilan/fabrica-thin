@@ -89,7 +89,7 @@ public class MongoSwitchSource: SwitchSource
 
 
     private bool Started { get; set; }
-    public override void Start()
+    public override async Task Start()
     {
 
         try
@@ -112,6 +112,7 @@ public class MongoSwitchSource: SwitchSource
 
             Started = true;
 
+            await base.Start();
 
         }
         catch( Exception cause )
@@ -121,17 +122,16 @@ public class MongoSwitchSource: SwitchSource
             logger.Error(cause, "Failed to start");
         }
 
-
     }
 
-    public override void Stop()
+    public override async Task Stop()
     {
 
         MustStop.Set();
 
         Stopped.WaitOne(WaitForStopInterval);
 
-        base.Stop();
+        await base.Stop();
 
     }
 

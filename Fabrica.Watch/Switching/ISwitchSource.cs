@@ -29,8 +29,8 @@ namespace Fabrica.Watch.Switching;
 public interface ISwitchSource
 {
 
-    void Start();
-    void Stop();
+    Task Start();
+    Task Stop();
 
 
     ISwitch Lookup( string category );

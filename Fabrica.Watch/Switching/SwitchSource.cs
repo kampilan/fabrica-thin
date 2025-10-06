@@ -94,13 +94,14 @@ public class SwitchSource : ISwitchSource
 
 
 
-    public virtual void Start()
+    public virtual Task Start()
     {
+        return Task.CompletedTask;
     }
 
-    public virtual void Stop()
+    public virtual Task Stop()
     {
-
+        return Task.CompletedTask;
     }
 
 
