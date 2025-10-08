@@ -24,7 +24,7 @@ public class PipelineTests
 
         maker.UseRealtime();
 
-        maker.Build();        
+        maker.BuildAsync();        
 
         var builder = new ContainerBuilder();
         builder.RegisterModule<TheModule>();
@@ -38,7 +38,7 @@ public class PipelineTests
         TheRoot.Dispose();
         
         await Task.Delay(500);
-        await WatchFactoryLocator.Factory.Stop();
+        await WatchFactoryLocator.Factory.StopAsync();
         
     }
 

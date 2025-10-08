@@ -26,38 +26,23 @@ using Fabrica.Watch.Pool;
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
 using Fabrica.Watch.Utilities;
-using System.Collections.Concurrent;
+using System.Threading.Channels;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable UnusedMember.Local
 
 namespace Fabrica.Watch;
 
-public class WatchFactoryConfig
-{
-
-    public bool Quiet { get; init; }
-
-    public int InitialPoolSize { get; set; } = 50;
-    public int MaxPoolSize { get; set; } = 500;
-
-    public int BatchSize { get; set; } = 10;
-    public TimeSpan PollingInterval { get; set; } = TimeSpan.FromMilliseconds(50);
-    public TimeSpan WaitForStopInterval { get; set; } = TimeSpan.FromSeconds(5);
-
-    public required ISwitchSource Switches { get; init; }
-
-    public required IEnumerable<IEventSinkProvider> Sinks { get; init; }
-
-
-}
-
-public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatchFactory
+public sealed class WatchFactory( WatchFactoryConfig config ) : IWatchFactory
 {
 
     private static readonly ILogger Silencer = new QuietLogger();
-
+    
     private IWatchObjectSerializer ForObject { get; set; } = new JsonWatchObjectSerializer();
     private IWatchExceptionSerializer ForException { get; set; } = new TextExceptionSerializer();
 
@@ -67,11 +52,14 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
     private Pool<Logger> LoggerPool { get; set; } = null!;
     private Pool<LogEvent> EventPool { get; set; } = null!;
 
-    protected List<IEventSinkProvider> Sinks { get; } = [..config.Sinks];
-
+    private WatchFactoryConfig Config { get; } = config;
+    
+    public ISwitchSource Switches { get; private set; } = config.Switches;    
+    public IEventSinkProvider Sink { get; private set; } = config.Sink;
+    
     private bool Quiet { get; } = config.Quiet;
 
-    public ISwitchSource Switches { get; private set; } = config.Switches;
+
 
     private void _return(Logger lg)
     {
@@ -83,8 +71,10 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
         EventPool.Return(le);
     }
 
-    protected bool Started { get; set; }
-    public virtual async Task Start()
+    private WatchFactoryUpdater? _updater;
+    
+    private bool Started { get; set; }
+    public async Task StartAsync()
     {
 
         if (Started)
@@ -112,22 +102,50 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
 
 
         await Switches.Start();
+        await Sink.Start();
 
-        foreach (var sink in Sinks)
-            await sink.Start();
-
+        if (Config.UseAutoUpdate)
+        {
+            _updater = new WatchFactoryUpdater();
+            _updater.Start();       
+        }
+        
         Started = true;
 
     }
 
 
-    public virtual async Task Stop()
+    public async Task StopAsync()
     {
 
+        
         try
         {
-            Switches.Stop();
+            _updater?.Stop();
+            _updater = null;       
+        }
+        catch
+        {
+            // ignored            
+        }
+        
+        
+        try
+        {
+            _channel.Writer.Complete();
+            await FlushEventsAsync(TimeSpan.Zero);
+        }
+        catch
+        {
+            // ignored            
+        }
+        
+        try
+        {
+            
+            await Switches.Stop();
             Switches = null!;
+            
         }
         catch
         {
@@ -136,14 +154,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
 
         try
         {
-
-            foreach (var sink in Sinks)
-                await sink.Stop();
-
-            await Task.Delay(1000);
-            
-            Sinks.Clear();
-
+            await Sink.Stop();
         }
         catch
         {
@@ -170,10 +181,126 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
 
     }
 
+    private readonly Channel<LogEvent> _channel = Channel.CreateBounded<LogEvent>(new BoundedChannelOptions(config.ChannelCapacity)
+    {
+        
+        FullMode = BoundedChannelFullMode.DropOldest,
+        
+        SingleReader = true,
+        SingleWriter = false,
+        
+    });    
+    
+    public void Accept(LogEvent logEvent)
+    {
 
-    public abstract void Accept(LogEvent logEvent);
-    
-    
+        _channel.Writer.TryWrite(logEvent);
+        
+    }
+
+    public async Task FlushEventsAsync( TimeSpan waitInterval=default, CancellationToken cancellationToken=default )
+    {
+
+        if( cancellationToken.IsCancellationRequested )
+            return;
+
+        
+        // *************************************************************        
+        if( waitInterval > TimeSpan.Zero )
+        {
+
+            var waitSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            waitSource.CancelAfter(waitInterval);
+
+            try
+            {
+                var has = await _channel.Reader.WaitToReadAsync(waitSource.Token).ConfigureAwait(false);
+                if( !has )
+                    return;
+            }
+            catch( OperationCanceledException )
+            {
+                return;
+            }
+            catch( Exception cause )
+            {
+                using var logger = WatchFactoryLocator.ConsoleFactory.GetLogger<WatchFactory>();
+                logger.Error(cause, "Failed to WaitToReadAsync");
+                return;           
+            }
+
+        }
+
+        
+        // *************************************************************
+        var batch = new LogEventBatch();
+        try
+        {
+
+            while( _channel.Reader.TryRead(out var le) )
+            {
+
+                batch.Events.Add(le);
+
+                if( batch.Events.Count >= Config.BatchSize )
+                    await Send().ConfigureAwait(false);
+            
+            }        
+        
+            if( batch.Events.Count > 0 )
+                await Send().ConfigureAwait(false);
+            
+        }
+        catch (Exception cause)
+        {
+            using var logger = WatchFactoryLocator.ConsoleFactory.GetLogger<WatchFactory>();
+            logger.Error(cause, "Failed to Process Log Events");
+        }
+
+
+        
+        // *************************************************************
+        // *************************************************************        
+        async Task Send()
+        {
+
+            try
+            {
+                await Sink.Accept(batch, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception cause)
+            {
+                using var logger = WatchFactoryLocator.ConsoleFactory.GetLogger<WatchFactory>();
+                logger.Error(cause, "Failed to process batch");
+            }
+
+            batch.Events.ForEach(e => e.Dispose());
+            batch.Events.Clear();
+            
+        }
+
+        
+    }
+
+    public async Task UpdateSwitchesAsync(CancellationToken cancellationToken = default)
+    {
+
+        if( cancellationToken.IsCancellationRequested )
+            return;
+        
+        try
+        {
+            await Switches.UpdateAsync(cancellationToken);
+        }
+        catch (Exception cause)
+        {
+            using var logger = WatchFactoryLocator.ConsoleFactory.GetLogger<WatchFactory>();
+            logger.Error(cause, "Failed to Update Switches");   
+        }
+
+    }
+
+
     public bool IsTraceEnabled(string category)
     {
 
@@ -219,7 +346,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
     }
 
 
-    public virtual ILogger GetLogger( string category, bool retroOn=true )
+    public ILogger GetLogger( string category, bool retroOn=true )
     {
 
         // Overall Quiet
@@ -251,7 +378,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
     }
 
 
-    public virtual ILogger GetLogger<T>( bool retroOn = true )
+    public ILogger GetLogger<T>( bool retroOn = true )
     {
 
         var logger = GetLogger( typeof(T).GetConciseFullName(), retroOn );
@@ -262,7 +389,7 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
 
 
 
-    public virtual ILogger GetLogger( Type type, bool retroOn = true)
+    public ILogger GetLogger( Type type, bool retroOn = true)
     {
 
         var logger = GetLogger(type.GetConciseFullName(), retroOn );
@@ -358,128 +485,4 @@ public abstract class AbstractWatchFactory( WatchFactoryConfig config ) : IWatch
 }
 
 
-public class BackgroundWatchFactory(WatchFactoryConfig config): AbstractWatchFactory(config)
-{
-    
-    private int BatchSize { get;  } = config.BatchSize;
-    private TimeSpan PollingInterval { get;  } = config.PollingInterval;
-    private TimeSpan WaitForStopInterval { get;  } = config.WaitForStopInterval;
-    
-    private ConcurrentQueue<LogEvent> Queue { get; } = new();
-    private CancellationTokenSource MustStop { get; } = new ();
-    
-    public override void Accept( LogEvent logEvent )
-    {
 
-        Enrich(logEvent);
-        Encode(logEvent);
-
-        Queue.Enqueue(logEvent);
-
-    }
-
-    public override async Task Start()
-    {
-        
-        await base.Start();
-        
-#pragma warning disable CS4014
-        Task.Run(_process);
-#pragma warning restore CS4014
-       
-        
-    }
-
-    
-    public override async Task Stop()
-    {
-
-        if (!Started)
-            return;
-
-        Started = false;
-
-        await MustStop.CancelAsync();        
-        
-        await base.Stop();
-        
-    }
-
-
-    private async Task _process()
-    {
-
-        while (!MustStop.IsCancellationRequested)
-        {
-            await Drain(false);
-        }
-
-        await Drain(true);
-
-    }
-
-    private readonly LogEventBatch _batch = new();
-
-    private async Task Drain(bool all)
-    {
-
-        if( Queue.IsEmpty )
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
-            return;
-        }
-
-        _batch.Events.Clear();
-
-        while (!Queue.IsEmpty)
-        {
-
-            if (!all && _batch.Events.Count >= BatchSize)
-                break;
-
-            if (!Queue.TryDequeue(out var le))
-                break;
-
-            _batch.Events.Add(le);
-
-        }
-
-        if (_batch.Events.Count > 0)
-        {
-
-            foreach (var sink in Sinks)
-                await sink.Accept(_batch);
-
-            _batch.Events.ForEach(e => e.Dispose());
-
-        }
-
-
-    }    
-    
-    
-}
-
-
-public class ForegroundWatchFactory(WatchFactoryConfig config) : AbstractWatchFactory(config)
-{
-    
-    public override void Accept( LogEvent logEvent )
-    {
-
-        var batch = LogEventBatch.Single( "",  logEvent );
-
-        foreach (var sink in Sinks)
-        {
-            sink.Accept(batch).SafeFireAndForget(_handleException);
-        }
-        
-    }
-
-    private void _handleException(Exception cause)
-    {
-        
-    }    
-    
-    
-}

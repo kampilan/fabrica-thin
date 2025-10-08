@@ -182,7 +182,7 @@ public class SqliteSink: IEventSinkProvider
     }
 
 
-    public async Task Accept( LogEventBatch batch, CancellationToken ct = default)
+    public async Task Accept( LogEventBatch batch, CancellationToken cancellationToken = default)
     {
 
         using var logger = DebugSink.EnterMethod<SqliteSink>();
@@ -190,14 +190,14 @@ public class SqliteSink: IEventSinkProvider
         try
         {
 
-            await Lock.WaitAsync(ct);
+            await Lock.WaitAsync(cancellationToken);
 
             var start = Stopwatch.GetTimestamp();
 
             await using var cn = new SqliteConnection(ConnectionString);
-            await cn.OpenAsync(ct);
+            await cn.OpenAsync(cancellationToken);
 
-            await using var transaction = await cn.BeginTransactionAsync(ct);
+            await using var transaction = await cn.BeginTransactionAsync(cancellationToken);
 
             var cmd = cn.CreateCommand();
             cmd.CommandText = LogEventInsertDml;
@@ -238,11 +238,11 @@ public class SqliteSink: IEventSinkProvider
                 Set(cmd, nameof(LogEvent.Occurred), le.Occurred);
                 Set(cmd, "TimeToLive", ttl);
 
-                await cmd.ExecuteNonQueryAsync(ct);
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             }
 
-            await transaction.CommitAsync(ct);
+            await transaction.CommitAsync(cancellationToken);
 
             var dur = Stopwatch.GetTimestamp() - start;
             var ts = TimeSpan.FromTicks(dur);

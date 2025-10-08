@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2025 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,9 @@ SOFTWARE.
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Drawing;
+
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMethodReturnValue.Global
 
 namespace Fabrica.Watch.Switching;
 
@@ -118,17 +121,9 @@ public class SwitchSource : ISwitchSource
             _switchLock.EnterReadLock();
 
 
-
             // ************************************************************************
             if( Patterns.Count == 0 )
                 return DefaultSwitch;
-
-
-
-            // ************************************************************************
-//            var match = Patterns.FirstOrDefault(category.StartsWith);
-//            if( match is null )
-//                return DefaultSwitch;
 
 
             string? match = null;
@@ -227,7 +222,6 @@ public class SwitchSource : ISwitchSource
 
     }
 
-
     public ISwitch GetDefaultSwitch()
     {
         return DefaultSwitch;
@@ -246,7 +240,11 @@ public class SwitchSource : ISwitchSource
             return Switches.Values.Select( s =>new SwitchDef {Pattern = s.Pattern, Color = s.Color, Level = s.Level, Tag = s.Tag} ).ToList();
         }
     }
-
+    
+    public virtual Task UpdateAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
 
     public virtual void Update( IEnumerable<SwitchDef> switchSource )
     {
@@ -300,13 +298,6 @@ public class SwitchSource : ISwitchSource
         }
 
 
-    }
-
-
-    private string _buildComposite(string filterType, string filterTarget, string pattern)
-    {
-        var composite = $"{filterType}:{filterTarget}{pattern}";
-        return composite;
     }
 
 

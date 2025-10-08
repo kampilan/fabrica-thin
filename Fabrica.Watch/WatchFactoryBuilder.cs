@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2024 Pond Hawk Technologies Inc.
+Copyright (c) 2025 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,9 @@ SOFTWARE.
 
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
+// ReSharper disable MemberCanBePrivate.Global
+
+// ReSharper disable UnusedMethodReturnValue.Global
 
 namespace Fabrica.Watch;
 
@@ -36,25 +39,17 @@ public class WatchFactoryBuilder
         return new WatchFactoryBuilder();
     }
 
+    public bool UseAutoUpdater { get; set; }
+    
     public int InitialPoolSize { get; set; } = 50;
     public int MaxPoolSize { get; set; } = 500;
 
-
-    public int BatchSize { get; set; } = 10;
-    public TimeSpan PollingInterval { get; set; } = TimeSpan.FromMilliseconds(50);
-    public TimeSpan WaitForStopInterval { get; set; } = TimeSpan.FromSeconds(5);
-
+    public int ChannelCapacity { get; set; } = 1000;
+    public int BatchSize { get; set; } = 500;
 
     public ISwitchSource Source { get; set; } = new SwitchSource();
 
-
-    private readonly List<IEventSinkProvider> _sinks = [];
-    public void AddSink(IEventSinkProvider sink)
-    {
-        _sinks.Add(sink);
-    }
-
-
+    public IEventSinkProvider Sink { get; set; } = new ConsoleEventSink();
 
     private bool Quiet { get; set; }
 
@@ -63,105 +58,45 @@ public class WatchFactoryBuilder
         Quiet = true;
         return this;
     }
+   
 
-    private bool Foreground { get; set; }
-
-    public WatchFactoryBuilder UseForegroundFactory()
-    {
-        Foreground = true;
-        return this;
-    }    
-    
-
-    public void Build()
+    public async Task BuildAsync()
     {
 
         if( Quiet )
         {
             var factory = new QuietLoggerFactory();
-            WatchFactoryLocator.SetFactory(factory);
+            await WatchFactoryLocator.SetFactory(factory);
         }
-        else if (Foreground)
+        else
         {
                         
             var config = new WatchFactoryConfig
             {
+
                 Quiet = Quiet,
+                UseAutoUpdate = UseAutoUpdater,
+
                 InitialPoolSize = InitialPoolSize,
                 MaxPoolSize = MaxPoolSize,
+
+                ChannelCapacity = ChannelCapacity,
                 BatchSize = BatchSize,
-                PollingInterval = PollingInterval,
-                WaitForStopInterval = WaitForStopInterval,
 
                 Switches = Source,
-                Sinks = _sinks
+                Sink = Sink
 
             };
 
-            var factory = new ForegroundWatchFactory(config);
+            var factory = new WatchFactory( config );
 
-            WatchFactoryLocator.SetFactory(factory);            
+            await WatchFactoryLocator.SetFactory(factory);            
             
         }        
-        else
-        {
-
-            var config = new WatchFactoryConfig
-            {
-                Quiet = Quiet,
-                InitialPoolSize = InitialPoolSize,
-                MaxPoolSize = MaxPoolSize,
-                BatchSize = BatchSize,
-                PollingInterval = PollingInterval,
-                WaitForStopInterval = WaitForStopInterval,
-
-                Switches = Source,
-                Sinks = _sinks
-
-            };
-
-            var factory = new BackgroundWatchFactory(config);
-
-            WatchFactoryLocator.SetFactory(factory);            
-            
-        }        
-
-    }
-
-
-    public IWatchFactory BuildNoSet()
-    {
-
-        if (Quiet)
-        {
-            var factory = new QuietLoggerFactory();
-            return factory;
-        }
-        else
-        {
-
-            var config = new WatchFactoryConfig
-            {
-                Quiet = Quiet,
-                InitialPoolSize = InitialPoolSize,
-                MaxPoolSize = MaxPoolSize,
-                BatchSize = BatchSize,
-                PollingInterval = PollingInterval,
-                WaitForStopInterval = WaitForStopInterval,
-
-                Switches = Source,
-                Sinks = _sinks
-
-            };
-
-            var factory = new BackgroundWatchFactory(config);
-
-            return factory;            
-            
-        }
-
         
+
     }
+
 
 
 }

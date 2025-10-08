@@ -22,7 +22,7 @@ public class TokenSourceTests
         maker.UseLocalSwitchSource()
             .WhenNotMatched(Level.Trace, Color.Aqua);
 
-        maker.Build();
+        maker.BuildAsync();
 
         var builder = new ContainerBuilder();
         builder.RegisterModule<TheModule>();
@@ -41,7 +41,7 @@ public class TokenSourceTests
 
         TheContainer.Dispose();
         await Task.Delay(1000);
-        await WatchFactoryLocator.Factory.Stop();
+        await WatchFactoryLocator.Factory.StopAsync();
         
     }
 

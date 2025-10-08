@@ -15,11 +15,11 @@ maker.UseLocalSwitchSource()
     .WhenMatched("Program", "", Level.Debug, Color.Bisque)
     .WhenNotMatched(Level.Quiet);
 
-maker.AddSink(TheSink);
+maker.Sink = TheSink;
 
 //maker.UseQuiet();
 
-maker.Build();
+maker.BuildAsync();
 
 
 Console.WriteLine("Press ESC to stop");

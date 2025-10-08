@@ -152,9 +152,12 @@ public class MongoEventSink: IEventSinkProvider
     private ConsoleEventSink DebugSink { get; } = new();
 
 
-    public async Task Accept( LogEventBatch batch, CancellationToken ct=default )
+    public async Task Accept( LogEventBatch batch, CancellationToken cancellationToken=default )
     {
 
+        if( cancellationToken.IsCancellationRequested )
+            return;
+        
         try
         {
 
@@ -187,7 +190,7 @@ public class MongoEventSink: IEventSinkProvider
 
 
 
-            await Collection.InsertManyAsync(documents, cancellationToken: ct);
+            await Collection.InsertManyAsync(documents, cancellationToken: cancellationToken);
 
         }
         catch (Exception cause)

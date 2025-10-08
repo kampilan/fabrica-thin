@@ -75,7 +75,7 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
 
         maker.UseQuiet();
 
-        maker.Build();
+        maker.BuildAsync();
 
     }
 

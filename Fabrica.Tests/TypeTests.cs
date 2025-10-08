@@ -24,7 +24,7 @@ public class TypeTests
 
         maker.UseRealtime();
 
-        maker.Build();        
+        maker.BuildAsync();        
         
         
         var x = new ConcurrentResource<string>(() =>
@@ -54,7 +54,7 @@ public class TypeTests
        
         
         await Task.Delay(1000);
-        await WatchFactoryLocator.Factory.Stop();
+        await WatchFactoryLocator.Factory.StopAsync();
         
 
 

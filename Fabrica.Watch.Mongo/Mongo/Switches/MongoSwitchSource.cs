@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2025 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,14 +36,14 @@ public class MongoSwitchSource: SwitchSource
 {
 
 
-    public string ServerUri { get; set; } = "";
-    public MongoSwitchSource WithServerUri( string uri )
+    public string WatchServerUrl { get; set; } = "";
+    public MongoSwitchSource WithWatchServerUrl( string uri )
     {
 
         if (string.IsNullOrWhiteSpace(uri))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(uri));
 
-        ServerUri = uri;
+        WatchServerUrl = uri;
         return this;
     }
 
@@ -61,29 +61,8 @@ public class MongoSwitchSource: SwitchSource
 
 
 
-    public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(15);
-    public MongoSwitchSource WithPollingInterval(TimeSpan interval)
-    {
-        PollingInterval = interval;
-        return this;
-    }
-
-
-    public TimeSpan WaitForStopInterval { get; set; } = TimeSpan.FromSeconds(5);
-    public MongoSwitchSource WithWaitForStopInterval(TimeSpan interval)
-    {
-        WaitForStopInterval = interval;
-        return this;
-    }
-
-
-
     private IMongoCollection<DomainEntity> DomainCollection { get; set; } = null!;
     private IMongoCollection<SwitchEntity> SwitchCollection { get; set; } = null!;
-
-
-    private EventWaitHandle MustStop { get; } = new (false, EventResetMode.ManualReset);
-    private EventWaitHandle Stopped { get; } = new (false, EventResetMode.ManualReset);
 
     private ConsoleEventSink DebugSink { get; } = new ();
 
@@ -98,17 +77,13 @@ public class MongoSwitchSource: SwitchSource
             if (Started)
                 return;
             
-            var client   = new MongoClient(ServerUri);
+            var client   = new MongoClient(WatchServerUrl);
             var database = client.GetDatabase("fabrica_watch");
 
             DomainCollection = database.GetCollection<DomainEntity>("domains");
             SwitchCollection = database.GetCollection<SwitchEntity>("switches");
 
-            Fetch();
-
-
-            var task = new Task(_process);
-            task.Start();
+            await UpdateAsync();
 
             Started = true;
 
@@ -124,39 +99,21 @@ public class MongoSwitchSource: SwitchSource
 
     }
 
-    public override async Task Stop()
+
+    public override async Task UpdateAsync( CancellationToken cancellationToken=default )
     {
 
-        MustStop.Set();
-
-        Stopped.WaitOne(WaitForStopInterval);
-
-        await base.Stop();
-
-    }
-
-    private void _process()
-    {
-
-        while (!MustStop.WaitOne(PollingInterval))
-            Fetch();
-
-        Stopped.Set();
-
-    }
-
-
-    protected void Fetch()
-    {
-
+        if( cancellationToken.IsCancellationRequested )
+            return;
+        
         try
         {
 
             var domCursor = DomainCollection.Find(d => d.Name == DomainName);
-            var domain    = domCursor.SingleOrDefault();
+            var domain    = await domCursor.SingleOrDefaultAsync(cancellationToken: cancellationToken);
 
             var switchCursor = SwitchCollection.Find(s=>s.DomainUid == domain.Uid);
-            var switchList   = switchCursor.ToList();
+            var switchList   = await switchCursor.ToListAsync(cancellationToken: cancellationToken);
 
 
             var switches = new List<SwitchDef>();
@@ -203,11 +160,8 @@ public class MongoSwitchSource: SwitchSource
         }
         catch (Exception cause)
         {
-
             var logger = DebugSink.GetLogger<MongoSwitchSource>();
-
             logger.Error(cause, "Failed to fetch switches");
-                
         }
 
 

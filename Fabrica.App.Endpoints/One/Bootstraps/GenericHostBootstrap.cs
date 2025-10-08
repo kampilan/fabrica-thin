@@ -68,14 +68,14 @@ public abstract class GenericHostBootstrap() : CorrelatedObject(new Correlation(
     protected IHostBuilder Builder { get; set; } = null!;
     protected IMissionContext MissionContext { get; set; } = null!;
 
-    public virtual void ConfigureWatch()
+    public virtual async Task ConfigureWatch()
     {
 
         var maker = WatchFactoryBuilder.Create();
 
         maker.UseQuiet();
 
-        maker.Build();
+        await maker.BuildAsync();
 
     }
 

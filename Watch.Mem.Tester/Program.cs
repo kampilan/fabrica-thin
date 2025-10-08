@@ -56,11 +56,11 @@ public class WatchBenchmark
             .WhenMatched("WatchBenchmark", "", Level.Debug, Color.Bisque)
             .WhenNotMatched(Level.Quiet);
 
-        maker.AddSink(new RealtimeSink());
+        maker.Sink = new RealtimeSink();
 
         //maker.UseQuiet();
 
-        maker.Build();
+        maker.BuildAsync();
 
     }
 
@@ -69,7 +69,7 @@ public class WatchBenchmark
     {
 
 
-        WatchFactoryLocator.Factory.Stop();
+        WatchFactoryLocator.Factory.StopAsync();
 
         await Task.Delay(2000);
 

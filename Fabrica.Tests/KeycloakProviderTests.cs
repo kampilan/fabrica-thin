@@ -29,7 +29,7 @@ public class KeycloakProviderTests
         maker.UseLocalSwitchSource()
             .WhenNotMatched(Level.Debug, Color.Aqua);
 
-        maker.Build();
+        maker.BuildAsync();
 
         var builder = new ContainerBuilder();
         builder.RegisterModule<TheModule>();
@@ -46,7 +46,7 @@ public class KeycloakProviderTests
     public void Teardown()
     {
         TheContainer.Dispose();
-        WatchFactoryLocator.Factory.Stop();
+        WatchFactoryLocator.Factory.StopAsync();
     }
 
 

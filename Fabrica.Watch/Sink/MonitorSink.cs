@@ -34,7 +34,7 @@ public class MonitorSink: IEventSinkProvider
 
     private int _total;
 
-    public async Task Accept( LogEventBatch batch, CancellationToken ct=default )
+    public async Task Accept( LogEventBatch batch, CancellationToken cancellationToken=default )
     {
 
         foreach (var le in batch.Events)

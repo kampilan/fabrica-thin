@@ -31,11 +31,11 @@ public class LogEventBatchSerializationTests
             .WhenMatched("Fabrica.Tests.LogEventBatchSerializationTests", "", Level.Debug, Color.Bisque)
             .WhenNotMatched(Level.Quiet);
 
-        maker.AddSink(TheSink);
+        maker.Sink = TheSink;
 
         //maker.UseQuiet();
 
-        maker.Build();
+        maker.BuildAsync();
 
     }
 

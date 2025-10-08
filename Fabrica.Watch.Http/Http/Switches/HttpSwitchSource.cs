@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Net.Http.Json;
 using CommunityToolkit.Diagnostics;
 using Fabrica.Rql.Builder;
 using Fabrica.Rql.Serialization;
@@ -6,8 +7,8 @@ using Fabrica.Watch.Http.Models;
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
 using Flurl;
-using Flurl.Http;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -24,13 +25,13 @@ public class HttpSwitchSource: SwitchSource
 {
 
     
-    public string ServerUrl { get; set; } = string.Empty;
+    public string WatchServerUrl { get; set; } = string.Empty;
     public HttpSwitchSource WithWatchServerUrl( string url )
     {
 
         Guard.IsNotNullOrWhiteSpace(url, nameof(url));
 
-        ServerUrl = url;
+        WatchServerUrl = url;
 
         return this;
         
@@ -49,161 +50,179 @@ public class HttpSwitchSource: SwitchSource
         
     }
 
-    public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(15);
-    public HttpSwitchSource WithPollingInterval(TimeSpan interval)
-    {
-        PollingInterval = interval;
-        return this;
-    }
-    
-    public TimeSpan WaitForStopInterval { get; set; } = TimeSpan.FromSeconds(5);
-    public HttpSwitchSource WithWaitForStopInterval(TimeSpan interval)
-    {
-        WaitForStopInterval = interval;
-        return this;
-    }    
-    
-    private EventWaitHandle MustStop { get; } = new (false, EventResetMode.ManualReset);
-    private EventWaitHandle Stopped { get; } = new (false, EventResetMode.ManualReset);
-
     private ConsoleEventSink DebugSink { get; } = new ();
     
+    
+    private ServiceProvider? _provider;    
+
+    
+    private readonly SemaphoreSlim _cycleLock = new (1, 1);
     private bool Started { get; set; }
     public override async Task Start()
     {
+
         
-        Guard.IsNotNullOrWhiteSpace(ServerUrl);
+        Guard.IsNotNullOrWhiteSpace(WatchServerUrl);
         Guard.IsNotNullOrWhiteSpace(DomainName);
 
-        if( Started )
-            return;
         
         // *************************************************
         try
         {
 
-            var uri = new Uri(ServerUrl);
-            Guard.IsTrue(uri.IsAbsoluteUri, "ServerUrl must be an absolute path");
+            var uri = new Uri(WatchServerUrl);
+            Guard.IsTrue(uri.IsAbsoluteUri, "WatchServerUrl must be an absolute path");
             
         }
         catch (Exception cause)
         {
             var logger = DebugSink.GetLogger<HttpSwitchSource>();
-            logger.Error( cause, "Failed to validate Url: ({0})", ServerUrl );
+            logger.Error( cause, "Failed to validate Url: ({0})", WatchServerUrl );
             return;
         }
 
-        
+
         
         // *************************************************        
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        Task.Run( _process );
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        
-        Started = true;
+        try
+        {
 
-        await base.Start();
+            var acquired = await _cycleLock.WaitAsync(TimeSpan.FromMilliseconds(50));
+            if( !acquired || Started )
+                return;
+
+            
+            // *******************************************************        
+            var services = new ServiceCollection();
+            services
+                .AddHttpClient( "Watch", c =>
+                {
+                    c.BaseAddress = new Uri(WatchServerUrl);
+                })
+                .AddStandardResilienceHandler(o =>
+                {
+                    o.AttemptTimeout.Timeout = TimeSpan.FromSeconds(3);
+                    o.Retry.MaxRetryAttempts = 2;
+                });
+        
+            _provider = services.BuildServiceProvider();
+        
+            {
+
+            
+                // *******************************************************            
+                var factory = _provider!.GetRequiredService<IHttpClientFactory>();
+                using var client = factory.CreateClient("Watch");
+
+            
+                // *******************************************************
+                try
+                {
+
+                    var rql = RqlFilterBuilder<DomainExplorer>
+                        .Where(e=>e.Name).Equals(DomainName)
+                        .ToRqlCriteria();
+
+                    var url = new Url()
+                        .AppendPathSegment("domains")
+                        .AppendQueryParam("rql", rql, true);
+
+                    var list = await client.GetFromJsonAsync<List<DomainExplorer>>(url).ConfigureAwait(false);
+            
+                    if( list is not null && list.Count > 0 )
+                        _domainUid = list.First().Uid;
+
+                }
+                catch (Exception cause)
+                {
+                    var logger = DebugSink.GetLogger<HttpSwitchSource>();
+                    logger.Error( cause, "Failed to fetch Domain using Name: ({0}) from Url: ({1})", DomainName, WatchServerUrl );
+                }            
+            
+            }            
+        
+            Started = true;
+
+            await base.Start();            
+
+            await UpdateAsync();
+            
+            
+        }
+        finally
+        {
+            _cycleLock.Release();
+        }
+
         
     }
 
     public override async Task Stop()
     {
 
-        MustStop.Set();
-
-        Stopped.WaitOne( WaitForStopInterval );
-        
-        await base.Stop();
-
-    }
-
-
-    private async Task _process()
-    {
-
-        
-        // *******************************************************
         try
         {
 
-            var rql = RqlFilterBuilder<DomainEntity>
-                .Where(e=>e.Name).Equals(DomainName)
-                .ToRqlCriteria();                 
+            var acquired = await _cycleLock.WaitAsync(TimeSpan.FromMilliseconds(50));
+            if( !acquired || !Started )
+                return;
+
+            if( _provider is not null )
+                await _provider.DisposeAsync();
+        
+            await base.Stop();
+
+            Started = false;            
             
-            var list = await ServerUrl
-                .AppendPathSegment("domains")
-                .AppendQueryParam("rql", rql, true)
-                .GetJsonAsync<List<DomainExplorer>>()
-                .ConfigureAwait(false);
-            
-            if( list is not null && list.Count > 0 )
-                _domainUid = list.First().Uid;
-
-        }
-        catch (Exception cause)
-        {
-            var logger = DebugSink.GetLogger<HttpSwitchSource>();
-            logger.Error( cause, "Failed to fetch Domain using Name: ({0}) from Url: ({1})", DomainName, ServerUrl );
-        }
-
-
-        
-        // *******************************************************        
-        try
-        {
-            await Fetch();
-        }
-        catch (Exception cause)
-        {
-            var logger = DebugSink.GetLogger<HttpSwitchSource>();
-            logger.Error( cause, "Failed to fetch initial Switches" );
-        }
-        
-        
-
-        // *******************************************************
-        while( !MustStop.WaitOne(PollingInterval) )
-        {
-
-            try
-            {
-                await Fetch();           
-            }
-            catch
-            {
-                // ignore
-            }
             
         }
+        finally
+        {
+            _cycleLock.Release();            
+        }
 
-        Stopped.Set();
-
+        
     }
 
     
     private string? _domainUid;
     private List<SwitchDef> _switches = [];
-
-    private async Task Fetch()
+    public override async Task UpdateAsync( CancellationToken cancellationToken=default )
     {
+
+        
+        if( cancellationToken.IsCancellationRequested )
+            return;
+        
         
         // *******************************************************
-        DomainEntity? domain = null;
-        try
+        DomainEntity? domain = null;        
         {
 
-            domain = await ServerUrl
-                .AppendPathSegment( "domains" )
-                .AppendPathSegment( _domainUid )
-                .GetJsonAsync<DomainEntity>();
+            // *******************************************************            
+            var factory = _provider!.GetRequiredService<IHttpClientFactory>();
+            using var client = factory.CreateClient("Watch");
+
+            // *******************************************************
+            try
+            {
+            
+                var url = new Url()
+                    .AppendPathSegment( "domains" )
+                    .AppendPathSegment( _domainUid );
+                
+                domain = await client.GetFromJsonAsync<DomainEntity>(url, cancellationToken: cancellationToken).ConfigureAwait(false);
+            
+            }
+            catch( Exception cause)
+            {
+                var logger = DebugSink.GetLogger<HttpSwitchSource>();            
+                logger.Error( cause, "Failed to fetch Domain" );
+            }            
+            
             
         }
-        catch( Exception cause)
-        {
-            var logger = DebugSink.GetLogger<HttpSwitchSource>();            
-            logger.Error( cause, "Failed to fetch Domain" );
-        }
-        
+
 
         
         // *******************************************************
@@ -218,18 +237,21 @@ public class HttpSwitchSource: SwitchSource
         // *******************************************************
         _switches = [];
         
-        foreach( var se in domain.Switches )
+        foreach( var entity in domain.Switches )
         {
 
 
-            if ( !(Enum.TryParse( se.Level, true, out Level lv)) )
-                lv = Level.Warning;
+            // *******************************************************************
+            if( !(Enum.TryParse( entity.Level, true, out Level level)) )
+                level = Level.Warning;
 
 
+            
+            // *******************************************************************            
             var color = Color.White;
             try
             {
-                color = Color.FromName(se.Color);
+                color = ColorTranslator.FromHtml(entity.Color);
             }
             catch
             {
@@ -237,17 +259,19 @@ public class HttpSwitchSource: SwitchSource
             }
 
 
-            var sw = new SwitchDef
+            
+            // *******************************************************************            
+            var def = new SwitchDef
             {
-                Pattern      = se.Pattern,
-                Tag          = se.Tag,
-                FilterType   = se.FilterType,
-                FilterTarget = se.FilterTarget,
-                Level        = lv,
+                Pattern      = entity.Pattern,
+                Tag          = entity.Tag,
+                FilterType   = entity.FilterType,
+                FilterTarget = entity.FilterTarget,
+                Level        = level,
                 Color        = color
             };
 
-            _switches.Add(sw);
+            _switches.Add(def);
 
         }
 

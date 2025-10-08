@@ -24,7 +24,6 @@ SOFTWARE.
 
 using Fabrica.Watch.Sink;
 using Fabrica.Watch.Switching;
-using Microsoft.Extensions.Logging;
 
 namespace Fabrica.Watch;
 
@@ -33,12 +32,15 @@ public interface IWatchFactory
 {
 
     ISwitchSource Switches { get; }
-
-    Task Start();
-    Task Stop();
+    
+    Task StartAsync();
+    Task StopAsync();
 
     void Accept( LogEvent logEvent );
-
+    
+    Task FlushEventsAsync( TimeSpan waitInterval= default, CancellationToken cancellationToken = default); 
+    Task UpdateSwitchesAsync( CancellationToken cancellationToken = default );
+    
     bool IsTraceEnabled( string category );
     bool IsDebugEnabled( string category );
     
@@ -47,7 +49,6 @@ public interface IWatchFactory
 
     bool IsTraceEnabled<T>();
     bool IsDebugEnabled<T>();
-    
     
     ILogger GetLogger( string category, bool retroOn = true );
     ILogger GetLogger<T>( bool retroOn = true );

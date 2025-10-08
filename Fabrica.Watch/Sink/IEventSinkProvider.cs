@@ -30,6 +30,6 @@ public interface IEventSinkProvider
     Task Start();
     Task Stop();
     
-    Task Accept( LogEventBatch batch, CancellationToken ct=default );
+    Task Accept( LogEventBatch batch, CancellationToken cancellationToken=default );
 
 }

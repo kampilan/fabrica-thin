@@ -29,9 +29,10 @@
 		<PackageReference Include="Autofac"  />
 		<PackageReference Include="Autofac.Extensions.DependencyInjection"  />
 		<PackageReference Include="CommunityToolkit.Diagnostics" />
-		<PackageReference Include="Flurl.Http" />
+		<PackageReference Include="Flurl" />
 		<PackageReference Include="JetBrains.Annotations" />
 		<PackageReference Include="Microsoft.Extensions.Http"  />
+		<PackageReference Include="Microsoft.Extensions.Http.Resilience" />
 		<PackageReference Include="Polly"  />
 		<PackageReference Include="Polly.Extensions"  />
 	</ItemGroup>

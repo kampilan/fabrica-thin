@@ -39,7 +39,7 @@ public interface ISwitchSource
 
     IList<SwitchDef> CurrentSwitchDefs { get; }
     void Update( IEnumerable<SwitchDef> switchSource );
-
+    Task UpdateAsync( CancellationToken cancellationToken = default );
 
     ISwitch GetDefaultSwitch();
     ISwitch GetDebugSwitch();

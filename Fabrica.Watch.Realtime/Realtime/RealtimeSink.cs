@@ -59,9 +59,13 @@ public class RealtimeSink: IEventSinkProvider
 
     }
 
-    public Task Accept( LogEventBatch batch, CancellationToken ct=default )
+    public Task Accept( LogEventBatch batch, CancellationToken cancellationToken=default )
     {
 
+        if( cancellationToken.IsCancellationRequested )
+            return Task.CompletedTask;
+        
+        
         foreach( var le in batch.Events )
         {
             var entry = _mapToLogEntry(le);

@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2017 The Kampilan Group Inc.
+Copyright (c) 2025 Pond Hawk Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,15 @@ SOFTWARE.
 
 using Fabrica.Watch.Mongo.Sink;
 using Fabrica.Watch.Mongo.Switches;
+using JetBrains.Annotations;
+
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMethodReturnValue.Global
 
 
 namespace Fabrica.Watch.Mongo;
 
+[UsedImplicitly]
 public static class WatchFactoryBuilderExtensions
 {
 
@@ -63,13 +68,13 @@ public static class WatchFactoryBuilderExtensions
     {
 
 
-        var mongoSink = new MongoEventSink
+        var sink = new MongoEventSink
         {
             ServerUri  = module.WatchEventStoreUri,
             DomainName = module.WatchDomainName
         };
 
-        builder.AddSink(mongoSink);
+        builder.Sink = sink;
 
 
         return builder;
@@ -80,13 +85,13 @@ public static class WatchFactoryBuilderExtensions
     public static WatchFactoryBuilder UseMongoSink(this WatchFactoryBuilder builder, string serverUri, string domainName )
     {
 
-        var mongoSink = new MongoEventSink
+        var sink = new MongoEventSink
         {
             ServerUri  = serverUri,
             DomainName = domainName
         };
 
-        builder.AddSink(mongoSink);
+        builder.Sink = sink;
 
 
         return builder;
@@ -99,10 +104,8 @@ public static class WatchFactoryBuilderExtensions
 
         var source = new MongoSwitchSource
         {
-            DomainName          = module.WatchDomainName,
-            ServerUri           = module.WatchEventStoreUri,
-            PollingInterval     = TimeSpan.FromSeconds(module.WatchPollingDurationSecs),
-            WaitForStopInterval = TimeSpan.FromSeconds(30)
+            DomainName     = module.WatchDomainName,
+            WatchServerUrl = module.WatchEventStoreUri,
         };
 
 
@@ -119,7 +122,7 @@ public static class WatchFactoryBuilderExtensions
 
         var source = new MongoSwitchSource
         {
-            ServerUri  = serverUri,
+            WatchServerUrl  = serverUri,
             DomainName = domainName
         };
 

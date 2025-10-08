@@ -26,25 +26,26 @@ using Fabrica.Watch.Utilities;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using Fabrica.Watch.Switching;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Fabrica.Watch.Sink;
 
-public class ConsoleEventSink: IEventSinkProvider, ILogger
+public sealed class ConsoleEventSink: IEventSinkProvider, ILogger
 {
 
 
-    public virtual Task Start()
+    public Task Start()
     {
         return Task.CompletedTask;
     }
 
-    public virtual Task Stop()
+    public Task Stop()
     {
         return Task.CompletedTask;
     }
 
 
-    public virtual Task Accept( LogEventBatch batch, CancellationToken ct=default )
+    public Task Accept( LogEventBatch batch, CancellationToken cancellationToken=default )
     {
 
         foreach ( var le in batch.Events )
@@ -330,12 +331,7 @@ public class ConsoleLoggerFactory : IWatchFactory
 
     public ISwitchSource Switches { get; set; } = null!;
 
-    public IEventSinkProvider? GetSink<T>() where T : class, IEventSinkProvider
-    {
-        return TheSink;
-    }
-
-    public async Task Start()
+    public async Task StartAsync()
     {
 
         var ss = new SwitchSource();
@@ -347,7 +343,7 @@ public class ConsoleLoggerFactory : IWatchFactory
 
     }
 
-    public async Task Stop()
+    public async Task StopAsync()
     {
         await TheSink.Stop();
     }
@@ -356,6 +352,18 @@ public class ConsoleLoggerFactory : IWatchFactory
     {
         TheSink.Accept(logEvent);
     }
+
+    
+    public Task FlushEventsAsync(TimeSpan waitInterval = default, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;   
+    }
+
+    public Task UpdateSwitchesAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;  
+    }
+
 
     public bool IsTraceEnabled(string category)
     {

@@ -10,19 +10,33 @@ public class QuietLoggerFactory: IWatchFactory
 
     public ISwitchSource Switches { get; } = new SwitchSource();
 
-    public Task Start()
+    public Task StartAsync()
     {
         return Task.CompletedTask;
     }
 
-    public Task Stop()
+    public Task StopAsync()
     {
         return Task.CompletedTask;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public void Accept(LogEvent logEvent)
     {
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
+    public Task FlushEventsAsync(TimeSpan waitInterval = default, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]    
+    public Task UpdateSwitchesAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]    
     public bool IsTraceEnabled(string category)
@@ -58,6 +72,11 @@ public class QuietLoggerFactory: IWatchFactory
     public bool IsDebugEnabled<T>()
     {
         return false;
+    }
+
+    public ILogger GetConsoleLogger<T>() where T : class
+    {
+        return QuietLogger.Single;   
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]    

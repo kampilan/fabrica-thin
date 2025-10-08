@@ -21,7 +21,6 @@ public class PatchTestModule : ServiceModule
     {
 
         var maker = new WatchFactoryBuilder();
-        maker.UseForegroundFactory();
 
         maker.UseRealtime();
 
@@ -29,7 +28,7 @@ public class PatchTestModule : ServiceModule
             .WhenMatched("Microsoft", "", Level.Warning, Color.LightGreen)
             .WhenNotMatched(Level.Debug, Color.LightSalmon);
 
-        maker.Build();
+        maker.BuildAsync();
 
     }
 

@@ -24,7 +24,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="MemoryPack" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
   </ItemGroup>

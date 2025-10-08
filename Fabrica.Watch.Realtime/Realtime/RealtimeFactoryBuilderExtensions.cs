@@ -37,7 +37,7 @@ public static class RealtimeFactoryBuilderExtensions
 
         var sink = new RealtimeSink();
 
-        builder.AddSink(sink);
+        builder.Sink = sink;
 
         return builder;
 
@@ -52,7 +52,7 @@ public static class RealtimeFactoryBuilderExtensions
 
         var sink = new RealtimeSink();
 
-        builder.AddSink(sink);
+        builder.Sink = sink;
 
         return builder;
 

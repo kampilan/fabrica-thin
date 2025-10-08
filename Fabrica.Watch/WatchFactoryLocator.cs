@@ -31,22 +31,20 @@ public static class WatchFactoryLocator
 
     static WatchFactoryLocator()
     {
-        FallbackFactory = new ConsoleLoggerFactory();
+        ConsoleFactory = new ConsoleLoggerFactory();
     }
 
-    private static readonly IWatchFactory FallbackFactory;
-
-    public static void SetFactory( IWatchFactory factory )
+    public static async Task SetFactory( IWatchFactory factory )
     {
 
         if (factory == null) throw new ArgumentNullException(nameof(factory));
 
         var previous = _actualFactory;
 
-        factory.Start();
+        await factory.StartAsync();
         Factory = factory;
 
-        previous?.Stop();
+        previous?.StopAsync();
 
     }
 
@@ -54,9 +52,10 @@ public static class WatchFactoryLocator
     private static IWatchFactory? _actualFactory;
     public static IWatchFactory Factory
     {
-        get => _actualFactory ?? FallbackFactory;
+        get => _actualFactory ?? ConsoleFactory;
         private set => _actualFactory = value;
     }
 
-
+    public static IWatchFactory ConsoleFactory { get; }
+    
 }

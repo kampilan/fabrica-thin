@@ -33,20 +33,23 @@ public class WatchTests
 
         var maker = WatchFactoryBuilder.Create();
 
-        maker.UseBinaryHttpSink("http://localhost:8181", "Fabrica.Watch.Development" );
+        maker.UseAutoUpdater = true;
+        maker.UseLocalSwitchSource()
+            .WhenNotMatched(Level.Trace, Color.LightSalmon);
+        maker.UseRealtime();
+        
+//        maker.UseBinaryHttpSink("http://localhost:8181", "Fabrica.Watch.Development" );
 
-        maker.Build();
-        
-        await Task.Delay(2000);
-        
+        maker.BuildAsync();
         
         var logger = WatchFactoryLocator.Factory.GetLogger("Fabrica.Pump");
         logger.Trace("Testing");
 
         logger.Dispose();
 
-        await Task.Delay(2000);
-        await WatchFactoryLocator.Factory.Stop();
+        await Task.Delay(30000);
+        
+        await WatchFactoryLocator.Factory.StopAsync();
 
 /*
         maker.Build();
@@ -166,7 +169,7 @@ public class WatchTests
 
         maker.UseRealtime();
 
-        maker.Build();
+        maker.BuildAsync();
         await Task.Delay(3000);
 
         
@@ -179,7 +182,7 @@ public class WatchTests
         logger.Dispose();
 
         await Task.Delay(1000);
-        await WatchFactoryLocator.Factory.Stop();
+        await WatchFactoryLocator.Factory.StopAsync();
 
     }
     

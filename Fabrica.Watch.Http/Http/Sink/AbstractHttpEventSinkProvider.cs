@@ -1,14 +1,14 @@
-﻿using CommunityToolkit.Diagnostics;
+﻿using System.Net.Http.Json;
+using CommunityToolkit.Diagnostics;
 using Fabrica.Rql.Builder;
 using Fabrica.Rql.Serialization;
 using Fabrica.Watch.Http.Models;
 using Fabrica.Watch.Http.Switches;
 using Fabrica.Watch.Sink;
 using Flurl;
-using Flurl.Http;
+using Microsoft.Extensions.DependencyInjection;
+
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
-
-
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
 namespace Fabrica.Watch.Http.Sink;
@@ -16,7 +16,7 @@ namespace Fabrica.Watch.Http.Sink;
 public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
 {
 
-    public string ServerUrl { get; set; } = string.Empty;
+    public string WatchServerUrl { get; set; } = string.Empty;
     public string DomainName { get; set; } = string.Empty;
 
     private ConsoleEventSink DebugSink { get; } = new();
@@ -24,12 +24,12 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
     protected abstract Task<HttpContent> BuildContentAsync(LogEventBatch batch);
 
 
-    private string _endpoint = "";
+    private ServiceProvider? _provider;    
     private string _domainUid = "";
     public async Task Start()
     {
 
-        Guard.IsNotNullOrWhiteSpace(ServerUrl);
+        Guard.IsNotNullOrWhiteSpace(WatchServerUrl);
         Guard.IsNotNullOrWhiteSpace(DomainName);
 
         
@@ -37,15 +37,31 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
         try
         {
 
-            var uri = new Uri(ServerUrl);
+            var uri = new Uri(WatchServerUrl);
             Guard.IsTrue(uri.IsAbsoluteUri, "ServerUrl must be an absolute path");
             
         }
         catch (Exception cause)
         {
             var logger = DebugSink.GetLogger<HttpSwitchSource>();
-            logger.Error( cause, "Failed to validate Url: ({0})", ServerUrl );
+            logger.Error( cause, "Failed to validate Url: ({0})", WatchServerUrl );
         }
+
+
+        // *******************************************************        
+        var services = new ServiceCollection();
+        services
+            .AddHttpClient( "Watch", c =>
+            {
+                c.BaseAddress = new Uri(WatchServerUrl);
+            })
+            .AddStandardResilienceHandler(o =>
+            {
+                o.AttemptTimeout.Timeout = TimeSpan.FromSeconds(3);
+                o.Retry.MaxRetryAttempts = 2;
+            });
+        
+        _provider = services.BuildServiceProvider();
 
 
         
@@ -53,30 +69,31 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
         try
         {
 
+            var factory = _provider!.GetRequiredService<IHttpClientFactory>();
+            using var client = factory.CreateClient("Watch");
             
             var rql = RqlFilterBuilder<DomainEntity>
-                .Where(e=>e.Name).Equals(DomainName)
-                .ToRqlCriteria();            
-            
-            var list = await ServerUrl
-                .AppendPathSegment("domains")
-                .AppendQueryParam("rql", rql, true)
-                .GetJsonAsync<List<DomainExplorer>>();
+                .Where(e => e.Name).Equals(DomainName)
+                .ToRqlCriteria();
 
-            if( list is not null && list.Count > 0 )
+            var url = new Url()
+                .AppendPathSegment("domains")
+                .AppendQueryParam("rql", rql, true);
+
+            var list = await client.GetFromJsonAsync<List<DomainExplorer>>(url);
+
+            if (list is not null && list.Count > 0)
             {
                 var domain = list.First();
-                _endpoint = "http://localhost:8181";
                 _domainUid = domain.Uid;
             }
-
             
         }
         catch (Exception cause)
         {
             var logger = DebugSink.GetLogger(GetType());
-            logger.Error( cause, "Failed to fetch Domain using Name: ({0}) from Url: ({1})", DomainName, ServerUrl );
-        }        
+            logger.Error(cause, "Failed to fetch Domain using Name: ({0}) from Url: ({1})", DomainName, WatchServerUrl);
+        }            
 
 
     }
@@ -88,10 +105,12 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
     }
   
     
-    public async Task Accept( LogEventBatch batch, CancellationToken ct=default )
+    public async Task Accept( LogEventBatch batch, CancellationToken cancellationToken=default )
     {
 
-
+        if( cancellationToken.IsCancellationRequested )
+            return;
+        
         try
         {
 
@@ -105,13 +124,18 @@ public abstract class AbstractHttpEventSinkProvider: IEventSinkProvider
             // *****************************************************************
             var content = await BuildContentAsync(batch);
 
+
+            
+            // *******************************************************            
+            var factory = _provider!.GetRequiredService<IHttpClientFactory>();
+            using var client = factory.CreateClient("Watch");
+
+
             
             // *****************************************************************            
-            await _endpoint
-                .AppendPathSegment("sink")
-                .PostAsync( content, cancellationToken: ct );
+            var url = new Url().AppendPathSegment("sink");
 
-
+            await client.PostAsync(url, content, cancellationToken);
 
         }
         catch (Exception cause )

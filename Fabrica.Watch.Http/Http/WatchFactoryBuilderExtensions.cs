@@ -11,18 +11,14 @@ public static class WatchFactoryBuilderExtensions
     [UsedImplicitly]
     public static JsonHttpEventSinkProvider UseJsonHttpSink(this WatchFactoryBuilder builder, string serverUrl, string domainName, TimeSpan pollingInterval = default)
     {
-
-        builder.UseHttpSwitchSource(serverUrl, domainName);
-        
-        builder.PollingInterval = pollingInterval != TimeSpan.Zero?pollingInterval:TimeSpan.FromMilliseconds(50);
         
         var sink = new JsonHttpEventSinkProvider
         {
-            ServerUrl = serverUrl,
+            WatchServerUrl = serverUrl,
             DomainName = domainName
         };
 
-        builder.AddSink(sink);
+        builder.Sink = sink;
 
         return sink;
 
@@ -33,17 +29,13 @@ public static class WatchFactoryBuilderExtensions
     public static BinaryHttpEventSinkProvider UseBinaryHttpSink(this WatchFactoryBuilder builder, string serverUrl, string domainName, TimeSpan pollingInterval = default)
     {
 
-        builder.UseHttpSwitchSource(serverUrl, domainName);        
-        
-        builder.PollingInterval = pollingInterval != TimeSpan.Zero?pollingInterval:TimeSpan.FromMilliseconds(50);
-
         var sink = new BinaryHttpEventSinkProvider
         {
-            ServerUrl = serverUrl,
+            WatchServerUrl = serverUrl,
             DomainName = domainName
         };
 
-        builder.AddSink(sink);
+        builder.Sink = sink;
 
         return sink;
 
@@ -56,7 +48,7 @@ public static class WatchFactoryBuilderExtensions
 
         var source = new HttpSwitchSource
         {
-            ServerUrl  = serverUrl,
+            WatchServerUrl  = serverUrl,
             DomainName = domainName
         };
 

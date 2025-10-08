@@ -13,6 +13,6 @@ public interface IBootstrap
 
     Task<IAppliance> Boot();
 
-    void ConfigureWatch();
+    Task ConfigureWatch();
 
 }
